@@ -1,0 +1,37 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <!-- التدرجات الملونة -->
+        <linearGradient id="mainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#667eea;stop-opacity:0.9" />
+            <stop offset="100%" style="stop-color:#764ba2;stop-opacity:0.9" />
+        </linearGradient>
+
+        <linearGradient id="secondGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#f093fb;stop-opacity:0.8" />
+            <stop offset="100%" style="stop-color:#f5576c;stop-opacity:0.8" />
+        </linearGradient>
+
+        <linearGradient id="thirdGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#4facfe;stop-opacity:0.7" />
+            <stop offset="100%" style="stop-color:#00f2fe;stop-opacity:0.7" />
+        </linearGradient>
+    </defs>
+
+    <!-- خلفية بيضاء مربعة مع ظل -->
+    <rect width="200" height="200" fill="white" rx="20" ry="20" filter="drop-shadow(0 10px 20px rgba(0,0,0,0.1))"/>
+
+    <!-- الأيقونة الملونة في المنتصف -->
+    <g transform="translate(100, 100)">
+        <!-- الدائرة الكبيرة البنفسجية -->
+        <circle cx="0" cy="0" r="50" fill="url(#mainGradient)"/>
+
+        <!-- الدائرة المتوسطة الوردية -->
+        <circle cx="8" cy="-5" r="37" fill="url(#secondGradient)"/>
+
+        <!-- الدائرة الصغيرة الزرقاء -->
+        <circle cx="3" cy="3" r="25" fill="url(#thirdGradient)"/>
+
+        <!-- خط التقسيم الأبيض -->
+        <rect x="-35" y="-3" width="70" height="5" fill="white" rx="2" ry="2"/>
+    </g>
+</svg>

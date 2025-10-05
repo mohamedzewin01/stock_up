@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "873875459195",
+    "project_id": "stock-6783e",
+    "storage_bucket": "stock-6783e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:873875459195:android:595dcde2f42704a3b6a6de",
+        "android_client_info": {
+          "package_name": "com.example.stock_up"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAsQP-ZvEHQSXgXSk0cbhCYLFufIJQT-d0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:873875459195:android:49ba2df181efdbdab6a6de",
+        "android_client_info": {
+          "package_name": "com.example.stocktaking"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAsQP-ZvEHQSXgXSk0cbhCYLFufIJQT-d0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
