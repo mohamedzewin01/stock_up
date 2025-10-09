@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:stock_up/features/EmployeeBarcodeScreen/presentation/widgets/info_row.dart';
 
 class EmployeeBarcodeScreen extends StatefulWidget {
   @override
@@ -60,6 +59,33 @@ class _EmployeeBarcodeScreenState extends State<EmployeeBarcodeScreen> {
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
+                    // عرض صور المنتج
+                    if (_hasImages())
+                      Card(
+                        clipBehavior: Clip.antiAlias,
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              height: 200,
+                              child: PageView(
+                                children: _buildImageWidgets(),
+                              ),
+                            ),
+                            if (_buildImageWidgets().length > 1)
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  'اسحب لعرض المزيد من الصور',
+                                  style: TextStyle(
+                                    color: Colors.grey[600],
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    const SizedBox(height: 16),
                     Card(
                       child: Padding(
                         padding: const EdgeInsets.all(16),
@@ -67,15 +93,17 @@ class _EmployeeBarcodeScreenState extends State<EmployeeBarcodeScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              productData!['اسم الصنف']?.toString() ?? '',
+                              productData!['product_name']?.toString() ?? '',
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             const Divider(height: 24),
-                            InfoRow(label: 'الكمية',value:  '${productData!['إجمالى الكمية']} ${productData!['الوحدة']}'),
-                            InfoRow(label: 'رقم الصنف',value: productData!['رقم الصنف']?.toString() ?? ''),
+                            _buildInfoRow('الكمية', '${productData!['total_quantity']} ${productData!['unit']}'),
+                            _buildInfoRow('رقم الصنف', productData!['product_number']?.toString() ?? ''),
+                            _buildInfoRow('الفئة', productData!['category']?.toString() ?? ''),
+                            _buildInfoRow('سعر البيع', '${productData!['selling_price']} ر.س'),
                           ],
                         ),
                       ),
@@ -97,7 +125,108 @@ class _EmployeeBarcodeScreenState extends State<EmployeeBarcodeScreen> {
     );
   }
 
+  bool _hasImages() {
+    if (productData == null) return false;
+    return (productData!['image_front_url'] != null && productData!['image_front_url'].toString().isNotEmpty) ||
+        (productData!['image_ingredients_url'] != null && productData!['image_ingredients_url'].toString().isNotEmpty) ||
+        (productData!['image_nutrition_url'] != null && productData!['image_nutrition_url'].toString().isNotEmpty);
+  }
 
+  List<Widget> _buildImageWidgets() {
+    List<Widget> images = [];
+
+    if (productData!['image_front_url'] != null && productData!['image_front_url'].toString().isNotEmpty) {
+      images.add(_buildImageWidget(productData!['image_front_url'], 'صورة المنتج'));
+    }
+
+    if (productData!['image_ingredients_url'] != null && productData!['image_ingredients_url'].toString().isNotEmpty) {
+      images.add(_buildImageWidget(productData!['image_ingredients_url'], 'المكونات'));
+    }
+
+    if (productData!['image_nutrition_url'] != null && productData!['image_nutrition_url'].toString().isNotEmpty) {
+      images.add(_buildImageWidget(productData!['image_nutrition_url'], 'القيمة الغذائية'));
+    }
+
+    if (images.isEmpty) {
+      images.add(_buildPlaceholderImage());
+    }
+
+    return images;
+  }
+
+  Widget _buildImageWidget(String url, String label) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Image.network(
+          url,
+          fit: BoxFit.contain,
+          errorBuilder: (context, error, stackTrace) => _buildPlaceholderImage(),
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return const Center(child: CircularProgressIndicator());
+          },
+        ),
+        Positioned(
+          bottom: 0,
+          left: 0,
+          right: 0,
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.bottomCenter,
+                end: Alignment.topCenter,
+                colors: [
+                  Colors.black.withOpacity(0.7),
+                  Colors.transparent,
+                ],
+              ),
+            ),
+            child: Text(
+              label,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPlaceholderImage() {
+    return Container(
+      color: Colors.grey[200],
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.image_not_supported, size: 64, color: Colors.grey[400]),
+          const SizedBox(height: 8),
+          Text(
+            'لا توجد صورة متاحة',
+            style: TextStyle(color: Colors.grey[600]),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: TextStyle(color: Colors.grey[600])),
+          Text(value, style: const TextStyle(fontWeight: FontWeight.w600)),
+        ],
+      ),
+    );
+  }
 
   void _onBarcodeDetected(String barcode) async {
     if (!isScanning) return;
@@ -113,27 +242,43 @@ class _EmployeeBarcodeScreenState extends State<EmployeeBarcodeScreen> {
 
   Future<void> _fetchProductData(String search) async {
     try {
-      https://artawiya.com/zrranDB/api/v1/stocktaking/search_product?search=6281014472241
-      final url = 'https://artawiya.com/stock_up_DB/api/v1/stocktaking/search_product?search=$search';
+      final url = 'https://artawiya.com/stock_up_DB/api/v1/alrayan/smart_search2?q=$search';
       final response = await http.get(Uri.parse(url));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        if (data['status'] == 'success' && data['data'] != null && data['data'].isNotEmpty) {
+        if (data['status'] == 'success' && data['results'] != null && data['results'].isNotEmpty) {
           setState(() {
-            productData = data['data'][0];
+            productData = data['results'][0];
             isLoading = false;
           });
+        } else {
+          _showError('لم يتم العثور على المنتج');
         }
+      } else {
+        _showError('فشل في الاتصال بالسيرفر');
       }
     } catch (e) {
-      _resetScanner();
+      _showError('حدث خطأ: $e');
     }
+  }
+
+  void _showError(String message) {
+    setState(() {
+      isLoading = false;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+      ),
+    );
+    _resetScanner();
   }
 
   void _showQuantityDialog(Map<String, dynamic> product) {
     final TextEditingController quantityController = TextEditingController();
-    quantityController.text = product['إجمالى الكمية']?.toString() ?? '0';
+    quantityController.text = product['total_quantity']?.toString() ?? '0';
 
     showDialog(
       context: context,
@@ -161,17 +306,29 @@ class _EmployeeBarcodeScreenState extends State<EmployeeBarcodeScreen> {
       ),
     );
   }
+
   Future<void> _saveToFirebase(Map<String, dynamic> product, String newQuantity) async {
     try {
       final quantity = double.tryParse(newQuantity);
-      if (quantity == null) return;
+      if (quantity == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('الرجاء إدخال كمية صحيحة'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
 
-      // هنا بنحول الحقول المهمة للعربية أو الإنجليزية حسب الحاجة
       final Map<String, dynamic> dataToSave = {
-
+        'product_number': product['product_number'],
+        'product_name': product['product_name'],
+        'old_quantity': product['total_quantity'],
+        'new_quantity': newQuantity,
+        'unit': product['unit'],
         'status': 'pending',
         'timestamp': FieldValue.serverTimestamp(),
-        'all_data': product, // لو عايز تحتفظ بالنسخة الكاملة احتياطيًا ممكن تتركه
+        'all_data': product,
       };
 
       await _firestore.collection('inventory_updates').add(dataToSave);
@@ -191,7 +348,6 @@ class _EmployeeBarcodeScreenState extends State<EmployeeBarcodeScreen> {
       );
     }
   }
-
 
   void _resetScanner() {
     setState(() {
