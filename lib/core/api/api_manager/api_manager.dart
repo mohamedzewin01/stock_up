@@ -14,6 +14,10 @@ abstract class ApiService {
   @FactoryMethod()
   factory ApiService(Dio dio) = _ApiService;
 
+  @POST(ApiConstants.getStore)
+  Future<SmartSearchModel?> getStore();
+
+
   @POST(ApiConstants.smartSearch)
   Future<SmartSearchModel?> smartSearch(@Query("q") String query);
 }
