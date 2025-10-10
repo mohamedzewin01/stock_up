@@ -1451,14 +1451,14 @@ class _EmployeeSearchScreenState extends State<EmployeeSearchScreen> {
     });
 
     try {
-      final url = 'https://artawiya.com/stock_up_DB/api/v1/stocktaking/search_product?search=${Uri.encodeComponent(query)}';
+      final url = 'https://artawiya.com/stock_up_DB/api/v1/alrayan/smart_search2?q=${Uri.encodeComponent(query)}';
       final response = await http.get(Uri.parse(url));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        if (data['status'] == 'success' && data['data'] != null) {
+        if (data['status'] == 'success' && data['results'] != null) {
           setState(() {
-            searchResults = List<Map<String, dynamic>>.from(data['data']);
+            searchResults = List<Map<String, dynamic>>.from(data['results']);
             isLoading = false;
           });
         } else {
@@ -1489,7 +1489,7 @@ class _EmployeeSearchScreenState extends State<EmployeeSearchScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                product['اسم الصنف']?.toString() ?? 'غير محدد',
+                product['product_name']?.toString() ?? 'غير محدد',
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -1499,8 +1499,8 @@ class _EmployeeSearchScreenState extends State<EmployeeSearchScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('الكمية: ${product['إجمالى الكمية']} ${product['الوحدة']}'),
-                  Text('رقم الصنف: ${product['رقم الصنف']}'),
+                  Text('الكمية: ${product['total_quantity']} ${product['unit']}'),
+                  Text('رقم الصنف: ${product['barcodes']}'),
                 ],
               ),
             ],
@@ -1512,7 +1512,7 @@ class _EmployeeSearchScreenState extends State<EmployeeSearchScreen> {
 
   void _showQuantityDialog(Map<String, dynamic> product) {
     final TextEditingController quantityController = TextEditingController();
-    quantityController.text = product['إجمالى الكمية']?.toString() ?? '0';
+    quantityController.text = product['total_quantity']?.toString() ?? '0';
 
     showDialog(
       context: context,
@@ -1557,14 +1557,15 @@ class _EmployeeSearchScreenState extends State<EmployeeSearchScreen> {
         return;
       }
 
+
       await _firestore.collection('inventory_updates').add({
         'product_id': product['رقم الصنف'],
-        'product_name': product['اسم الصنف'],
+        'product_name': product['product_name'],
         'old_quantity': product['إجمالى الكمية'],
         'new_quantity': quantity,
         'unit': product['الوحدة'],
-        'category': product['التصنيف'],
-        'barcode': product['الباركود'],
+        'category': product['category'],
+        'barcode': product['barcodes'],
         'status': 'pending',
         'timestamp': FieldValue.serverTimestamp(),
         'all_data': product,

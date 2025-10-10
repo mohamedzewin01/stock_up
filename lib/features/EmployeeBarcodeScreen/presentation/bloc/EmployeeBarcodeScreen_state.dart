@@ -5,7 +5,11 @@ sealed class EmployeeBarcodeScreenState {}
 
 final class EmployeeBarcodeScreenInitial extends EmployeeBarcodeScreenState {}
 final class EmployeeBarcodeScreenLoading extends EmployeeBarcodeScreenState {}
-final class EmployeeBarcodeScreenSuccess extends EmployeeBarcodeScreenState {}
+final class EmployeeBarcodeScreenSuccess extends EmployeeBarcodeScreenState {
+  final SmartSearchEntity? smartSearchEntity;
+
+  EmployeeBarcodeScreenSuccess(this.smartSearchEntity);
+}
 final class EmployeeBarcodeScreenFailure extends EmployeeBarcodeScreenState {
   final Exception exception;
 

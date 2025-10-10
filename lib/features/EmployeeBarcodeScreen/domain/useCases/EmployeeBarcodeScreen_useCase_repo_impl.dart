@@ -1,3 +1,7 @@
+import 'package:stock_up/core/common/api_result.dart';
+
+import 'package:stock_up/features/EmployeeBarcodeScreen/domain/entities/entities.dart';
+
 import '../repositories/EmployeeBarcodeScreen_repository.dart';
 import 'package:injectable/injectable.dart';
 import '../useCases/EmployeeBarcodeScreen_useCase_repo.dart';
@@ -8,7 +12,10 @@ class EmployeeBarcodeScreenUseCase implements EmployeeBarcodeScreenUseCaseRepo {
 
   EmployeeBarcodeScreenUseCase(this.repository);
 
-  // Future<Result<T>> call(...) async {
-  //   return await repository.get...();
-  // }
+  @override
+  Future<Result<SmartSearchEntity?>> smartSearch(String query) {
+return repository.smartSearch(query);
+  }
+
+
 }
