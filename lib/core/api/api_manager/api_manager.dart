@@ -1,7 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:retrofit/retrofit.dart';
-import 'package:stock_up/features/EmployeeBarcodeScreen/data/models/response/smart_search_Model.dart';
+import 'package:stock_up/features/barcode_screen/data/models/response/smart_search_Model.dart';
+import 'package:stock_up/features/Stores/data/models/response/all_stores_model.dart';
 
 import '../api_constants.dart';
 
@@ -15,9 +16,12 @@ abstract class ApiService {
   factory ApiService(Dio dio) = _ApiService;
 
   @POST(ApiConstants.getStore)
-  Future<SmartSearchModel?> getStore();
+  Future<AllStoresModel?> getStore();
 
 
   @POST(ApiConstants.smartSearch)
-  Future<SmartSearchModel?> smartSearch(@Query("q") String query);
+  Future<SmartSearchModel?> smartSearch(
+      @Query("store_id") String storeId,
+      @Query("q") String query
+      );
 }
