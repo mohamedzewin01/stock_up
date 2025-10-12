@@ -1,9 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:stock_up/features/Auth/presentation/pages/Auth_page.dart';
 
 import 'core/di/di.dart';
 import 'core/utils/cashed_data_shared_preferences.dart';
-import 'features/Home/presentation/pages/Home_page.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         ),
       ),
-      home: HomePage(),
+      home: AuthPage(),
       debugShowCheckedModeBanner: false,
     );
   }
