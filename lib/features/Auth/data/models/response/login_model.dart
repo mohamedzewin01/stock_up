@@ -23,7 +23,11 @@ class LoginModel {
   }
 
   LoginEntity toEntity() {
-    return LoginEntity(status: status, user: user);
+    return LoginEntity(
+      status: status,
+      user: user?.toEntity(),
+      message: message,
+    );
   }
 }
 
@@ -57,5 +61,16 @@ class User {
 
   Map<String, dynamic> toJson() {
     return _$UserToJson(this);
+  }
+
+  UserEntity toEntity() {
+    return UserEntity(
+      id: id,
+      firstName: firstName,
+      lastName: lastName,
+      role: role,
+      profileImage: profileImage,
+      phoneNumber: phoneNumber,
+    );
   }
 }
