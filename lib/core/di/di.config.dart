@@ -104,7 +104,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i627.ManagerScreenRepository>(
       () => _i806.ManagerScreenRepositoryImpl(),
     );
-    gh.factory<_i647.AuthRepository>(() => _i295.AuthRepositoryImpl());
     gh.factory<_i93.EmployeeScreenRepository>(
       () => _i636.EmployeeScreenRepositoryImpl(),
     );
@@ -120,9 +119,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i972.ManagerScreenUseCaseRepo>(
       () => _i170.ManagerScreenUseCase(gh<_i627.ManagerScreenRepository>()),
-    );
-    gh.factory<_i628.AuthUseCaseRepo>(
-      () => _i971.AuthUseCase(gh<_i647.AuthRepository>()),
     );
     gh.factory<_i423.ManagerScreenDatasourceRepo>(
       () => _i856.ManagerScreenDatasourceRepoImpl(gh<_i680.ApiService>()),
@@ -148,11 +144,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i199.BarcodeScreenUseCaseRepo>(
       () => _i992.BarcodeScreenUseCase(gh<_i707.BarcodeScreenRepository>()),
     );
-    gh.factory<_i192.AuthCubit>(
-      () => _i192.AuthCubit(gh<_i628.AuthUseCaseRepo>()),
-    );
     gh.factory<_i303.EmployeeScreenCubit>(
       () => _i303.EmployeeScreenCubit(gh<_i46.EmployeeScreenUseCaseRepo>()),
+    );
+    gh.factory<_i647.AuthRepository>(
+      () => _i295.AuthRepositoryImpl(gh<_i354.AuthDatasourceRepo>()),
     );
     gh.factory<_i543.HomeUseCaseRepo>(
       () => _i557.HomeUseCase(gh<_i126.HomeRepository>()),
@@ -160,8 +156,14 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i132.BarcodeCubit>(
       () => _i132.BarcodeCubit(gh<_i199.BarcodeScreenUseCaseRepo>()),
     );
+    gh.factory<_i628.AuthUseCaseRepo>(
+      () => _i971.AuthUseCase(gh<_i647.AuthRepository>()),
+    );
     gh.factory<_i592.StoresRepository>(
       () => _i49.StoresRepositoryImpl(gh<_i1069.StoresDatasourceRepo>()),
+    );
+    gh.factory<_i192.AuthCubit>(
+      () => _i192.AuthCubit(gh<_i628.AuthUseCaseRepo>()),
     );
     gh.factory<_i371.HomeCubit>(
       () => _i371.HomeCubit(gh<_i543.HomeUseCaseRepo>()),
