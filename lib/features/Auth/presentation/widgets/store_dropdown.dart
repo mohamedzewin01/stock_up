@@ -111,42 +111,15 @@ class StoreDropdown extends StatelessWidget {
   }
 
   Widget _buildStoreItem(Results store) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            store.storeName ?? 'متجر بدون اسم',
-            style: const TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF1E293B),
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          // if (store.storeLocation != null &&
-          //     store.storeLocation!.isNotEmpty) ...[
-          //   const SizedBox(height: 4),
-          //   Row(
-          //     children: [
-          //       Icon(Icons.location_on, size: 14, color: Colors.grey[600]),
-          //       const SizedBox(width: 4),
-          //       Expanded(
-          //         child: Text(
-          //           store.storeLocation!,
-          //           style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-          //           maxLines: 1,
-          //           overflow: TextOverflow.ellipsis,
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          // ],
-        ],
+    return Text(
+      store.storeName ?? 'متجر بدون اسم',
+      style: const TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+        color: Color(0xFF1E293B),
       ),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
     );
   }
 }

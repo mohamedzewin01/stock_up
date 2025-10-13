@@ -52,16 +52,6 @@ import '../../features/EmployeeScreen/domain/useCases/EmployeeScreen_useCase_rep
     as _i198;
 import '../../features/EmployeeScreen/presentation/bloc/EmployeeScreen_cubit.dart'
     as _i303;
-import '../../features/Home/data/datasources/Home_datasource_repo.dart'
-    as _i827;
-import '../../features/Home/data/datasources/Home_datasource_repo_impl.dart'
-    as _i97;
-import '../../features/Home/data/repositories_impl/Home_repo_impl.dart' as _i60;
-import '../../features/Home/domain/repositories/Home_repository.dart' as _i126;
-import '../../features/Home/domain/useCases/Home_useCase_repo.dart' as _i543;
-import '../../features/Home/domain/useCases/Home_useCase_repo_impl.dart'
-    as _i557;
-import '../../features/Home/presentation/bloc/Home_cubit.dart' as _i371;
 import '../../features/ManagerScreen/data/datasources/ManagerScreen_datasource_repo.dart'
     as _i423;
 import '../../features/ManagerScreen/data/datasources/ManagerScreen_datasource_repo_impl.dart'
@@ -107,7 +97,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i93.EmployeeScreenRepository>(
       () => _i636.EmployeeScreenRepositoryImpl(),
     );
-    gh.factory<_i126.HomeRepository>(() => _i60.HomeRepositoryImpl());
     gh.factory<_i680.ApiService>(() => _i680.ApiService(gh<_i361.Dio>()));
     gh.factory<_i707.BarcodeScreenRepository>(
       () => _i229.BarcodeScreenRepositoryImpl(
@@ -125,9 +114,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i354.AuthDatasourceRepo>(
       () => _i485.AuthDatasourceRepoImpl(gh<_i680.ApiService>()),
-    );
-    gh.factory<_i827.HomeDatasourceRepo>(
-      () => _i97.HomeDatasourceRepoImpl(gh<_i680.ApiService>()),
     );
     gh.factory<_i1069.StoresDatasourceRepo>(
       () => _i133.StoresDatasourceRepoImpl(gh<_i680.ApiService>()),
@@ -150,9 +136,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i647.AuthRepository>(
       () => _i295.AuthRepositoryImpl(gh<_i354.AuthDatasourceRepo>()),
     );
-    gh.factory<_i543.HomeUseCaseRepo>(
-      () => _i557.HomeUseCase(gh<_i126.HomeRepository>()),
-    );
     gh.factory<_i132.BarcodeCubit>(
       () => _i132.BarcodeCubit(gh<_i199.BarcodeScreenUseCaseRepo>()),
     );
@@ -164,9 +147,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i192.AuthCubit>(
       () => _i192.AuthCubit(gh<_i628.AuthUseCaseRepo>()),
-    );
-    gh.factory<_i371.HomeCubit>(
-      () => _i371.HomeCubit(gh<_i543.HomeUseCaseRepo>()),
     );
     gh.factory<_i795.StoresUseCaseRepo>(
       () => _i1044.StoresUseCase(gh<_i592.StoresRepository>()),

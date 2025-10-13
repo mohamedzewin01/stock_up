@@ -50,4 +50,5 @@ class CacheKeys {
   static const String userPhone = 'userPhone';
   static const String userRole = 'userRole';
   static const String profileImage = 'profileImage';
+  static const String rememberMe = 'rememberMe';
 }

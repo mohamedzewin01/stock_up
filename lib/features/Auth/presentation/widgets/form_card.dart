@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stock_up/core/widgets/custom_text_field_widget.dart';
 import 'package:stock_up/features/Auth/data/models/request/login_request.dart';
 import 'package:stock_up/features/Auth/presentation/bloc/Auth_cubit.dart';
 import 'package:stock_up/features/Auth/presentation/widgets/custom_button.dart';
+import 'package:stock_up/features/Auth/presentation/widgets/remember_me.dart';
 import 'package:stock_up/features/Auth/presentation/widgets/store_dropdown.dart';
-import 'package:stock_up/features/Home/presentation/pages/Home_page.dart';
+import 'package:stock_up/features/EmployeeScreen/presentation/pages/EmployeeScreen_page.dart';
+import 'package:stock_up/features/ManagerScreen/presentation/pages/ManagerScreen_page.dart';
 import 'package:stock_up/features/Stores/data/models/response/all_stores_model.dart';
 import 'package:stock_up/features/Stores/presentation/bloc/Stores_cubit.dart';
 
@@ -23,7 +26,65 @@ class _FormCardState extends State<FormCard> {
 
   bool _obscurePassword = true;
   bool _rememberMe = false;
-  Results? _selectedStore; // ✅ إضافة المتغير المفقود
+  Results? _selectedStore;
+  bool _isLoadingPreferences = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedCredentials();
+  }
+
+  // تحميل البيانات المحفوظة
+  Future<void> _loadSavedCredentials() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final rememberMe = prefs.getBool('remember_me') ?? false;
+
+      if (rememberMe) {
+        final savedMobile = prefs.getString('mobile_number') ?? '';
+        final savedPassword = prefs.getString('password') ?? '';
+        final savedStoreId = prefs.getInt('store_id');
+
+        setState(() {
+          _rememberMe = rememberMe;
+          _mobileController.text = savedMobile;
+          _passwordController.text = savedPassword;
+          // يمكنك حفظ وتحميل المتجر المحدد أيضاً إذا كان لديك ID
+        });
+      }
+    } catch (e) {
+      debugPrint('Error loading credentials: $e');
+    } finally {
+      setState(() {
+        _isLoadingPreferences = false;
+      });
+    }
+  }
+
+  // حفظ البيانات
+  Future<void> _saveCredentials() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+
+      if (_rememberMe) {
+        await prefs.setBool('remember_me', true);
+        await prefs.setString('mobile_number', _mobileController.text.trim());
+        await prefs.setString('password', _passwordController.text);
+        if (_selectedStore?.id != null) {
+          await prefs.setInt('store_id', _selectedStore!.id!);
+        }
+      } else {
+        // حذف البيانات المحفوظة
+        await prefs.remove('remember_me');
+        await prefs.remove('mobile_number');
+        await prefs.remove('password');
+        await prefs.remove('store_id');
+      }
+    } catch (e) {
+      debugPrint('Error saving credentials: $e');
+    }
+  }
 
   @override
   void dispose() {
@@ -32,8 +93,7 @@ class _FormCardState extends State<FormCard> {
     super.dispose();
   }
 
-  // ✅ إضافة دالة تسجيل الدخول المفقودة
-  void _handleLogin() {
+  void _handleLogin() async {
     if (_formKey.currentState?.validate() ?? false) {
       if (_selectedStore == null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -44,6 +104,9 @@ class _FormCardState extends State<FormCard> {
         );
         return;
       }
+
+      // حفظ البيانات قبل تسجيل الدخول
+      await _saveCredentials();
 
       final loginRequest = LoginRequest(
         mobileNumber: _mobileController.text.trim(),
@@ -59,6 +122,18 @@ class _FormCardState extends State<FormCard> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoadingPreferences) {
+      return Container(
+        constraints: const BoxConstraints(maxWidth: 450),
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Form(
       key: _formKey,
       child: Container(
@@ -166,36 +241,46 @@ class _FormCardState extends State<FormCard> {
             ),
             const SizedBox(height: 16),
 
-            // خيار حفظ بيانات الدخول
-            // RememberMe(
-            //   value: _rememberMe,
-            //   onChanged: (value) {
-            //     setState(() {
-            //       _rememberMe = value;
-            //     });
-            //   },
-            // ),
+            // تذكرني
+            RememberMe(
+              value: _rememberMe,
+              onChanged: (value) {
+                setState(() {
+                  _rememberMe = value;
+                });
+              },
+            ),
             const SizedBox(height: 24),
 
             // زر تسجيل الدخول
             BlocConsumer<AuthCubit, AuthState>(
               listener: (context, state) {
                 if (state is AuthSuccess) {
+                  var data = state.loginEntity?.user;
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('تم تسجيل الدخول بنجاح'),
                       backgroundColor: Colors.green,
                     ),
                   );
-                  // الانتقال للصفحة الرئيسية
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => HomePage()),
-                  );
+
+                  if (data?.role == 'admin') {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => ManagerScreen()),
+                    );
+                  } else if (data?.role == 'employee') {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EmployeeScreenPage(),
+                      ),
+                    );
+                  }
                 } else if (state is AuthFailure) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(state.exception.toString()),
+                    const SnackBar(
+                      content: Text('تاكد من البيانات المدخلة'),
                       backgroundColor: Colors.red,
                     ),
                   );

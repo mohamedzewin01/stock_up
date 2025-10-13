@@ -1,6 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:stock_up/features/Auth/presentation/pages/Auth_page.dart';
+import 'package:stock_up/splash_screen.dart';
 
 import 'core/di/di.dart';
 import 'core/utils/cashed_data_shared_preferences.dart';
@@ -19,6 +19,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isRememberMe =
+        CacheService.getData(key: CacheKeys.rememberMe) ?? false;
     return MaterialApp(
       title: 'نظام جرد المخزون',
       theme: ThemeData(
@@ -40,7 +42,7 @@ class MyApp extends StatelessWidget {
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         ),
       ),
-      home: AuthPage(),
+      home: SplashScreen(),
       debugShowCheckedModeBanner: false,
     );
   }

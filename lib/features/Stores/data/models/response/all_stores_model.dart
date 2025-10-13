@@ -10,10 +10,7 @@ class AllStoresModel {
   @JsonKey(name: "results")
   final List<Results>? results;
 
-  AllStoresModel ({
-    this.status,
-    this.results,
-  });
+  AllStoresModel({this.status, this.results});
 
   factory AllStoresModel.fromJson(Map<String, dynamic> json) {
     return _$AllStoresModelFromJson(json);
@@ -22,11 +19,9 @@ class AllStoresModel {
   Map<String, dynamic> toJson() {
     return _$AllStoresModelToJson(this);
   }
+
   AllStoresEntity toEntity() {
-    return AllStoresEntity(
-      status: status,
-      results: results,
-    );
+    return AllStoresEntity(status: status, results: results);
   }
 }
 
@@ -41,12 +36,7 @@ class Results {
   @JsonKey(name: "created_at")
   final String? createdAt;
 
-  Results ({
-    this.id,
-    this.storeName,
-    this.storeLocation,
-    this.createdAt,
-  });
+  Results({this.id, this.storeName, this.storeLocation, this.createdAt});
 
   factory Results.fromJson(Map<String, dynamic> json) {
     return _$ResultsFromJson(json);
@@ -55,6 +45,13 @@ class Results {
   Map<String, dynamic> toJson() {
     return _$ResultsToJson(this);
   }
+
+  // ✅ الحل السحري لمشكلة DropdownButton
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Results && runtimeType == other.runtimeType && id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
 }
-
-

@@ -1,8 +1,9 @@
 import 'dart:convert';
-import 'package:barcode_widget/barcode_widget.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:stock_up/features/EmployeeScreen/presentation/pages/EmployeeScreen_page.dart';
 import 'package:stock_up/features/ManagerScreen/presentation/widgets/confirm_cancel_dialog.dart';
 import 'package:stock_up/features/ManagerScreen/presentation/widgets/empty_state_view.dart';
 import 'package:stock_up/features/ManagerScreen/presentation/widgets/error_view.dart';
@@ -27,9 +28,7 @@ class _ManagerScreenState extends State<ManagerScreen> {
         child: Column(
           children: [
             _buildAppBar(),
-            Expanded(
-              child: _buildBody(),
-            ),
+            Expanded(child: _buildBody()),
           ],
         ),
       ),
@@ -55,7 +54,7 @@ class _ManagerScreenState extends State<ManagerScreen> {
         children: [
           IconButton(
             icon: const Icon(Icons.arrow_back_ios, size: 20),
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => () {},
             style: IconButton.styleFrom(
               backgroundColor: Colors.white.withOpacity(0.2),
               foregroundColor: Colors.white,
@@ -80,10 +79,7 @@ class _ManagerScreenState extends State<ManagerScreen> {
                 SizedBox(height: 4),
                 Text(
                   'إدارة طلبات الجرد',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.white70,
-                  ),
+                  style: TextStyle(fontSize: 13, color: Colors.white70),
                 ),
               ],
             ),
@@ -94,10 +90,20 @@ class _ManagerScreenState extends State<ManagerScreen> {
               color: Colors.white.withOpacity(0.2),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(
-              Icons.admin_panel_settings,
-              color: Colors.white,
-              size: 24,
+            child: GestureDetector(
+              onTap: () => {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const EmployeeScreenPage(),
+                  ),
+                ),
+              },
+              child: const Icon(
+                Icons.admin_panel_settings,
+                color: Colors.white,
+                size: 24,
+              ),
             ),
           ),
         ],
@@ -161,7 +167,8 @@ class _ManagerScreenState extends State<ManagerScreen> {
     );
 
     try {
-      final url = 'https://artawiya.com/stock_up_DB/api/v1/stocktaking/update_quantity';
+      final url =
+          'https://artawiya.com/stock_up_DB/api/v1/stocktaking/update_quantity';
       final response = await http.post(
         Uri.parse(url),
         headers: {'Content-Type': 'application/json'},
@@ -218,11 +225,12 @@ class _ManagerScreenState extends State<ManagerScreen> {
             Expanded(child: Text(message)),
           ],
         ),
-        backgroundColor: isError ? const Color(0xFFE74C3C) : const Color(0xFF00B894),
+        backgroundColor: isError
+            ? const Color(0xFFE74C3C)
+            : const Color(0xFF00B894),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }
 }
-
