@@ -24,20 +24,6 @@ import '../../features/Auth/domain/useCases/Auth_useCase_repo.dart' as _i628;
 import '../../features/Auth/domain/useCases/Auth_useCase_repo_impl.dart'
     as _i971;
 import '../../features/Auth/presentation/bloc/Auth_cubit.dart' as _i192;
-import '../../features/barcode_screen/data/datasources/BarcodeScreen_datasource_repo.dart'
-    as _i4;
-import '../../features/barcode_screen/data/datasources/BarcodeScreen_datasource_repo_impl.dart'
-    as _i902;
-import '../../features/barcode_screen/data/repositories_impl/BarcodeScreen_repo_impl.dart'
-    as _i229;
-import '../../features/barcode_screen/domain/repositories/BarcodeScreen_repository.dart'
-    as _i707;
-import '../../features/barcode_screen/domain/useCases/BarcodeScreen_useCase_repo.dart'
-    as _i199;
-import '../../features/barcode_screen/domain/useCases/BarcodeScreen_useCase_repo_impl.dart'
-    as _i992;
-import '../../features/barcode_screen/presentation/bloc/Barcode_cubit.dart'
-    as _i132;
 import '../../features/EmployeeScreen/data/datasources/EmployeeScreen_datasource_repo.dart'
     as _i42;
 import '../../features/EmployeeScreen/data/datasources/EmployeeScreen_datasource_repo_impl.dart'
@@ -52,6 +38,20 @@ import '../../features/EmployeeScreen/domain/useCases/EmployeeScreen_useCase_rep
     as _i198;
 import '../../features/EmployeeScreen/presentation/bloc/EmployeeScreen_cubit.dart'
     as _i303;
+import '../../features/Inventory/data/datasources/Inventory_datasource_repo.dart'
+    as _i180;
+import '../../features/Inventory/data/datasources/Inventory_datasource_repo_impl.dart'
+    as _i413;
+import '../../features/Inventory/data/repositories_impl/Inventory_repo_impl.dart'
+    as _i629;
+import '../../features/Inventory/domain/repositories/Inventory_repository.dart'
+    as _i675;
+import '../../features/Inventory/domain/useCases/Inventory_useCase_repo.dart'
+    as _i1018;
+import '../../features/Inventory/domain/useCases/Inventory_useCase_repo_impl.dart'
+    as _i449;
+import '../../features/Inventory/presentation/bloc/Inventory_cubit.dart'
+    as _i271;
 import '../../features/ManagerScreen/data/datasources/ManagerScreen_datasource_repo.dart'
     as _i423;
 import '../../features/ManagerScreen/data/datasources/ManagerScreen_datasource_repo_impl.dart'
@@ -98,16 +98,14 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i636.EmployeeScreenRepositoryImpl(),
     );
     gh.factory<_i680.ApiService>(() => _i680.ApiService(gh<_i361.Dio>()));
-    gh.factory<_i707.BarcodeScreenRepository>(
-      () => _i229.BarcodeScreenRepositoryImpl(
-        gh<_i229.BarcodeScreenRepositoryImpl>(),
-      ),
-    );
     gh.factory<_i46.EmployeeScreenUseCaseRepo>(
       () => _i198.EmployeeScreenUseCase(gh<_i93.EmployeeScreenRepository>()),
     );
     gh.factory<_i972.ManagerScreenUseCaseRepo>(
       () => _i170.ManagerScreenUseCase(gh<_i627.ManagerScreenRepository>()),
+    );
+    gh.factory<_i180.InventoryDatasourceRepo>(
+      () => _i413.InventoryDatasourceRepoImpl(gh<_i680.ApiService>()),
     );
     gh.factory<_i423.ManagerScreenDatasourceRepo>(
       () => _i856.ManagerScreenDatasourceRepoImpl(gh<_i680.ApiService>()),
@@ -121,14 +119,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i42.EmployeeScreenDatasourceRepo>(
       () => _i188.EmployeeScreenDatasourceRepoImpl(gh<_i680.ApiService>()),
     );
-    gh.factory<_i4.BarcodeScreenDatasourceRepo>(
-      () => _i902.BarcodeScreenDatasourceRepoImpl(gh<_i680.ApiService>()),
-    );
     gh.factory<_i1051.ManagerScreenCubit>(
       () => _i1051.ManagerScreenCubit(gh<_i972.ManagerScreenUseCaseRepo>()),
-    );
-    gh.factory<_i199.BarcodeScreenUseCaseRepo>(
-      () => _i992.BarcodeScreenUseCase(gh<_i707.BarcodeScreenRepository>()),
     );
     gh.factory<_i303.EmployeeScreenCubit>(
       () => _i303.EmployeeScreenCubit(gh<_i46.EmployeeScreenUseCaseRepo>()),
@@ -136,8 +128,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i647.AuthRepository>(
       () => _i295.AuthRepositoryImpl(gh<_i354.AuthDatasourceRepo>()),
     );
-    gh.factory<_i132.BarcodeCubit>(
-      () => _i132.BarcodeCubit(gh<_i199.BarcodeScreenUseCaseRepo>()),
+    gh.factory<_i675.InventoryRepository>(
+      () => _i629.InventoryRepositoryImpl(gh<_i180.InventoryDatasourceRepo>()),
     );
     gh.factory<_i628.AuthUseCaseRepo>(
       () => _i971.AuthUseCase(gh<_i647.AuthRepository>()),
@@ -148,11 +140,17 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i192.AuthCubit>(
       () => _i192.AuthCubit(gh<_i628.AuthUseCaseRepo>()),
     );
+    gh.factory<_i1018.InventoryUseCaseRepo>(
+      () => _i449.InventoryUseCase(gh<_i675.InventoryRepository>()),
+    );
     gh.factory<_i795.StoresUseCaseRepo>(
       () => _i1044.StoresUseCase(gh<_i592.StoresRepository>()),
     );
     gh.factory<_i1055.StoresCubit>(
       () => _i1055.StoresCubit(gh<_i795.StoresUseCaseRepo>()),
+    );
+    gh.factory<_i271.InventoryCubit>(
+      () => _i271.InventoryCubit(gh<_i1018.InventoryUseCaseRepo>()),
     );
     return this;
   }

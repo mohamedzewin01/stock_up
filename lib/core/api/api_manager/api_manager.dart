@@ -4,8 +4,8 @@ import 'package:retrofit/retrofit.dart';
 import 'package:stock_up/features/Auth/data/models/request/login_request.dart';
 import 'package:stock_up/features/Auth/data/models/response/login_model.dart';
 import 'package:stock_up/features/Stores/data/models/response/all_stores_model.dart';
-import 'package:stock_up/features/barcode_screen/data/models/response/smart_search_Model.dart';
 
+import '../../../features/Inventory/data/models/response/smart_search_Model.dart';
 import '../api_constants.dart';
 
 part 'api_manager.g.dart';
