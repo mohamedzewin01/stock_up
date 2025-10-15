@@ -1,4 +1,4 @@
-import 'package:stock_up/features/Inventory/data/models/response/smart_search_Model.dart';
+import 'package:stock_up/features/Inventory/data/models/response/search_Model.dart';
 
 class SearchEntity {
   final String? status;

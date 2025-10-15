@@ -1,5 +1,5 @@
 //
-// import 'package:stock_up/features/barcode_screen/data/models/response/smart_search_Model.dart';
+// import 'package:stock_up/features/barcode_screen/data/models/response/search_Model.dart';
 //
 //
 // class SmartSearchEntity {
