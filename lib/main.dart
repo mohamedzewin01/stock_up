@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'core/di/di.dart';
 import 'core/utils/cashed_data_shared_preferences.dart';
-import 'features/Inventory/presentation/pages/Inventory_page.dart';
+import 'features/Search/presentation/widgets/Inventory_page.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {

@@ -1,7 +1,8 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:stock_up/features/Inventory/domain/entities/entities.dart';
 
-part 'search_Model.g.dart';
+import '../../../domain/entities/search_entity.dart';
+
+part 'search_model.g.dart';
 
 @JsonSerializable()
 class SearchModel {
@@ -9,10 +10,26 @@ class SearchModel {
   final String? status;
   @JsonKey(name: "store")
   final Store? store;
+  @JsonKey(name: "page")
+  final int? page;
+  @JsonKey(name: "limit")
+  final int? limit;
+  @JsonKey(name: "total_items")
+  final int? totalItems;
+  @JsonKey(name: "total_pages")
+  final int? totalPages;
   @JsonKey(name: "results")
   final List<Results>? results;
 
-  SearchModel({this.status, this.store, this.results});
+  SearchModel({
+    this.status,
+    this.store,
+    this.page,
+    this.limit,
+    this.totalItems,
+    this.totalPages,
+    this.results,
+  });
 
   factory SearchModel.fromJson(Map<String, dynamic> json) {
     return _$SearchModelFromJson(json);
@@ -23,7 +40,15 @@ class SearchModel {
   }
 
   SearchEntity toEntity() {
-    return SearchEntity(status: status, store: store, results: results);
+    return SearchEntity(
+      status: status,
+      store: store,
+      page: page,
+      limit: limit,
+      totalItems: totalItems,
+      totalPages: totalPages,
+      results: results,
+    );
   }
 }
 
@@ -64,13 +89,15 @@ class Results {
   @JsonKey(name: "last_purchase_price")
   final String? lastPurchasePrice;
   @JsonKey(name: "category_id")
-  final int? categoryId;
+  final dynamic? categoryId;
+  @JsonKey(name: "category_name")
+  final dynamic? categoryName;
   @JsonKey(name: "taxable")
   final int? taxable;
   @JsonKey(name: "tax_rate")
   final String? taxRate;
   @JsonKey(name: "barcodes")
-  final List<String>? barcodes;
+  final List<dynamic>? barcodes;
 
   Results({
     this.productId,
@@ -82,6 +109,7 @@ class Results {
     this.averagePurchasePrice,
     this.lastPurchasePrice,
     this.categoryId,
+    this.categoryName,
     this.taxable,
     this.taxRate,
     this.barcodes,

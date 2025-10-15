@@ -38,20 +38,6 @@ import '../../features/EmployeeScreen/domain/useCases/EmployeeScreen_useCase_rep
     as _i198;
 import '../../features/EmployeeScreen/presentation/bloc/EmployeeScreen_cubit.dart'
     as _i303;
-import '../../features/Inventory/data/datasources/Inventory_datasource_repo.dart'
-    as _i180;
-import '../../features/Inventory/data/datasources/Inventory_datasource_repo_impl.dart'
-    as _i413;
-import '../../features/Inventory/data/repositories_impl/Inventory_repo_impl.dart'
-    as _i629;
-import '../../features/Inventory/domain/repositories/Inventory_repository.dart'
-    as _i675;
-import '../../features/Inventory/domain/useCases/Inventory_useCase_repo.dart'
-    as _i1018;
-import '../../features/Inventory/domain/useCases/Inventory_useCase_repo_impl.dart'
-    as _i449;
-import '../../features/Inventory/presentation/bloc/Inventory_cubit.dart'
-    as _i271;
 import '../../features/ManagerScreen/data/datasources/ManagerScreen_datasource_repo.dart'
     as _i423;
 import '../../features/ManagerScreen/data/datasources/ManagerScreen_datasource_repo_impl.dart'
@@ -66,6 +52,19 @@ import '../../features/ManagerScreen/domain/useCases/ManagerScreen_useCase_repo_
     as _i170;
 import '../../features/ManagerScreen/presentation/bloc/ManagerScreen_cubit.dart'
     as _i1051;
+import '../../features/Search/data/datasources/Search_datasource_repo.dart'
+    as _i33;
+import '../../features/Search/data/datasources/Search_datasource_repo_impl.dart'
+    as _i786;
+import '../../features/Search/data/repositories_impl/Search_repo_impl.dart'
+    as _i901;
+import '../../features/Search/domain/repositories/Search_repository.dart'
+    as _i285;
+import '../../features/Search/domain/useCases/Search_useCase_repo.dart'
+    as _i293;
+import '../../features/Search/domain/useCases/Search_useCase_repo_impl.dart'
+    as _i339;
+import '../../features/Search/presentation/bloc/Search_cubit.dart' as _i359;
 import '../../features/Stores/data/datasources/Stores_datasource_repo.dart'
     as _i1069;
 import '../../features/Stores/data/datasources/Stores_datasource_repo_impl.dart'
@@ -104,8 +103,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i972.ManagerScreenUseCaseRepo>(
       () => _i170.ManagerScreenUseCase(gh<_i627.ManagerScreenRepository>()),
     );
-    gh.factory<_i180.InventoryDatasourceRepo>(
-      () => _i413.InventoryDatasourceRepoImpl(gh<_i680.ApiService>()),
+    gh.factory<_i33.SearchDatasourceRepo>(
+      () => _i786.SearchDatasourceRepoImpl(gh<_i680.ApiService>()),
     );
     gh.factory<_i423.ManagerScreenDatasourceRepo>(
       () => _i856.ManagerScreenDatasourceRepoImpl(gh<_i680.ApiService>()),
@@ -122,14 +121,14 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i1051.ManagerScreenCubit>(
       () => _i1051.ManagerScreenCubit(gh<_i972.ManagerScreenUseCaseRepo>()),
     );
+    gh.factory<_i285.SearchRepository>(
+      () => _i901.SearchRepositoryImpl(gh<_i33.SearchDatasourceRepo>()),
+    );
     gh.factory<_i303.EmployeeScreenCubit>(
       () => _i303.EmployeeScreenCubit(gh<_i46.EmployeeScreenUseCaseRepo>()),
     );
     gh.factory<_i647.AuthRepository>(
       () => _i295.AuthRepositoryImpl(gh<_i354.AuthDatasourceRepo>()),
-    );
-    gh.factory<_i675.InventoryRepository>(
-      () => _i629.InventoryRepositoryImpl(gh<_i180.InventoryDatasourceRepo>()),
     );
     gh.factory<_i628.AuthUseCaseRepo>(
       () => _i971.AuthUseCase(gh<_i647.AuthRepository>()),
@@ -137,20 +136,20 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i592.StoresRepository>(
       () => _i49.StoresRepositoryImpl(gh<_i1069.StoresDatasourceRepo>()),
     );
+    gh.factory<_i293.SearchUseCaseRepo>(
+      () => _i339.SearchUseCase(gh<_i285.SearchRepository>()),
+    );
     gh.factory<_i192.AuthCubit>(
       () => _i192.AuthCubit(gh<_i628.AuthUseCaseRepo>()),
     );
-    gh.factory<_i1018.InventoryUseCaseRepo>(
-      () => _i449.InventoryUseCase(gh<_i675.InventoryRepository>()),
+    gh.factory<_i359.SearchCubit>(
+      () => _i359.SearchCubit(gh<_i293.SearchUseCaseRepo>()),
     );
     gh.factory<_i795.StoresUseCaseRepo>(
       () => _i1044.StoresUseCase(gh<_i592.StoresRepository>()),
     );
     gh.factory<_i1055.StoresCubit>(
       () => _i1055.StoresCubit(gh<_i795.StoresUseCaseRepo>()),
-    );
-    gh.factory<_i271.InventoryCubit>(
-      () => _i271.InventoryCubit(gh<_i1018.InventoryUseCaseRepo>()),
     );
     return this;
   }
