@@ -535,7 +535,7 @@ class _SearchPageState extends State<SearchPage> {
 
   void _onSearchChanged() {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
-    _debounce = Timer(const Duration(milliseconds: 0), () {
+    _debounce = Timer(const Duration(milliseconds: 2), () {
       if (_searchController.text.isNotEmpty) {
         _currentPage = 1;
         _allResults.clear();
@@ -1120,7 +1120,11 @@ class BarcodeScannerPage extends StatefulWidget {
 }
 
 class _BarcodeScannerPageState extends State<BarcodeScannerPage> {
-  final MobileScannerController cameraController = MobileScannerController();
+  /// 🔹 تهيئة الكنترولر مع إعداد سرعة المسح
+  final MobileScannerController cameraController = MobileScannerController(
+    detectionSpeed: DetectionSpeed.noDuplicates,
+  );
+
   bool _isScanned = false;
   bool _torchOn = false;
 
@@ -1133,6 +1137,9 @@ class _BarcodeScannerPageState extends State<BarcodeScannerPage> {
 
   @override
   Widget build(BuildContext context) {
+    final double boxHeight = 220; // الطول
+    final double boxWidth = MediaQuery.of(context).size.width * 0.95; // العرض
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -1162,15 +1169,16 @@ class _BarcodeScannerPageState extends State<BarcodeScannerPage> {
       ),
       body: Stack(
         children: [
-          // Camera View
+          /// 👁️ عرض الكاميرا
           MobileScanner(
             controller: cameraController,
             onDetect: (capture) {
               if (!_isScanned) {
-                final List<Barcode> barcodes = capture.barcodes;
+                final barcodes = capture.barcodes;
                 if (barcodes.isNotEmpty && barcodes.first.rawValue != null) {
                   _isScanned = true;
-                  final String code = barcodes.first.rawValue!;
+                  cameraController.stop(); // إيقاف الكاميرا بعد أول قراءة
+                  final code = barcodes.first.rawValue!;
                   widget.onBarcodeDetected(code);
                   Navigator.pop(context);
                 }
@@ -1178,105 +1186,38 @@ class _BarcodeScannerPageState extends State<BarcodeScannerPage> {
             },
           ),
 
-          // Scanning Frame Overlay
+          /// 🌓 طبقة التعتيم مع الفتحة الشفافة
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final width = constraints.maxWidth;
+              final height = constraints.maxHeight;
+
+              return ClipPath(
+                clipper: HoleClipper(
+                  rect: Rect.fromCenter(
+                    center: Offset(width / 2, height / 2),
+                    width: boxWidth,
+                    height: boxHeight,
+                  ),
+                ),
+                child: Container(color: Colors.black54),
+              );
+            },
+          ),
+
+          /// 🔲 حدود المستطيل
           Center(
             child: Container(
-              width: 280,
-              height: 280,
+              width: boxWidth,
+              height: boxHeight,
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.white, width: 3),
                 borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.blue.withOpacity(0.3),
-                    blurRadius: 20,
-                    spreadRadius: 5,
-                  ),
-                ],
-              ),
-              child: Stack(
-                children: [
-                  // Corner indicators
-                  Positioned(
-                    top: -2,
-                    left: -2,
-                    child: Container(
-                      width: 30,
-                      height: 30,
-                      decoration: BoxDecoration(
-                        border: Border(
-                          top: BorderSide(color: Colors.blue[400]!, width: 4),
-                          left: BorderSide(color: Colors.blue[400]!, width: 4),
-                        ),
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(16),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: -2,
-                    right: -2,
-                    child: Container(
-                      width: 30,
-                      height: 30,
-                      decoration: BoxDecoration(
-                        border: Border(
-                          top: BorderSide(color: Colors.blue[400]!, width: 4),
-                          right: BorderSide(color: Colors.blue[400]!, width: 4),
-                        ),
-                        borderRadius: const BorderRadius.only(
-                          topRight: Radius.circular(16),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: -2,
-                    left: -2,
-                    child: Container(
-                      width: 30,
-                      height: 30,
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            color: Colors.blue[400]!,
-                            width: 4,
-                          ),
-                          left: BorderSide(color: Colors.blue[400]!, width: 4),
-                        ),
-                        borderRadius: const BorderRadius.only(
-                          bottomLeft: Radius.circular(16),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: -2,
-                    right: -2,
-                    child: Container(
-                      width: 30,
-                      height: 30,
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            color: Colors.blue[400]!,
-                            width: 4,
-                          ),
-                          right: BorderSide(color: Colors.blue[400]!, width: 4),
-                        ),
-                        borderRadius: const BorderRadius.only(
-                          bottomRight: Radius.circular(16),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
               ),
             ),
           ),
 
-          // Instruction Text
+          /// 📜 النص في الأسفل
           Positioned(
             bottom: 80,
             left: 0,
@@ -1324,4 +1265,22 @@ class _BarcodeScannerPageState extends State<BarcodeScannerPage> {
     cameraController.dispose();
     super.dispose();
   }
+}
+
+/// 🔹 كلاس لقص الفتحة المستطيلة وسط الشاشة
+class HoleClipper extends CustomClipper<Path> {
+  final Rect rect;
+
+  HoleClipper({required this.rect});
+
+  @override
+  Path getClip(Size size) {
+    final path = Path()..addRect(Rect.fromLTWH(0, 0, size.width, size.height));
+    path.addRRect(RRect.fromRectAndRadius(rect, const Radius.circular(16)));
+    path.fillType = PathFillType.evenOdd; // الجزء داخل المستطيل يصبح شفاف
+    return path;
+  }
+
+  @override
+  bool shouldReclip(HoleClipper oldClipper) => oldClipper.rect != rect;
 }
