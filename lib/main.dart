@@ -1,9 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:stock_up/splash_screen.dart';
 
 import 'core/di/di.dart';
 import 'core/utils/cashed_data_shared_preferences.dart';
+import 'features/Inventory/presentation/pages/Inventory_page.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         ),
       ),
-      home: SplashScreen(),
+      home: ProductSearchPage(),
       debugShowCheckedModeBanner: false,
     );
   }
