@@ -6,8 +6,8 @@ part of 'smart_search_Model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-SmartSearchModel _$SmartSearchModelFromJson(Map<String, dynamic> json) =>
-    SmartSearchModel(
+SearchModel _$SmartSearchModelFromJson(Map<String, dynamic> json) =>
+    SearchModel(
       status: json['status'] as String?,
       store: json['store'] == null
           ? null
@@ -17,7 +17,7 @@ SmartSearchModel _$SmartSearchModelFromJson(Map<String, dynamic> json) =>
           .toList(),
     );
 
-Map<String, dynamic> _$SmartSearchModelToJson(SmartSearchModel instance) =>
+Map<String, dynamic> _$SmartSearchModelToJson(SearchModel instance) =>
     <String, dynamic>{
       'status': instance.status,
       'store': instance.store,

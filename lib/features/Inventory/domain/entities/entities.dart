@@ -1,11 +1,11 @@
 import 'package:stock_up/features/Inventory/data/models/response/smart_search_Model.dart';
 
-class SmartSearchEntity {
+class SearchEntity {
   final String? status;
 
   final Store? store;
 
   final List<Results>? results;
 
-  SmartSearchEntity({this.status, this.store, this.results});
+  SearchEntity({this.status, this.store, this.results});
 }

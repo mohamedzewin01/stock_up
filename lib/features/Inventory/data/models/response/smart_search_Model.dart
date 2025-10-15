@@ -4,7 +4,7 @@ import 'package:stock_up/features/Inventory/domain/entities/entities.dart';
 part 'smart_search_Model.g.dart';
 
 @JsonSerializable()
-class SmartSearchModel {
+class SearchModel {
   @JsonKey(name: "status")
   final String? status;
   @JsonKey(name: "store")
@@ -12,9 +12,9 @@ class SmartSearchModel {
   @JsonKey(name: "results")
   final List<Results>? results;
 
-  SmartSearchModel({this.status, this.store, this.results});
+  SearchModel({this.status, this.store, this.results});
 
-  factory SmartSearchModel.fromJson(Map<String, dynamic> json) {
+  factory SearchModel.fromJson(Map<String, dynamic> json) {
     return _$SmartSearchModelFromJson(json);
   }
 
@@ -22,8 +22,8 @@ class SmartSearchModel {
     return _$SmartSearchModelToJson(this);
   }
 
-  SmartSearchEntity toEntity() {
-    return SmartSearchEntity(status: status, store: store, results: results);
+  SearchEntity toEntity() {
+    return SearchEntity(status: status, store: store, results: results);
   }
 }
 

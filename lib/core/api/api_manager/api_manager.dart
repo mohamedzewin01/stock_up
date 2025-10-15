@@ -23,8 +23,8 @@ abstract class ApiService {
   @POST(ApiConstants.getStore)
   Future<AllStoresModel?> getStore();
 
-  @POST(ApiConstants.smartSearch)
-  Future<SmartSearchModel?> smartSearch(
+  @POST(ApiConstants.search)
+  Future<SearchModel?> search(
     @Query("store_id") String storeId,
     @Query("q") String query,
   );
