@@ -3,6 +3,8 @@ import 'package:injectable/injectable.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:stock_up/features/Auth/data/models/request/login_request.dart';
 import 'package:stock_up/features/Auth/data/models/response/login_model.dart';
+import 'package:stock_up/features/Products/data/models/request/get_all_products_request.dart';
+import 'package:stock_up/features/Products/data/models/response/get_all_products_model.dart';
 import 'package:stock_up/features/Stores/data/models/response/all_stores_model.dart';
 
 import '../../../features/Search/data/models/request/search_request.dart';
@@ -23,6 +25,11 @@ abstract class ApiService {
 
   @POST(ApiConstants.getStore)
   Future<AllStoresModel?> getStore();
+
+  @POST(ApiConstants.getAllProducts)
+  Future<GetAllProductsModel?> getAllProducts(
+    @Body() GetAllProductsRequest getAllProductsRequest,
+  );
 
   @POST(ApiConstants.search)
   Future<SearchModel?> search(@Body() SearchRequest searchRequest);

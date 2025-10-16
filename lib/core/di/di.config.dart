@@ -52,6 +52,19 @@ import '../../features/ManagerScreen/domain/useCases/ManagerScreen_useCase_repo_
     as _i170;
 import '../../features/ManagerScreen/presentation/bloc/ManagerScreen_cubit.dart'
     as _i1051;
+import '../../features/Products/data/datasources/Products_datasource_repo.dart'
+    as _i266;
+import '../../features/Products/data/datasources/Products_datasource_repo_impl.dart'
+    as _i760;
+import '../../features/Products/data/repositories_impl/Products_repo_impl.dart'
+    as _i724;
+import '../../features/Products/domain/repositories/Products_repository.dart'
+    as _i362;
+import '../../features/Products/domain/useCases/Products_useCase_repo.dart'
+    as _i1066;
+import '../../features/Products/domain/useCases/Products_useCase_repo_impl.dart'
+    as _i187;
+import '../../features/Products/presentation/bloc/Products_cubit.dart' as _i959;
 import '../../features/Search/data/datasources/Search_datasource_repo.dart'
     as _i33;
 import '../../features/Search/data/datasources/Search_datasource_repo_impl.dart'
@@ -117,6 +130,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i972.ManagerScreenUseCaseRepo>(
       () => _i170.ManagerScreenUseCase(gh<_i627.ManagerScreenRepository>()),
     );
+    gh.factory<_i266.ProductsDatasourceRepo>(
+      () => _i760.ProductsDatasourceRepoImpl(gh<_i680.ApiService>()),
+    );
     gh.factory<_i33.SearchDatasourceRepo>(
       () => _i786.SearchDatasourceRepoImpl(gh<_i680.ApiService>()),
     );
@@ -150,6 +166,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i647.AuthRepository>(
       () => _i295.AuthRepositoryImpl(gh<_i354.AuthDatasourceRepo>()),
     );
+    gh.factory<_i362.ProductsRepository>(
+      () => _i724.ProductsRepositoryImpl(gh<_i266.ProductsDatasourceRepo>()),
+    );
     gh.factory<_i628.AuthUseCaseRepo>(
       () => _i971.AuthUseCase(gh<_i647.AuthRepository>()),
     );
@@ -168,11 +187,17 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i359.SearchCubit>(
       () => _i359.SearchCubit(gh<_i293.SearchUseCaseRepo>()),
     );
+    gh.factory<_i1066.ProductsUseCaseRepo>(
+      () => _i187.ProductsUseCase(gh<_i362.ProductsRepository>()),
+    );
     gh.factory<_i795.StoresUseCaseRepo>(
       () => _i1044.StoresUseCase(gh<_i592.StoresRepository>()),
     );
     gh.factory<_i1055.StoresCubit>(
       () => _i1055.StoresCubit(gh<_i795.StoresUseCaseRepo>()),
+    );
+    gh.factory<_i959.ProductsCubit>(
+      () => _i959.ProductsCubit(gh<_i1066.ProductsUseCaseRepo>()),
     );
     return this;
   }
