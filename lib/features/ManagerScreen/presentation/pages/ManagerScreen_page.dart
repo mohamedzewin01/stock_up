@@ -3,12 +3,12 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:stock_up/features/EmployeeScreen/presentation/pages/EmployeeScreen_page.dart';
 import 'package:stock_up/features/ManagerScreen/presentation/widgets/confirm_cancel_dialog.dart';
 import 'package:stock_up/features/ManagerScreen/presentation/widgets/empty_state_view.dart';
 import 'package:stock_up/features/ManagerScreen/presentation/widgets/error_view.dart';
 import 'package:stock_up/features/ManagerScreen/presentation/widgets/loading_view.dart';
 import 'package:stock_up/features/ManagerScreen/presentation/widgets/pending_inventory_card.dart';
+import 'package:stock_up/features/Search/presentation/pages/Search_page.dart';
 
 class ManagerScreen extends StatefulWidget {
   const ManagerScreen({super.key});
@@ -94,9 +94,7 @@ class _ManagerScreenState extends State<ManagerScreen> {
               onTap: () => {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => const EmployeeScreenPage(),
-                  ),
+                  MaterialPageRoute(builder: (context) => const SearchPage()),
                 ),
               },
               child: const Icon(

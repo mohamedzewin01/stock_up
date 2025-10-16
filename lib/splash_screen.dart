@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:stock_up/core/utils/cashed_data_shared_preferences.dart';
+import 'package:stock_up/features/ManagerHome/presentation/pages/ManagerHome_page.dart';
+import 'package:stock_up/features/Search/presentation/pages/Search_page.dart';
 
-import 'features/Auth/presentation/pages/Auth_page.dart' show AuthPage;
-import 'features/EmployeeScreen/presentation/pages/EmployeeScreen_page.dart';
-import 'features/ManagerScreen/presentation/pages/ManagerScreen_page.dart';
+import 'features/Auth/presentation/pages/Auth_page.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -78,9 +78,9 @@ class _SplashScreenState extends State<SplashScreen>
     Widget nextScreen;
 
     if (isLoggedIn && role == 'admin') {
-      nextScreen = ManagerScreen();
+      nextScreen = ManagerHome();
     } else if (isLoggedIn && role == 'employee') {
-      nextScreen = EmployeeScreenPage();
+      nextScreen = SearchPage();
     } else {
       nextScreen = AuthPage();
     }

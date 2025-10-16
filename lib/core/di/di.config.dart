@@ -24,20 +24,20 @@ import '../../features/Auth/domain/useCases/Auth_useCase_repo.dart' as _i628;
 import '../../features/Auth/domain/useCases/Auth_useCase_repo_impl.dart'
     as _i971;
 import '../../features/Auth/presentation/bloc/Auth_cubit.dart' as _i192;
-import '../../features/EmployeeScreen/data/datasources/EmployeeScreen_datasource_repo.dart'
-    as _i42;
-import '../../features/EmployeeScreen/data/datasources/EmployeeScreen_datasource_repo_impl.dart'
-    as _i188;
-import '../../features/EmployeeScreen/data/repositories_impl/EmployeeScreen_repo_impl.dart'
-    as _i636;
-import '../../features/EmployeeScreen/domain/repositories/EmployeeScreen_repository.dart'
-    as _i93;
-import '../../features/EmployeeScreen/domain/useCases/EmployeeScreen_useCase_repo.dart'
-    as _i46;
-import '../../features/EmployeeScreen/domain/useCases/EmployeeScreen_useCase_repo_impl.dart'
-    as _i198;
-import '../../features/EmployeeScreen/presentation/bloc/EmployeeScreen_cubit.dart'
-    as _i303;
+import '../../features/ManagerHome/data/datasources/ManagerHome_datasource_repo.dart'
+    as _i650;
+import '../../features/ManagerHome/data/datasources/ManagerHome_datasource_repo_impl.dart'
+    as _i33;
+import '../../features/ManagerHome/data/repositories_impl/ManagerHome_repo_impl.dart'
+    as _i1029;
+import '../../features/ManagerHome/domain/repositories/ManagerHome_repository.dart'
+    as _i105;
+import '../../features/ManagerHome/domain/useCases/ManagerHome_useCase_repo.dart'
+    as _i794;
+import '../../features/ManagerHome/domain/useCases/ManagerHome_useCase_repo_impl.dart'
+    as _i260;
+import '../../features/ManagerHome/presentation/bloc/ManagerHome_cubit.dart'
+    as _i389;
 import '../../features/ManagerScreen/data/datasources/ManagerScreen_datasource_repo.dart'
     as _i423;
 import '../../features/ManagerScreen/data/datasources/ManagerScreen_datasource_repo_impl.dart'
@@ -65,6 +65,19 @@ import '../../features/Search/domain/useCases/Search_useCase_repo.dart'
 import '../../features/Search/domain/useCases/Search_useCase_repo_impl.dart'
     as _i339;
 import '../../features/Search/presentation/bloc/Search_cubit.dart' as _i359;
+import '../../features/Settings/data/datasources/Settings_datasource_repo.dart'
+    as _i826;
+import '../../features/Settings/data/datasources/Settings_datasource_repo_impl.dart'
+    as _i625;
+import '../../features/Settings/data/repositories_impl/Settings_repo_impl.dart'
+    as _i583;
+import '../../features/Settings/domain/repositories/Settings_repository.dart'
+    as _i271;
+import '../../features/Settings/domain/useCases/Settings_useCase_repo.dart'
+    as _i650;
+import '../../features/Settings/domain/useCases/Settings_useCase_repo_impl.dart'
+    as _i502;
+import '../../features/Settings/presentation/bloc/Settings_cubit.dart' as _i241;
 import '../../features/Stores/data/datasources/Stores_datasource_repo.dart'
     as _i1069;
 import '../../features/Stores/data/datasources/Stores_datasource_repo_impl.dart'
@@ -93,12 +106,13 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i627.ManagerScreenRepository>(
       () => _i806.ManagerScreenRepositoryImpl(),
     );
-    gh.factory<_i93.EmployeeScreenRepository>(
-      () => _i636.EmployeeScreenRepositoryImpl(),
+    gh.factory<_i105.ManagerHomeRepository>(
+      () => _i1029.ManagerHomeRepositoryImpl(),
     );
+    gh.factory<_i271.SettingsRepository>(() => _i583.SettingsRepositoryImpl());
     gh.factory<_i680.ApiService>(() => _i680.ApiService(gh<_i361.Dio>()));
-    gh.factory<_i46.EmployeeScreenUseCaseRepo>(
-      () => _i198.EmployeeScreenUseCase(gh<_i93.EmployeeScreenRepository>()),
+    gh.factory<_i650.SettingsUseCaseRepo>(
+      () => _i502.SettingsUseCase(gh<_i271.SettingsRepository>()),
     );
     gh.factory<_i972.ManagerScreenUseCaseRepo>(
       () => _i170.ManagerScreenUseCase(gh<_i627.ManagerScreenRepository>()),
@@ -106,26 +120,32 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i33.SearchDatasourceRepo>(
       () => _i786.SearchDatasourceRepoImpl(gh<_i680.ApiService>()),
     );
+    gh.factory<_i650.ManagerHomeDatasourceRepo>(
+      () => _i33.ManagerHomeDatasourceRepoImpl(gh<_i680.ApiService>()),
+    );
     gh.factory<_i423.ManagerScreenDatasourceRepo>(
       () => _i856.ManagerScreenDatasourceRepoImpl(gh<_i680.ApiService>()),
     );
     gh.factory<_i354.AuthDatasourceRepo>(
       () => _i485.AuthDatasourceRepoImpl(gh<_i680.ApiService>()),
     );
+    gh.factory<_i826.SettingsDatasourceRepo>(
+      () => _i625.SettingsDatasourceRepoImpl(gh<_i680.ApiService>()),
+    );
     gh.factory<_i1069.StoresDatasourceRepo>(
       () => _i133.StoresDatasourceRepoImpl(gh<_i680.ApiService>()),
-    );
-    gh.factory<_i42.EmployeeScreenDatasourceRepo>(
-      () => _i188.EmployeeScreenDatasourceRepoImpl(gh<_i680.ApiService>()),
     );
     gh.factory<_i1051.ManagerScreenCubit>(
       () => _i1051.ManagerScreenCubit(gh<_i972.ManagerScreenUseCaseRepo>()),
     );
+    gh.factory<_i794.ManagerHomeUseCaseRepo>(
+      () => _i260.ManagerHomeUseCase(gh<_i105.ManagerHomeRepository>()),
+    );
     gh.factory<_i285.SearchRepository>(
       () => _i901.SearchRepositoryImpl(gh<_i33.SearchDatasourceRepo>()),
     );
-    gh.factory<_i303.EmployeeScreenCubit>(
-      () => _i303.EmployeeScreenCubit(gh<_i46.EmployeeScreenUseCaseRepo>()),
+    gh.factory<_i241.SettingsCubit>(
+      () => _i241.SettingsCubit(gh<_i650.SettingsUseCaseRepo>()),
     );
     gh.factory<_i647.AuthRepository>(
       () => _i295.AuthRepositoryImpl(gh<_i354.AuthDatasourceRepo>()),
@@ -135,6 +155,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i592.StoresRepository>(
       () => _i49.StoresRepositoryImpl(gh<_i1069.StoresDatasourceRepo>()),
+    );
+    gh.factory<_i389.ManagerHomeCubit>(
+      () => _i389.ManagerHomeCubit(gh<_i794.ManagerHomeUseCaseRepo>()),
     );
     gh.factory<_i293.SearchUseCaseRepo>(
       () => _i339.SearchUseCase(gh<_i285.SearchRepository>()),

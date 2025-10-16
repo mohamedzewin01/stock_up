@@ -7,8 +7,8 @@ import 'package:stock_up/features/Auth/presentation/bloc/Auth_cubit.dart';
 import 'package:stock_up/features/Auth/presentation/widgets/custom_button.dart';
 import 'package:stock_up/features/Auth/presentation/widgets/remember_me.dart';
 import 'package:stock_up/features/Auth/presentation/widgets/store_dropdown.dart';
-import 'package:stock_up/features/EmployeeScreen/presentation/pages/EmployeeScreen_page.dart';
-import 'package:stock_up/features/ManagerScreen/presentation/pages/ManagerScreen_page.dart';
+import 'package:stock_up/features/ManagerHome/presentation/pages/ManagerHome_page.dart';
+import 'package:stock_up/features/Search/presentation/pages/Search_page.dart';
 import 'package:stock_up/features/Stores/data/models/response/all_stores_model.dart';
 import 'package:stock_up/features/Stores/presentation/bloc/Stores_cubit.dart';
 
@@ -267,14 +267,12 @@ class _FormCardState extends State<FormCard> {
                   if (data?.role == 'admin') {
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => ManagerScreen()),
+                      MaterialPageRoute(builder: (context) => ManagerHome()),
                     );
                   } else if (data?.role == 'employee') {
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => EmployeeScreenPage(),
-                      ),
+                      MaterialPageRoute(builder: (context) => SearchPage()),
                     );
                   }
                 } else if (state is AuthFailure) {
