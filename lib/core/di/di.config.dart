@@ -64,7 +64,6 @@ import '../../features/Products/domain/useCases/Products_useCase_repo.dart'
     as _i1066;
 import '../../features/Products/domain/useCases/Products_useCase_repo_impl.dart'
     as _i187;
-import '../../features/Products/presentation/bloc/Products_cubit.dart' as _i959;
 import '../../features/Search/data/datasources/Search_datasource_repo.dart'
     as _i33;
 import '../../features/Search/data/datasources/Search_datasource_repo_impl.dart'
@@ -195,9 +194,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i1055.StoresCubit>(
       () => _i1055.StoresCubit(gh<_i795.StoresUseCaseRepo>()),
-    );
-    gh.factory<_i959.ProductsCubit>(
-      () => _i959.ProductsCubit(gh<_i1066.ProductsUseCaseRepo>()),
     );
     return this;
   }
