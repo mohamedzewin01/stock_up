@@ -456,7 +456,6 @@ class _SelectWorkersPageState extends State<SelectWorkersPage>
 
   void _handleAddWorkers(BuildContext context) {
     context.read<AddInventoryCubit>().addInventoryAuditUsers(
-      auditId: widget.auditId,
       userIds: _selectedWorkerIds.toList(),
     );
   }

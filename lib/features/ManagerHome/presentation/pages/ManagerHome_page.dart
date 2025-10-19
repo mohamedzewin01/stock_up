@@ -238,7 +238,7 @@
 // }
 import 'package:flutter/material.dart';
 import 'package:stock_up/core/widgets/custom_app_bar.dart';
-import 'package:stock_up/features/Inventory/presentation/pages/Inventory_page.dart';
+import 'package:stock_up/features/Inventory/presentation/widgets/inventory_list_page.dart';
 import 'package:stock_up/features/ManagerHome/presentation/widgets/menu_card.dart';
 import 'package:stock_up/features/ManagerHome/presentation/widgets/placeholder_page.dart';
 import 'package:stock_up/features/POSPage/presentation/pages/POSPage_page.dart';
@@ -304,7 +304,7 @@ class _ManagerHomeState extends State<ManagerHome> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const InventoryManagementPage(),
+                          builder: (_) => const InventoryListPage(),
                         ),
                       );
                     },

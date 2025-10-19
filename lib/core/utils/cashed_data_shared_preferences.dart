@@ -52,4 +52,5 @@ class CacheKeys {
   static const String profileImage = 'profileImage';
   static const String rememberMe = 'rememberMe';
   static const String storeId = 'storeId';
+  static const String auditId = 'auditId';
 }
