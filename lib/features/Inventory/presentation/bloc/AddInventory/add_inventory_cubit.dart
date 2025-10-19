@@ -12,7 +12,10 @@ class AddInventoryCubit extends Cubit<AddInventoryState> {
   AddInventoryCubit(this.inventoryUseCaseRepo) : super(AddInventoryInitial());
   final InventoryUseCaseRepo inventoryUseCaseRepo;
 
-  Future<void> addInventoryAuditUsers(List<int>? userIds) async {
+  Future<void> addInventoryAuditUsers({
+    required int auditId,
+    required List<int> userIds,
+  }) async {
     emit(AddInventoryLoading());
     final result = await inventoryUseCaseRepo.addInventoryAuditUsers(userIds);
     switch (result) {

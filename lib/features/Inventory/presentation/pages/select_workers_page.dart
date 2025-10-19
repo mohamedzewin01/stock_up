@@ -452,9 +452,12 @@ class _SelectWorkersPageState extends State<SelectWorkersPage>
     });
   }
 
+  // استبدل الدالة _handleAddWorkers في select_workers_page.dart بهذا:
+
   void _handleAddWorkers(BuildContext context) {
     context.read<AddInventoryCubit>().addInventoryAuditUsers(
-      _selectedWorkerIds.toList(),
+      auditId: widget.auditId,
+      userIds: _selectedWorkerIds.toList(),
     );
   }
 
