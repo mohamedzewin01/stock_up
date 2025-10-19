@@ -241,7 +241,7 @@ import 'package:stock_up/core/widgets/custom_app_bar.dart';
 import 'package:stock_up/features/Inventory/presentation/pages/Inventory_page.dart';
 import 'package:stock_up/features/ManagerHome/presentation/widgets/menu_card.dart';
 import 'package:stock_up/features/ManagerHome/presentation/widgets/placeholder_page.dart';
-import 'package:stock_up/features/Search/presentation/pages/Search_page.dart';
+import 'package:stock_up/features/POSPage/presentation/pages/POSPage_page.dart';
 import 'package:stock_up/shared/test.dart';
 
 class ManagerHome extends StatefulWidget {
@@ -321,7 +321,7 @@ class _ManagerHomeState extends State<ManagerHome> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => SearchPage()),
+                        MaterialPageRoute(builder: (_) => POSPage()),
                       );
                     },
                   ),

@@ -74,6 +74,19 @@ import '../../features/ManagerScreen/domain/useCases/ManagerScreen_useCase_repo_
     as _i170;
 import '../../features/ManagerScreen/presentation/bloc/ManagerScreen_cubit.dart'
     as _i1051;
+import '../../features/POSPage/data/datasources/POSPage_datasource_repo.dart'
+    as _i830;
+import '../../features/POSPage/data/datasources/POSPage_datasource_repo_impl.dart'
+    as _i448;
+import '../../features/POSPage/data/repositories_impl/POSPage_repo_impl.dart'
+    as _i228;
+import '../../features/POSPage/domain/repositories/POSPage_repository.dart'
+    as _i230;
+import '../../features/POSPage/domain/useCases/POSPage_useCase_repo.dart'
+    as _i381;
+import '../../features/POSPage/domain/useCases/POSPage_useCase_repo_impl.dart'
+    as _i660;
+import '../../features/POSPage/presentation/bloc/POSPage_cubit.dart' as _i647;
 import '../../features/Products/data/datasources/Products_datasource_repo.dart'
     as _i266;
 import '../../features/Products/data/datasources/Products_datasource_repo_impl.dart'
@@ -143,6 +156,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i105.ManagerHomeRepository>(
       () => _i1029.ManagerHomeRepositoryImpl(),
     );
+    gh.factory<_i230.POSPageRepository>(() => _i228.POSPageRepositoryImpl());
     gh.factory<_i271.SettingsRepository>(() => _i583.SettingsRepositoryImpl());
     gh.factory<_i680.ApiService>(() => _i680.ApiService(gh<_i361.Dio>()));
     gh.factory<_i650.SettingsUseCaseRepo>(
@@ -156,6 +170,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i180.InventoryDatasourceRepo>(
       () => _i413.InventoryDatasourceRepoImpl(gh<_i680.ApiService>()),
+    );
+    gh.factory<_i381.POSPageUseCaseRepo>(
+      () => _i660.POSPageUseCase(gh<_i230.POSPageRepository>()),
     );
     gh.factory<_i33.SearchDatasourceRepo>(
       () => _i786.SearchDatasourceRepoImpl(gh<_i680.ApiService>()),
@@ -175,6 +192,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i1069.StoresDatasourceRepo>(
       () => _i133.StoresDatasourceRepoImpl(gh<_i680.ApiService>()),
     );
+    gh.factory<_i830.POSPageDatasourceRepo>(
+      () => _i448.POSPageDatasourceRepoImpl(gh<_i680.ApiService>()),
+    );
     gh.factory<_i1051.ManagerScreenCubit>(
       () => _i1051.ManagerScreenCubit(gh<_i972.ManagerScreenUseCaseRepo>()),
     );
@@ -186,6 +206,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i241.SettingsCubit>(
       () => _i241.SettingsCubit(gh<_i650.SettingsUseCaseRepo>()),
+    );
+    gh.factory<_i647.POSPageCubit>(
+      () => _i647.POSPageCubit(gh<_i381.POSPageUseCaseRepo>()),
     );
     gh.factory<_i647.AuthRepository>(
       () => _i295.AuthRepositoryImpl(gh<_i354.AuthDatasourceRepo>()),
