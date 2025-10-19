@@ -238,6 +238,7 @@
 // }
 import 'package:flutter/material.dart';
 import 'package:stock_up/core/widgets/custom_app_bar.dart';
+import 'package:stock_up/features/Inventory/presentation/pages/Inventory_page.dart';
 import 'package:stock_up/features/ManagerHome/presentation/widgets/menu_card.dart';
 import 'package:stock_up/features/ManagerHome/presentation/widgets/placeholder_page.dart';
 import 'package:stock_up/features/Search/presentation/pages/Search_page.dart';
@@ -303,7 +304,7 @@ class _ManagerHomeState extends State<ManagerHome> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const PlaceholderPage(title: 'الجرد'),
+                          builder: (_) => const InventoryManagementPage(),
                         ),
                       );
                     },

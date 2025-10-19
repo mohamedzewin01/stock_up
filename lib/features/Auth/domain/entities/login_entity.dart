@@ -3,9 +3,10 @@
 class LoginEntity {
   final String? status;
   final String? message;
+  final int? storeId;
   final UserEntity? user;
 
-  LoginEntity({this.status, this.message, this.user});
+  LoginEntity({this.status, this.message, this.user, this.storeId});
 }
 
 class UserEntity {
@@ -13,6 +14,7 @@ class UserEntity {
   final String? firstName;
   final String? lastName;
   final String? phoneNumber;
+  final int? storeId;
   final String? role;
   final String? profileImage;
 
@@ -21,6 +23,7 @@ class UserEntity {
     this.firstName,
     this.lastName,
     this.phoneNumber,
+    this.storeId,
     this.role,
     this.profileImage,
   });

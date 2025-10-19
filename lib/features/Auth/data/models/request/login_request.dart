@@ -8,11 +8,10 @@ class LoginRequest {
   final String? mobileNumber;
   @JsonKey(name: "password")
   final String? password;
+  @JsonKey(name: "store_id")
+  final int? storeId;
 
-  LoginRequest ({
-    this.mobileNumber,
-    this.password,
-  });
+  LoginRequest({this.mobileNumber, this.password, this.storeId});
 
   factory LoginRequest.fromJson(Map<String, dynamic> json) {
     return _$LoginRequestFromJson(json);
@@ -22,5 +21,3 @@ class LoginRequest {
     return _$LoginRequestToJson(this);
   }
 }
-
-

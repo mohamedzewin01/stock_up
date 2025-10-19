@@ -116,6 +116,7 @@ class _FormCardState extends State<FormCard> {
       context.read<AuthCubit>().login(
         loginRequest.mobileNumber.toString(),
         loginRequest.password.toString(),
+        _selectedStore!.id!,
       );
     }
   }

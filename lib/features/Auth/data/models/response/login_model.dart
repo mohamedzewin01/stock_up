@@ -11,8 +11,10 @@ class LoginModel {
   final String? message;
   @JsonKey(name: "user")
   final User? user;
+  @JsonKey(name: "store_id")
+  final int? storeId;
 
-  LoginModel({this.status, this.user, this.message});
+  LoginModel({this.status, this.user, this.message, this.storeId});
 
   factory LoginModel.fromJson(Map<String, dynamic> json) {
     return _$LoginModelFromJson(json);
@@ -27,6 +29,7 @@ class LoginModel {
       status: status,
       user: user?.toEntity(),
       message: message,
+      storeId: storeId,
     );
   }
 }
