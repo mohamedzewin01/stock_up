@@ -36,7 +36,7 @@ class GetInventoryByUserEntity {
 
   final String? message;
 
-  final List<Data>? data;
+  final Data? data;
 
   GetInventoryByUserEntity({this.status, this.message, this.data});
 }
