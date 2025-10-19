@@ -24,6 +24,28 @@ import '../../features/Auth/domain/useCases/Auth_useCase_repo.dart' as _i628;
 import '../../features/Auth/domain/useCases/Auth_useCase_repo_impl.dart'
     as _i971;
 import '../../features/Auth/presentation/bloc/Auth_cubit.dart' as _i192;
+import '../../features/Inventory/data/datasources/Inventory_datasource_repo.dart'
+    as _i180;
+import '../../features/Inventory/data/datasources/Inventory_datasource_repo_impl.dart'
+    as _i413;
+import '../../features/Inventory/data/repositories_impl/Inventory_repo_impl.dart'
+    as _i629;
+import '../../features/Inventory/domain/repositories/Inventory_repository.dart'
+    as _i675;
+import '../../features/Inventory/domain/useCases/Inventory_useCase_repo.dart'
+    as _i1018;
+import '../../features/Inventory/domain/useCases/Inventory_useCase_repo_impl.dart'
+    as _i449;
+import '../../features/Inventory/presentation/bloc/AddInventory/add_inventory_cubit.dart'
+    as _i421;
+import '../../features/Inventory/presentation/bloc/createInventory/create_inventory_cubit.dart'
+    as _i678;
+import '../../features/Inventory/presentation/bloc/Inventory_cubit.dart'
+    as _i271;
+import '../../features/Inventory/presentation/bloc/InventoryByUser/inventory_user_cubit.dart'
+    as _i214;
+import '../../features/Inventory/presentation/bloc/users/users_inventory_cubit.dart'
+    as _i821;
 import '../../features/ManagerHome/data/datasources/ManagerHome_datasource_repo.dart'
     as _i650;
 import '../../features/ManagerHome/data/datasources/ManagerHome_datasource_repo_impl.dart'
@@ -132,6 +154,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i266.ProductsDatasourceRepo>(
       () => _i760.ProductsDatasourceRepoImpl(gh<_i680.ApiService>()),
     );
+    gh.factory<_i180.InventoryDatasourceRepo>(
+      () => _i413.InventoryDatasourceRepoImpl(gh<_i680.ApiService>()),
+    );
     gh.factory<_i33.SearchDatasourceRepo>(
       () => _i786.SearchDatasourceRepoImpl(gh<_i680.ApiService>()),
     );
@@ -165,6 +190,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i647.AuthRepository>(
       () => _i295.AuthRepositoryImpl(gh<_i354.AuthDatasourceRepo>()),
     );
+    gh.factory<_i675.InventoryRepository>(
+      () => _i629.InventoryRepositoryImpl(gh<_i180.InventoryDatasourceRepo>()),
+    );
     gh.factory<_i362.ProductsRepository>(
       () => _i724.ProductsRepositoryImpl(gh<_i266.ProductsDatasourceRepo>()),
     );
@@ -186,6 +214,21 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i359.SearchCubit>(
       () => _i359.SearchCubit(gh<_i293.SearchUseCaseRepo>()),
     );
+    gh.factory<_i1018.InventoryUseCaseRepo>(
+      () => _i449.InventoryUseCase(gh<_i675.InventoryRepository>()),
+    );
+    gh.factory<_i821.UsersInventoryCubit>(
+      () => _i821.UsersInventoryCubit(gh<_i1018.InventoryUseCaseRepo>()),
+    );
+    gh.factory<_i421.AddInventoryCubit>(
+      () => _i421.AddInventoryCubit(gh<_i1018.InventoryUseCaseRepo>()),
+    );
+    gh.factory<_i214.InventoryUserCubit>(
+      () => _i214.InventoryUserCubit(gh<_i1018.InventoryUseCaseRepo>()),
+    );
+    gh.factory<_i678.CreateInventoryCubit>(
+      () => _i678.CreateInventoryCubit(gh<_i1018.InventoryUseCaseRepo>()),
+    );
     gh.factory<_i1066.ProductsUseCaseRepo>(
       () => _i187.ProductsUseCase(gh<_i362.ProductsRepository>()),
     );
@@ -194,6 +237,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i1055.StoresCubit>(
       () => _i1055.StoresCubit(gh<_i795.StoresUseCaseRepo>()),
+    );
+    gh.factory<_i271.InventoryCubit>(
+      () => _i271.InventoryCubit(gh<_i1018.InventoryUseCaseRepo>()),
     );
     return this;
   }
