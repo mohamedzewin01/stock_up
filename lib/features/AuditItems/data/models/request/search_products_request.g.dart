@@ -9,7 +9,7 @@ part of 'search_products_request.dart';
 SearchProductsRequest _$SearchProductsRequestFromJson(
   Map<String, dynamic> json,
 ) => SearchProductsRequest(
-  storeId: json['store_id'] as String?,
+  storeId: (json['store_id'] as num?)?.toInt(),
   q: json['q'] as String?,
   page: (json['page'] as num?)?.toInt(),
   limit: (json['limit'] as num?)?.toInt(),

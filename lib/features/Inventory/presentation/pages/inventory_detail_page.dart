@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stock_up/features/AuditItems/presentation/pages/audit_products_page.dart';
 import 'package:stock_up/features/Inventory/presentation/pages/select_workers_page.dart';
 
 class InventoryDetailPage extends StatefulWidget {
@@ -586,8 +587,11 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
                   const Color(0xFF26DE81),
                   Icons.check_circle_rounded,
                 );
-                // هنا يمكنك إضافة منطق تحديث حالة الجرد
-                // وتوجيه المستخدم إلى صفحة الجرد الفعلية
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AuditProductsPage()),
+                );
               },
               style: TextButton.styleFrom(
                 padding: const EdgeInsets.symmetric(

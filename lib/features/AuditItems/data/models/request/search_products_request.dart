@@ -5,7 +5,7 @@ part 'search_products_request.g.dart';
 @JsonSerializable()
 class SearchProductsRequest {
   @JsonKey(name: "store_id")
-  final String? storeId;
+  final int? storeId;
   @JsonKey(name: "q")
   final String? q;
   @JsonKey(name: "page")

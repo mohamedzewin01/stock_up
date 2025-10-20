@@ -237,7 +237,9 @@
 //   }
 // }
 import 'package:flutter/material.dart';
+import 'package:stock_up/core/utils/cashed_data_shared_preferences.dart';
 import 'package:stock_up/core/widgets/custom_app_bar.dart';
+import 'package:stock_up/features/AuditItems/presentation/pages/AuditItems_page.dart';
 import 'package:stock_up/features/Inventory/presentation/widgets/inventory_list_page.dart';
 import 'package:stock_up/features/ManagerHome/presentation/widgets/menu_card.dart';
 import 'package:stock_up/features/ManagerHome/presentation/widgets/placeholder_page.dart';
@@ -301,12 +303,22 @@ class _ManagerHomeState extends State<ManagerHome> {
                       end: Alignment.bottomRight,
                     ),
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const InventoryListPage(),
-                        ),
-                      );
+                      if (CacheService.getData(key: CacheKeys.userRole) ==
+                          'admin') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => InventoryListPage(),
+                          ),
+                        );
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const SearchProductsPage(),
+                          ),
+                        );
+                      }
                     },
                   ),
                   MenuCard(
