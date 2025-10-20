@@ -13,6 +13,22 @@ import 'package:dio/dio.dart' as _i361;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 
+import '../../features/AuditItems/data/datasources/AuditItems_datasource_repo.dart'
+    as _i257;
+import '../../features/AuditItems/data/datasources/AuditItems_datasource_repo_impl.dart'
+    as _i237;
+import '../../features/AuditItems/data/repositories_impl/AuditItems_repo_impl.dart'
+    as _i308;
+import '../../features/AuditItems/domain/repositories/AuditItems_repository.dart'
+    as _i291;
+import '../../features/AuditItems/domain/useCases/AuditItems_useCase_repo.dart'
+    as _i183;
+import '../../features/AuditItems/domain/useCases/AuditItems_useCase_repo_impl.dart'
+    as _i56;
+import '../../features/AuditItems/presentation/bloc/AuditItems_cubit.dart'
+    as _i274;
+import '../../features/AuditItems/presentation/bloc/SearchProducts/search_products_cubit.dart'
+    as _i613;
 import '../../features/Auth/data/datasources/Auth_datasource_repo.dart'
     as _i354;
 import '../../features/Auth/data/datasources/Auth_datasource_repo_impl.dart'
@@ -198,6 +214,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i1051.ManagerScreenCubit>(
       () => _i1051.ManagerScreenCubit(gh<_i972.ManagerScreenUseCaseRepo>()),
     );
+    gh.factory<_i257.AuditItemsDatasourceRepo>(
+      () => _i237.AuditItemsDatasourceRepoImpl(gh<_i680.ApiService>()),
+    );
     gh.factory<_i794.ManagerHomeUseCaseRepo>(
       () => _i260.ManagerHomeUseCase(gh<_i105.ManagerHomeRepository>()),
     );
@@ -222,6 +241,10 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i628.AuthUseCaseRepo>(
       () => _i971.AuthUseCase(gh<_i647.AuthRepository>()),
     );
+    gh.factory<_i291.AuditItemsRepository>(
+      () =>
+          _i308.AuditItemsRepositoryImpl(gh<_i257.AuditItemsDatasourceRepo>()),
+    );
     gh.factory<_i592.StoresRepository>(
       () => _i49.StoresRepositoryImpl(gh<_i1069.StoresDatasourceRepo>()),
     );
@@ -240,26 +263,35 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i1018.InventoryUseCaseRepo>(
       () => _i449.InventoryUseCase(gh<_i675.InventoryRepository>()),
     );
-    gh.factory<_i821.UsersInventoryCubit>(
-      () => _i821.UsersInventoryCubit(gh<_i1018.InventoryUseCaseRepo>()),
-    );
     gh.factory<_i421.AddInventoryCubit>(
       () => _i421.AddInventoryCubit(gh<_i1018.InventoryUseCaseRepo>()),
-    );
-    gh.factory<_i214.InventoryUserCubit>(
-      () => _i214.InventoryUserCubit(gh<_i1018.InventoryUseCaseRepo>()),
     );
     gh.factory<_i678.CreateInventoryCubit>(
       () => _i678.CreateInventoryCubit(gh<_i1018.InventoryUseCaseRepo>()),
     );
+    gh.factory<_i214.InventoryUserCubit>(
+      () => _i214.InventoryUserCubit(gh<_i1018.InventoryUseCaseRepo>()),
+    );
+    gh.factory<_i821.UsersInventoryCubit>(
+      () => _i821.UsersInventoryCubit(gh<_i1018.InventoryUseCaseRepo>()),
+    );
     gh.factory<_i1066.ProductsUseCaseRepo>(
       () => _i187.ProductsUseCase(gh<_i362.ProductsRepository>()),
+    );
+    gh.factory<_i183.AuditItemsUseCaseRepo>(
+      () => _i56.AuditItemsUseCase(gh<_i291.AuditItemsRepository>()),
     );
     gh.factory<_i795.StoresUseCaseRepo>(
       () => _i1044.StoresUseCase(gh<_i592.StoresRepository>()),
     );
     gh.factory<_i1055.StoresCubit>(
       () => _i1055.StoresCubit(gh<_i795.StoresUseCaseRepo>()),
+    );
+    gh.factory<_i274.AuditItemsCubit>(
+      () => _i274.AuditItemsCubit(gh<_i183.AuditItemsUseCaseRepo>()),
+    );
+    gh.factory<_i613.SearchProductsCubit>(
+      () => _i613.SearchProductsCubit(gh<_i183.AuditItemsUseCaseRepo>()),
     );
     gh.factory<_i271.InventoryCubit>(
       () => _i271.InventoryCubit(gh<_i1018.InventoryUseCaseRepo>()),

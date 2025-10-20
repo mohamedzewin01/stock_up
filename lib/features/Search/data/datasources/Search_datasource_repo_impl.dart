@@ -1,6 +1,7 @@
 import 'package:injectable/injectable.dart';
 import 'package:stock_up/core/api/api_extentions.dart';
 import 'package:stock_up/core/common/api_result.dart';
+import 'package:stock_up/core/utils/cashed_data_shared_preferences.dart';
 import 'package:stock_up/features/Search/data/models/request/search_request.dart';
 import 'package:stock_up/features/Search/domain/entities/search_entity.dart';
 
@@ -19,8 +20,7 @@ class SearchDatasourceRepoImpl implements SearchDatasourceRepo {
       limit: 10,
       page: page ?? 1,
       q: query,
-      storeId: '1',
-      // CacheService.getData(key: CacheKeys.storeId),
+      storeId: CacheService.getData(key: CacheKeys.storeId) ?? 0,
     );
     return executeApi(() async {
       final result = await apiService.search(searchRequest);

@@ -1,6 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:retrofit/retrofit.dart';
+import 'package:stock_up/features/AuditItems/data/models/request/add_inventory_audit_items_request.dart';
+import 'package:stock_up/features/AuditItems/data/models/request/search_products_request.dart';
+import 'package:stock_up/features/AuditItems/data/models/response/add_inventory_audit_items_model.dart';
+import 'package:stock_up/features/AuditItems/data/models/response/search_products_model.dart';
 import 'package:stock_up/features/Auth/data/models/request/login_request.dart';
 import 'package:stock_up/features/Auth/data/models/response/login_model.dart';
 import 'package:stock_up/features/Inventory/data/models/request/add_inventory_audit_users_request.dart';
@@ -53,9 +57,19 @@ abstract class ApiService {
     @Body() GetInventoryByUserRequest getInventoryByUserRequest,
   );
 
+  @POST(ApiConstants.addInventoryAuditItems)
+  Future<AddInventoryAuditItemsModel?> addInventoryAuditItems(
+    @Body() AddInventoryAuditItemsRequest addInventoryAuditItemsRequest,
+  );
+
   @POST(ApiConstants.getAllUsers)
   Future<GetAllUsersModel?> getAllUsers();
 
   @POST(ApiConstants.search)
   Future<SearchModel?> search(@Body() SearchRequest searchRequest);
+
+  @POST(ApiConstants.search)
+  Future<SearchProductsModel?> searchProducts(
+    @Body() SearchProductsRequest searchRequest,
+  );
 }
