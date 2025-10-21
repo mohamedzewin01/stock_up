@@ -9,8 +9,4 @@ abstract class AuditItemsRepository {
   });
 
   Future<Result<SearchProductsEntity?>> search(String? query, int? page);
-
-  Future<Result<UpdateAuditStatusEntity?>> updateAuditStatus({
-    required int auditId,
-  });
 }

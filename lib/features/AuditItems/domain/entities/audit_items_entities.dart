@@ -42,23 +42,3 @@ class SearchProductsEntity {
     this.results,
   });
 }
-
-class UpdateAuditStatusEntity {
-  final String? status;
-
-  final String? message;
-
-  final int? auditId;
-
-  final String? newStatus;
-
-  final int? pendingItemsCount;
-
-  UpdateAuditStatusEntity({
-    this.status,
-    this.message,
-    this.auditId,
-    this.newStatus,
-    this.pendingItemsCount,
-  });
-}

@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:stock_up/features/AuditItems/domain/entities/audit_items_entities.dart';
+import 'package:stock_up/features/Inventory/domain/entities/inventory_entities.dart';
 
 part 'update_audit_status_model.g.dart';
 
@@ -37,6 +37,7 @@ class UpdateAuditStatusModel {
       status: status,
       message: message,
       auditId: auditId,
+
       newStatus: newStatus,
       pendingItemsCount: pendingItemsCount,
     );

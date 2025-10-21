@@ -34,4 +34,11 @@ class InventoryUseCase implements InventoryUseCaseRepo {
   Future<Result<GetInventoryByUserEntity?>> getInventoryByUser() {
     return repository.getInventoryByUser();
   }
+
+  @override
+  Future<Result<UpdateAuditStatusEntity?>> updateAuditStatus({
+    required int auditId,
+  }) {
+    return repository.updateAuditStatus(auditId: auditId);
+  }
 }

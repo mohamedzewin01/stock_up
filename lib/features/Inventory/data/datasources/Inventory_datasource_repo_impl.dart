@@ -5,6 +5,7 @@ import 'package:stock_up/core/utils/cashed_data_shared_preferences.dart';
 import 'package:stock_up/features/Inventory/data/models/request/add_inventory_audit_users_request.dart';
 import 'package:stock_up/features/Inventory/data/models/request/create_inventory_audit_request.dart';
 import 'package:stock_up/features/Inventory/data/models/request/get_inventory_by_user_request.dart';
+import 'package:stock_up/features/Inventory/data/models/request/update_audit_status_request.dart';
 import 'package:stock_up/features/Inventory/domain/entities/inventory_entities.dart';
 
 import '../../../../core/api/api_manager/api_manager.dart';
@@ -69,6 +70,18 @@ class InventoryDatasourceRepoImpl implements InventoryDatasourceRepo {
         getInventoryByUserRequest,
       );
       return response?.toEntity();
+    });
+  }
+
+  @override
+  Future<Result<UpdateAuditStatusEntity?>> updateAuditStatus({
+    required int auditId,
+  }) {
+    return executeApi(() async {
+      final result = await apiService.updateAuditStatus(
+        UpdateAuditStatusRequest(auditId: auditId, creatorUserId: userId),
+      );
+      return result?.toEntity();
     });
   }
 }

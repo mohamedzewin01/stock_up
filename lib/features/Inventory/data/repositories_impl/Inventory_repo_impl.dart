@@ -34,4 +34,11 @@ class InventoryRepositoryImpl implements InventoryRepository {
   Future<Result<GetInventoryByUserEntity?>> getInventoryByUser() {
     return inventoryDatasourceRepo.getInventoryByUser();
   }
+
+  @override
+  Future<Result<UpdateAuditStatusEntity?>> updateAuditStatus({
+    required int auditId,
+  }) {
+    return inventoryDatasourceRepo.updateAuditStatus(auditId: auditId);
+  }
 }

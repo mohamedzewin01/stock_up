@@ -13,4 +13,8 @@ abstract class InventoryDatasourceRepo {
   Future<Result<AddInventoryAuditUsersEntity?>> addInventoryAuditUsers(
     List<int>? userIds,
   );
+
+  Future<Result<UpdateAuditStatusEntity?>> updateAuditStatus({
+    required int auditId,
+  });
 }

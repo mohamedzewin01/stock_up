@@ -6,10 +6,10 @@ part 'update_audit_status_request.g.dart';
 class UpdateAuditStatusRequest {
   @JsonKey(name: "audit_id")
   final int? auditId;
+  @JsonKey(name: "creator_user_id")
+  final int? creatorUserId;
 
-  UpdateAuditStatusRequest ({
-    this.auditId,
-  });
+  UpdateAuditStatusRequest({this.auditId, this.creatorUserId});
 
   factory UpdateAuditStatusRequest.fromJson(Map<String, dynamic> json) {
     return _$UpdateAuditStatusRequestFromJson(json);
@@ -19,5 +19,3 @@ class UpdateAuditStatusRequest {
     return _$UpdateAuditStatusRequestToJson(this);
   }
 }
-
-

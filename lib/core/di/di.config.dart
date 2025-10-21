@@ -29,8 +29,6 @@ import '../../features/AuditItems/presentation/bloc/AuditItems_cubit.dart'
     as _i274;
 import '../../features/AuditItems/presentation/bloc/SearchProducts/search_products_cubit.dart'
     as _i613;
-import '../../features/AuditItems/presentation/bloc/update_audit_status/update_audit_status_cubit.dart'
-    as _i147;
 import '../../features/Auth/data/datasources/Auth_datasource_repo.dart'
     as _i354;
 import '../../features/Auth/data/datasources/Auth_datasource_repo_impl.dart'
@@ -62,6 +60,8 @@ import '../../features/Inventory/presentation/bloc/Inventory_cubit.dart'
     as _i271;
 import '../../features/Inventory/presentation/bloc/InventoryByUser/inventory_user_cubit.dart'
     as _i214;
+import '../../features/Inventory/presentation/bloc/update_audit_status/update_audit_status_cubit.dart'
+    as _i359;
 import '../../features/Inventory/presentation/bloc/users/users_inventory_cubit.dart'
     as _i821;
 import '../../features/ManagerHome/data/datasources/ManagerHome_datasource_repo.dart'
@@ -277,6 +277,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i821.UsersInventoryCubit>(
       () => _i821.UsersInventoryCubit(gh<_i1018.InventoryUseCaseRepo>()),
     );
+    gh.factory<_i359.UpdateAuditStatusCubit>(
+      () => _i359.UpdateAuditStatusCubit(gh<_i1018.InventoryUseCaseRepo>()),
+    );
     gh.factory<_i1066.ProductsUseCaseRepo>(
       () => _i187.ProductsUseCase(gh<_i362.ProductsRepository>()),
     );
@@ -297,9 +300,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i271.InventoryCubit>(
       () => _i271.InventoryCubit(gh<_i1018.InventoryUseCaseRepo>()),
-    );
-    gh.factory<_i147.UpdateAuditStatusCubit>(
-      () => _i147.UpdateAuditStatusCubit(gh<_i183.AuditItemsUseCaseRepo>()),
     );
     return this;
   }

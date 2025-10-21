@@ -10,7 +10,7 @@ abstract class AuditItemsDatasourceRepo {
 
   Future<Result<SearchProductsEntity?>> search(String? query, int? page);
 
-  Future<Result<UpdateAuditStatusEntity?>> updateAuditStatus({
-    required int auditId,
-  });
+  // Future<Result<UpdateAuditStatusEntity?>> updateAuditStatus({
+  //   required int auditId,
+  // });
 }
