@@ -15,4 +15,6 @@ abstract class AuditItemsUseCaseRepo {
     required int itemId,
     required String status,
   });
+
+  Future<Result<SearchAuditUserEntity?>> searchAuditUser();
 }

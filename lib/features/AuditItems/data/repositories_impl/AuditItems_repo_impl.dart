@@ -41,4 +41,9 @@ class AuditItemsRepositoryImpl implements AuditItemsRepository {
       status: status,
     );
   }
+
+  @override
+  Future<Result<SearchAuditUserEntity?>> searchAuditUser() {
+    return auditItemsDatasourceRepo.searchAuditUser();
+  }
 }

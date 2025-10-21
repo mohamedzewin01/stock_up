@@ -1,3 +1,4 @@
+import '../../data/models/response/search_audit_user_model.dart';
 import '../../data/models/response/search_products_model.dart';
 
 class AddInventoryAuditItemsEntity {
@@ -61,4 +62,14 @@ class UpdateInventoryStatusEntity {
     this.itemId,
     this.newStatus,
   });
+}
+
+class SearchAuditUserEntity {
+  final String? status;
+
+  final String? message;
+
+  final List<Data>? data;
+
+  SearchAuditUserEntity({this.status, this.message, this.data});
 }

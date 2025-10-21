@@ -2,9 +2,11 @@ import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:stock_up/features/AuditItems/data/models/request/add_inventory_audit_items_request.dart';
+import 'package:stock_up/features/AuditItems/data/models/request/search_audit_user_request.dart';
 import 'package:stock_up/features/AuditItems/data/models/request/search_products_request.dart';
 import 'package:stock_up/features/AuditItems/data/models/request/update_inventory_stem_status_request.dart';
 import 'package:stock_up/features/AuditItems/data/models/response/add_inventory_audit_items_model.dart';
+import 'package:stock_up/features/AuditItems/data/models/response/search_audit_user_model.dart';
 import 'package:stock_up/features/AuditItems/data/models/response/search_products_model.dart';
 import 'package:stock_up/features/AuditItems/data/models/response/update_inventory_stem_status_model.dart';
 import 'package:stock_up/features/Auth/data/models/request/login_request.dart';
@@ -85,5 +87,10 @@ abstract class ApiService {
   @POST(ApiConstants.updateInventoryItemStatus)
   Future<UpdateInventoryStatusModel?> updateInventoryItemStatus(
     @Body() UpdateInventoryStatusRequest updateInventoryStatusRequest,
+  );
+
+  @POST(ApiConstants.searchAuditUser)
+  Future<SearchAuditUserModel?> searchAuditUser(
+    @Body() SearchAuditUserRequest searchAuditUserRequest,
   );
 }

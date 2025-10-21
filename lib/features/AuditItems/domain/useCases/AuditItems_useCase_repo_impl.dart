@@ -41,4 +41,9 @@ class AuditItemsUseCase implements AuditItemsUseCaseRepo {
       status: status,
     );
   }
+
+  @override
+  Future<Result<SearchAuditUserEntity?>> searchAuditUser() {
+    return repository.searchAuditUser();
+  }
 }

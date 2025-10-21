@@ -3,6 +3,7 @@ import 'package:stock_up/core/api/api_extentions.dart';
 import 'package:stock_up/core/common/api_result.dart';
 import 'package:stock_up/core/utils/cashed_data_shared_preferences.dart';
 import 'package:stock_up/features/AuditItems/data/models/request/add_inventory_audit_items_request.dart';
+import 'package:stock_up/features/AuditItems/data/models/request/search_audit_user_request.dart';
 import 'package:stock_up/features/AuditItems/data/models/request/search_products_request.dart';
 import 'package:stock_up/features/AuditItems/data/models/request/update_inventory_stem_status_request.dart';
 import 'package:stock_up/features/AuditItems/domain/entities/audit_items_entities.dart';
@@ -64,6 +65,18 @@ class AuditItemsDatasourceRepoImpl implements AuditItemsDatasourceRepo {
           auditId: auditId,
           itemId: itemId,
           status: status,
+        ),
+      );
+      return result?.toEntity();
+    });
+  }
+
+  @override
+  Future<Result<SearchAuditUserEntity?>> searchAuditUser() {
+    return executeApi(() async {
+      final result = await apiService.searchAuditUser(
+        SearchAuditUserRequest(
+          userId: CacheService.getData(key: CacheKeys.userId) ?? 0,
         ),
       );
       return result?.toEntity();
