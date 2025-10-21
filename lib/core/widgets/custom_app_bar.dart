@@ -228,33 +228,33 @@ class SalesPageExample extends StatelessWidget {
 }
 
 // مثال 5: صفحة الجرد - أخضر منعش
-class InventoryPageExample extends StatelessWidget {
-  const InventoryPageExample({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
-      appBar: CustomAppBar(
-        title: 'الجرد',
-        leadingIcon: Icons.inventory_2_rounded,
-        showBackButton: true,
-        startColor: const Color(0xFF4CAF50),
-        endColor: const Color(0xFF388E3C),
-        actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.qr_code_scanner_rounded,
-              color: Colors.white,
-            ),
-            onPressed: () {},
-          ),
-        ],
-      ),
-      body: const Center(child: Text('محتوى الصفحة')),
-    );
-  }
-}
+// class InventoryPageExample extends StatelessWidget {
+//   const InventoryPageExample({Key? key}) : super(key: key);
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: const Color(0xFFF5F7FA),
+//       appBar: CustomAppBar(
+//         title: 'الجرد',
+//         leadingIcon: Icons.inventory_2_rounded,
+//         showBackButton: true,
+//         startColor: const Color(0xFF4CAF50),
+//         endColor: const Color(0xFF388E3C),
+//         actions: [
+//           IconButton(
+//             icon: const Icon(
+//               Icons.qr_code_scanner_rounded,
+//               color: Colors.white,
+//             ),
+//             onPressed: () {},
+//           ),
+//         ],
+//       ),
+//       body: const Center(child: Text('محتوى الصفحة')),
+//     );
+//   }
+// }
 
 // مثال 6: دفتر اليومية - بنفسجي أنيق
 class JournalPageExample extends StatelessWidget {

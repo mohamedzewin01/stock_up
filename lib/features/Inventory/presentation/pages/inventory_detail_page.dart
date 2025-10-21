@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:stock_up/features/AuditItems/presentation/pages/audit_products_page.dart';
 import 'package:stock_up/features/Inventory/presentation/pages/select_workers_page.dart';
 
 class InventoryDetailPage extends StatefulWidget {
@@ -45,8 +44,8 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
             const SizedBox(height: 20),
             _buildWorkersSection(workers),
             const SizedBox(height: 20),
-            if (status.toLowerCase() == 'pending' && workers.isNotEmpty)
-              _buildStartInventoryButton(),
+            // if (status.toLowerCase() == 'pending' && workers.isNotEmpty)
+            //   _buildStartInventoryButton(),
           ],
         ),
       ),
@@ -489,129 +488,129 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
     );
   }
 
-  Widget _buildStartInventoryButton() {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF26DE81), Color(0xFF20BF6B)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF26DE81).withOpacity(0.4),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: ElevatedButton(
-        onPressed: () => _handleStartInventory(),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent,
-          shadowColor: Colors.transparent,
-          padding: const EdgeInsets.symmetric(vertical: 18),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Icon(Icons.play_arrow_rounded, color: Colors.white, size: 28),
-            SizedBox(width: 12),
-            Text(
-              'البدء في الجرد',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  // Widget _buildStartInventoryButton() {
+  //   return Container(
+  //     decoration: BoxDecoration(
+  //       gradient: const LinearGradient(
+  //         colors: [Color(0xFF26DE81), Color(0xFF20BF6B)],
+  //         begin: Alignment.topLeft,
+  //         end: Alignment.bottomRight,
+  //       ),
+  //       borderRadius: BorderRadius.circular(20),
+  //       boxShadow: [
+  //         BoxShadow(
+  //           color: const Color(0xFF26DE81).withOpacity(0.4),
+  //           blurRadius: 15,
+  //           offset: const Offset(0, 8),
+  //         ),
+  //       ],
+  //     ),
+  //     child: ElevatedButton(
+  //       onPressed: () => _handleStartInventory(),
+  //       style: ElevatedButton.styleFrom(
+  //         backgroundColor: Colors.transparent,
+  //         shadowColor: Colors.transparent,
+  //         padding: const EdgeInsets.symmetric(vertical: 18),
+  //         shape: RoundedRectangleBorder(
+  //           borderRadius: BorderRadius.circular(20),
+  //         ),
+  //       ),
+  //       child: Row(
+  //         mainAxisAlignment: MainAxisAlignment.center,
+  //         children: const [
+  //           Icon(Icons.play_arrow_rounded, color: Colors.white, size: 28),
+  //           SizedBox(width: 12),
+  //           Text(
+  //             'البدء في الجرد',
+  //             style: TextStyle(
+  //               fontSize: 18,
+  //               fontWeight: FontWeight.bold,
+  //               color: Colors.white,
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
-  void _handleStartInventory() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: const Color(0xFF26DE81).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Icon(
-                Icons.play_arrow_rounded,
-                color: Color(0xFF26DE81),
-              ),
-            ),
-            const SizedBox(width: 12),
-            const Text('البدء في الجرد', style: TextStyle(fontSize: 18)),
-          ],
-        ),
-        content: const Text(
-          'هل تريد البدء في عملية الجرد؟\nسيتم تحديث حالة الجرد إلى "جاري التنفيذ".',
-          style: TextStyle(height: 1.5),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text(
-              'إلغاء',
-              style: TextStyle(color: Color(0xFF636E72)),
-            ),
-          ),
-          Container(
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF26DE81), Color(0xFF20BF6B)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                _showSnackBar(
-                  context,
-                  'تم البدء في الجرد بنجاح',
-                  const Color(0xFF26DE81),
-                  Icons.check_circle_rounded,
-                );
-
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => AuditProductsPage()),
-                );
-              },
-              style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 10,
-                ),
-              ),
-              child: const Text(
-                'نعم، ابدأ',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // void _handleStartInventory() {
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) => AlertDialog(
+  //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+  //       title: Row(
+  //         children: [
+  //           Container(
+  //             padding: const EdgeInsets.all(8),
+  //             decoration: BoxDecoration(
+  //               color: const Color(0xFF26DE81).withOpacity(0.1),
+  //               borderRadius: BorderRadius.circular(10),
+  //             ),
+  //             child: const Icon(
+  //               Icons.play_arrow_rounded,
+  //               color: Color(0xFF26DE81),
+  //             ),
+  //           ),
+  //           const SizedBox(width: 12),
+  //           const Text('البدء في الجرد', style: TextStyle(fontSize: 18)),
+  //         ],
+  //       ),
+  //       content: const Text(
+  //         'هل تريد البدء في عملية الجرد؟\nسيتم تحديث حالة الجرد إلى "جاري التنفيذ".',
+  //         style: TextStyle(height: 1.5),
+  //       ),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () => Navigator.pop(context),
+  //           child: const Text(
+  //             'إلغاء',
+  //             style: TextStyle(color: Color(0xFF636E72)),
+  //           ),
+  //         ),
+  //         Container(
+  //           decoration: BoxDecoration(
+  //             gradient: const LinearGradient(
+  //               colors: [Color(0xFF26DE81), Color(0xFF20BF6B)],
+  //               begin: Alignment.topLeft,
+  //               end: Alignment.bottomRight,
+  //             ),
+  //             borderRadius: BorderRadius.circular(12),
+  //           ),
+  //           child: TextButton(
+  //             onPressed: () {
+  //               Navigator.pop(context);
+  //               _showSnackBar(
+  //                 context,
+  //                 'تم البدء في الجرد بنجاح',
+  //                 const Color(0xFF26DE81),
+  //                 Icons.check_circle_rounded,
+  //               );
+  //
+  //               Navigator.push(
+  //                 context,
+  //                 MaterialPageRoute(builder: (context) => AuditProductsPage()),
+  //               );
+  //             },
+  //             style: TextButton.styleFrom(
+  //               padding: const EdgeInsets.symmetric(
+  //                 horizontal: 20,
+  //                 vertical: 10,
+  //               ),
+  //             ),
+  //             child: const Text(
+  //               'نعم، ابدأ',
+  //               style: TextStyle(
+  //                 color: Colors.white,
+  //                 fontWeight: FontWeight.bold,
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
@@ -635,38 +634,5 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
       default:
         return 'قيد الانتظار';
     }
-  }
-
-  void _showSnackBar(
-    BuildContext context,
-    String message,
-    Color backgroundColor,
-    IconData icon,
-  ) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            Icon(icon, color: Colors.white),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                message,
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          ],
-        ),
-        backgroundColor: backgroundColor,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        margin: const EdgeInsets.all(16),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        duration: const Duration(seconds: 3),
-      ),
-    );
   }
 }
