@@ -3,8 +3,10 @@ import 'package:injectable/injectable.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:stock_up/features/AuditItems/data/models/request/add_inventory_audit_items_request.dart';
 import 'package:stock_up/features/AuditItems/data/models/request/search_products_request.dart';
+import 'package:stock_up/features/AuditItems/data/models/request/update_audit_status_request.dart';
 import 'package:stock_up/features/AuditItems/data/models/response/add_inventory_audit_items_model.dart';
 import 'package:stock_up/features/AuditItems/data/models/response/search_products_model.dart';
+import 'package:stock_up/features/AuditItems/data/models/response/update_audit_status_model.dart';
 import 'package:stock_up/features/Auth/data/models/request/login_request.dart';
 import 'package:stock_up/features/Auth/data/models/response/login_model.dart';
 import 'package:stock_up/features/Inventory/data/models/request/add_inventory_audit_users_request.dart';
@@ -71,5 +73,10 @@ abstract class ApiService {
   @POST(ApiConstants.search)
   Future<SearchProductsModel?> searchProducts(
     @Body() SearchProductsRequest searchRequest,
+  );
+
+  @POST(ApiConstants.updateAuditStatus)
+  Future<UpdateAuditStatusModel?> updateAuditStatus(
+    @Body() UpdateAuditStatusRequest updateAuditStatusRequest,
   );
 }

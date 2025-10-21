@@ -28,4 +28,11 @@ class AuditItemsUseCase implements AuditItemsUseCaseRepo {
   Future<Result<SearchProductsEntity?>> search(String? query, int? page) {
     return repository.search(query, page);
   }
+
+  @override
+  Future<Result<UpdateAuditStatusEntity?>> updateAuditStatus({
+    required int auditId,
+  }) {
+    return repository.updateAuditStatus(auditId: auditId);
+  }
 }

@@ -29,6 +29,8 @@ import '../../features/AuditItems/presentation/bloc/AuditItems_cubit.dart'
     as _i274;
 import '../../features/AuditItems/presentation/bloc/SearchProducts/search_products_cubit.dart'
     as _i613;
+import '../../features/AuditItems/presentation/bloc/update_audit_status/update_audit_status_cubit.dart'
+    as _i147;
 import '../../features/Auth/data/datasources/Auth_datasource_repo.dart'
     as _i354;
 import '../../features/Auth/data/datasources/Auth_datasource_repo_impl.dart'
@@ -295,6 +297,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i271.InventoryCubit>(
       () => _i271.InventoryCubit(gh<_i1018.InventoryUseCaseRepo>()),
+    );
+    gh.factory<_i147.UpdateAuditStatusCubit>(
+      () => _i147.UpdateAuditStatusCubit(gh<_i183.AuditItemsUseCaseRepo>()),
     );
     return this;
   }

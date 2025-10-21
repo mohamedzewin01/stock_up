@@ -20,7 +20,7 @@ class SearchDatasourceRepoImpl implements SearchDatasourceRepo {
       limit: 10,
       page: page ?? 1,
       q: query,
-      storeId: CacheService.getData(key: CacheKeys.storeId) ?? 0,
+      storeId: CacheService.getData(key: CacheKeys.storeId).toString(),
     );
     return executeApi(() async {
       final result = await apiService.search(searchRequest);
