@@ -28,4 +28,17 @@ class AuditItemsRepositoryImpl implements AuditItemsRepository {
   Future<Result<SearchProductsEntity?>> search(String? query, int? page) {
     return auditItemsDatasourceRepo.search(query, page);
   }
+
+  @override
+  Future<Result<UpdateInventoryStatusEntity?>> updateInventoryItemsStatus({
+    required int auditId,
+    required int itemId,
+    required String status,
+  }) {
+    return auditItemsDatasourceRepo.updateInventoryItemsStatus(
+      auditId: auditId,
+      itemId: itemId,
+      status: status,
+    );
+  }
 }

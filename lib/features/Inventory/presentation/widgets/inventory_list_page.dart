@@ -768,13 +768,13 @@
 //     }
 //   }
 // }
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stock_up/core/di/di.dart';
 import 'package:stock_up/features/AuditItems/presentation/pages/AuditItems_page.dart';
 import 'package:stock_up/features/AuditItems/presentation/pages/audit_products_page.dart';
 import 'package:stock_up/features/Inventory/presentation/bloc/InventoryByUser/inventory_user_cubit.dart';
+import 'package:stock_up/features/Inventory/presentation/bloc/update_audit_status/update_audit_status_cubit.dart';
 import 'package:stock_up/features/Inventory/presentation/pages/create_inventory_page.dart';
 import 'package:stock_up/features/Inventory/presentation/pages/inventory_detail_page.dart';
 
@@ -836,6 +836,10 @@ class SnackBarHelper {
     _showSnackBar(context, message, AppColors.primary, Icons.info_rounded);
   }
 
+  static void showWarning(BuildContext context, String message) {
+    _showSnackBar(context, message, AppColors.warning, Icons.warning_rounded);
+  }
+
   static void _showSnackBar(
     BuildContext context,
     String message,
@@ -883,8 +887,14 @@ class InventoryListPage extends StatefulWidget {
 class _InventoryListPageState extends State<InventoryListPage> {
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => getIt<InventoryUserCubit>()..getInventoryByUser(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) =>
+              getIt<InventoryUserCubit>()..getInventoryByUser(),
+        ),
+        BlocProvider(create: (context) => getIt<UpdateAuditStatusCubit>()),
+      ],
       child: Scaffold(
         backgroundColor: AppColors.background,
         appBar: _InventoryAppBar(),
@@ -951,28 +961,199 @@ class _InventoryBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<InventoryUserCubit, InventoryUserState>(
-      builder: (context, state) {
-        if (state is InventoryUserLoading) {
-          return const _LoadingWidget();
+    return BlocListener<UpdateAuditStatusCubit, UpdateAuditStatusState>(
+      listener: (context, state) {
+        if (state is UpdateAuditStatusLoaded) {
+          final entity = state.updateAuditStatusEntity;
+
+          if (entity?.status == 'success') {
+            SnackBarHelper.showSuccess(
+              context,
+              entity?.message ?? 'تم إنهاء الجرد بنجاح',
+            );
+            // تحديث البيانات
+            context.read<InventoryUserCubit>().getInventoryByUser();
+          } else if (entity?.status == 'error') {
+            _showPendingItemsDialog(
+              context,
+              entity?.message ?? 'حدث خطأ',
+              entity?.pendingItemsCount ?? 0,
+            );
+          }
         }
 
-        if (state is InventoryUserFailure) {
-          return const _ErrorWidget();
+        if (state is UpdateAuditStatusError) {
+          SnackBarHelper.showError(context, 'حدث خطأ أثناء إنهاء الجرد');
         }
-
-        if (state is InventoryUserSuccess) {
-          final inventory = state.value?.data;
-
-          if (inventory == null) {
-            return const _EmptyStateWidget();
+      },
+      child: BlocBuilder<InventoryUserCubit, InventoryUserState>(
+        builder: (context, state) {
+          if (state is InventoryUserLoading) {
+            return const _LoadingWidget();
           }
 
-          return _InventoryContent(inventory: inventory);
-        }
+          if (state is InventoryUserFailure) {
+            return const _ErrorWidget();
+          }
 
-        return const SizedBox.shrink();
-      },
+          if (state is InventoryUserSuccess) {
+            final inventory = state.value?.data;
+
+            if (inventory == null) {
+              return const _EmptyStateWidget();
+            }
+
+            return _InventoryContent(inventory: inventory);
+          }
+
+          return const SizedBox.shrink();
+        },
+      ),
+    );
+  }
+
+  void _showPendingItemsDialog(
+    BuildContext context,
+    String message,
+    int pendingCount,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        contentPadding: const EdgeInsets.all(24),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.warning.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.warning_rounded,
+                color: AppColors.warning,
+                size: 32,
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Text(
+                'تنبيه',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              message,
+              style: const TextStyle(
+                fontSize: 16,
+                height: 1.6,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: AppColors.warning.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: AppColors.warning.withOpacity(0.3),
+                  width: 2,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.warning.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(
+                      Icons.inventory_2_rounded,
+                      color: AppColors.warning,
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'عدد المنتجات المعلقة',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '$pendingCount منتج',
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.warning,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(0.05),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.info_outline,
+                    color: AppColors.primary,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  const Expanded(
+                    child: Text(
+                      'يرجى إكمال جميع المنتجات قبل إنهاء الجرد',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: AppColors.textSecondary,
+                        height: 1.4,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'فهمت',
+              style: TextStyle(
+                color: AppColors.primary,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -987,6 +1168,9 @@ class _InventoryContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final status = inventory.status ?? 'pending';
+    final isCompleted = status.toLowerCase() == 'completed';
+
     return RefreshIndicator(
       onRefresh: () async {
         context.read<InventoryUserCubit>().getInventoryByUser();
@@ -997,19 +1181,27 @@ class _InventoryContent extends StatelessWidget {
           final isTablet = constraints.maxWidth > 600;
           final padding = isTablet ? 32.0 : 20.0;
 
-          return SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: Padding(
-              padding: EdgeInsets.all(padding),
-              child: Center(
-                child: Container(
-                  constraints: BoxConstraints(
-                    maxWidth: isTablet ? 800 : double.infinity,
+          return Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Padding(
+                    padding: EdgeInsets.all(padding),
+                    child: Center(
+                      child: Container(
+                        constraints: BoxConstraints(
+                          maxWidth: isTablet ? 800 : double.infinity,
+                        ),
+                        child: _InventoryCard(inventory: inventory),
+                      ),
+                    ),
                   ),
-                  child: _InventoryCard(inventory: inventory),
                 ),
               ),
-            ),
+              if (!isCompleted)
+                _CompleteInventoryButton(auditId: inventory.id ?? 0),
+            ],
           );
         },
       ),
@@ -1018,7 +1210,226 @@ class _InventoryContent extends StatelessWidget {
 }
 
 // ============================================================================
-// Inventory Card
+// Complete Inventory Button
+// ============================================================================
+class _CompleteInventoryButton extends StatelessWidget {
+  final int auditId;
+
+  const _CompleteInventoryButton({required this.auditId});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<UpdateAuditStatusCubit, UpdateAuditStatusState>(
+      builder: (context, state) {
+        final isLoading = state is UpdateAuditStatusLoading;
+
+        return Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 20,
+                offset: const Offset(0, -4),
+              ),
+            ],
+          ),
+          child: SafeArea(
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF26DE81), Color(0xFF20BF6B)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.success.withOpacity(0.4),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: isLoading ? null : () => _showCompleteDialog(context),
+                  borderRadius: BorderRadius.circular(20),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 18),
+                    child: isLoading
+                        ? const Center(
+                            child: SizedBox(
+                              height: 28,
+                              width: 28,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 3,
+                                color: Colors.white,
+                              ),
+                            ),
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: const Icon(
+                                  Icons.check_circle_rounded,
+                                  color: Colors.white,
+                                  size: 24,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              const Text(
+                                'إنهاء الجرد',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ],
+                          ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showCompleteDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        contentPadding: const EdgeInsets.all(10),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.success.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.check_circle_rounded,
+                color: AppColors.success,
+                size: 32,
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Text(
+                'إنهاء الجرد',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'هل أنت متأكد من إنهاء الجرد؟',
+              style: TextStyle(
+                fontSize: 16,
+                height: 1.6,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: AppColors.warning.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: AppColors.warning.withOpacity(0.3),
+                  width: 1.5,
+                ),
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.info_outline,
+                    color: AppColors.warning,
+                    size: 24,
+                  ),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Text(
+                      'سيتم إنهاء الجرد وتحويل حالته إلى مكتمل',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppColors.textSecondary,
+                        height: 1.4,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text(
+              'إلغاء',
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 16),
+            ),
+          ),
+          Container(
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF26DE81), Color(0xFF20BF6B)],
+              ),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+                context.read<UpdateAuditStatusCubit>().updateAuditStatus(
+                  auditId: auditId,
+                );
+              },
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+              ),
+              child: const Text(
+                'نعم، إنهاء',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ============================================================================
+// Inventory Card (باقي الكود كما هو)
 // ============================================================================
 class _InventoryCard extends StatelessWidget {
   final dynamic inventory;

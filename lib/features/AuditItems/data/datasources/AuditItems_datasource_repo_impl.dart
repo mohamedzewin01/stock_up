@@ -4,6 +4,7 @@ import 'package:stock_up/core/common/api_result.dart';
 import 'package:stock_up/core/utils/cashed_data_shared_preferences.dart';
 import 'package:stock_up/features/AuditItems/data/models/request/add_inventory_audit_items_request.dart';
 import 'package:stock_up/features/AuditItems/data/models/request/search_products_request.dart';
+import 'package:stock_up/features/AuditItems/data/models/request/update_inventory_stem_status_request.dart';
 import 'package:stock_up/features/AuditItems/domain/entities/audit_items_entities.dart';
 
 import '../../../../core/api/api_manager/api_manager.dart';
@@ -51,15 +52,21 @@ class AuditItemsDatasourceRepoImpl implements AuditItemsDatasourceRepo {
     });
   }
 
-  // @override
-  // Future<Result<UpdateAuditStatusEntity?>> updateAuditStatus({
-  //   required int auditId,
-  // }) {
-  //   return executeApi(() async {
-  //     final result = await apiService.updateAuditStatus(
-  //       UpdateAuditStatusRequest(auditId: auditId),
-  //     );
-  //     return result?.toEntity();
-  //   });
-  // }
+  @override
+  Future<Result<UpdateInventoryStatusEntity?>> updateInventoryItemsStatus({
+    required int auditId,
+    required int itemId,
+    required String status,
+  }) {
+    return executeApi(() async {
+      final result = await apiService.updateInventoryItemStatus(
+        UpdateInventoryStatusRequest(
+          auditId: auditId,
+          itemId: itemId,
+          status: status,
+        ),
+      );
+      return result?.toEntity();
+    });
+  }
 }

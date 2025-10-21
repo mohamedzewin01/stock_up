@@ -42,3 +42,23 @@ class SearchProductsEntity {
     this.results,
   });
 }
+
+class UpdateInventoryStatusEntity {
+  final String? status;
+
+  final String? message;
+
+  final int? auditId;
+
+  final int? itemId;
+
+  final String? newStatus;
+
+  UpdateInventoryStatusEntity({
+    this.status,
+    this.message,
+    this.auditId,
+    this.itemId,
+    this.newStatus,
+  });
+}
