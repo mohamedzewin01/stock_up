@@ -6,6 +6,7 @@ abstract class AuditItemsUseCaseRepo {
     String? notes,
     required int productId,
     required int quantity,
+    required int auditId,
   });
 
   Future<Result<SearchProductsEntity?>> search(String? query, int? page);

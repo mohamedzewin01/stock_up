@@ -16,11 +16,13 @@ class AuditItemsRepositoryImpl implements AuditItemsRepository {
     String? notes,
     required int productId,
     required int quantity,
+    required int auditId,
   }) {
     return auditItemsDatasourceRepo.addInventoryAuditItems(
       notes: notes,
       productId: productId,
       quantity: quantity,
+      auditId: auditId,
     );
   }
 

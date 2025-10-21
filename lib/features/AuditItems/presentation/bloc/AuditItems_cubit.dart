@@ -17,12 +17,14 @@ class AuditItemsCubit extends Cubit<AuditItemsState> {
     String? notes,
     required int productId,
     required int quantity,
+    required int auditId,
   }) async {
     emit(AuditItemsLoading());
     final result = await _auditItemsUseCaseRepo.addInventoryAuditItems(
       notes: notes,
       productId: productId,
       quantity: quantity,
+      auditId: auditId,
     );
     switch (result) {
       case Success<AddInventoryAuditItemsEntity?>():

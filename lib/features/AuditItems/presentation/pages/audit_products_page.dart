@@ -1220,7 +1220,7 @@ class _AuditProductsPageState extends State<AuditProductsPage>
                   final querySnapshot = await _firestore
                       .collection('inventory_audit')
                       .where('audit_id', isEqualTo: auditId)
-                      .where('item_id', isEqualTo: itemId)
+                      .where('product_id', isEqualTo: itemId)
                       .limit(1)
                       .get();
 
@@ -1228,7 +1228,7 @@ class _AuditProductsPageState extends State<AuditProductsPage>
                     final docId = querySnapshot.docs.first.id;
                     await _updateFirebaseStatus(docId, firebaseStatus);
 
-                    if (mounted) {
+                    if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Row(

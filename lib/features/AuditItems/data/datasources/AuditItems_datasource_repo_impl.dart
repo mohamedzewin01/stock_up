@@ -22,10 +22,11 @@ class AuditItemsDatasourceRepoImpl implements AuditItemsDatasourceRepo {
     String? notes,
     required int productId,
     required int quantity,
+    required int auditId,
   }) {
     AddInventoryAuditItemsRequest addInventoryAuditItemsRequest =
         AddInventoryAuditItemsRequest(
-          auditId: CacheService.getData(key: CacheKeys.auditId),
+          auditId: auditId,
           productId: productId,
           userId: CacheService.getData(key: CacheKeys.userId),
           quantity: quantity,

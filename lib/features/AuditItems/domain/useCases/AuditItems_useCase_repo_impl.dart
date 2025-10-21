@@ -16,11 +16,13 @@ class AuditItemsUseCase implements AuditItemsUseCaseRepo {
     String? notes,
     required int productId,
     required int quantity,
+    required int auditId,
   }) {
     return repository.addInventoryAuditItems(
       notes: notes,
       productId: productId,
       quantity: quantity,
+      auditId: auditId,
     );
   }
 

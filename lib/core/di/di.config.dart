@@ -27,6 +27,8 @@ import '../../features/AuditItems/domain/useCases/AuditItems_useCase_repo_impl.d
     as _i56;
 import '../../features/AuditItems/presentation/bloc/AuditItems_cubit.dart'
     as _i274;
+import '../../features/AuditItems/presentation/bloc/search_audit_user/search_audit_user_cubit.dart'
+    as _i891;
 import '../../features/AuditItems/presentation/bloc/SearchProducts/search_products_cubit.dart'
     as _i613;
 import '../../features/AuditItems/presentation/bloc/update_inventory_items_status/update_items_status_cubit.dart'
@@ -297,6 +299,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i613.SearchProductsCubit>(
       () => _i613.SearchProductsCubit(gh<_i183.AuditItemsUseCaseRepo>()),
+    );
+    gh.factory<_i891.SearchAuditUserCubit>(
+      () => _i891.SearchAuditUserCubit(gh<_i183.AuditItemsUseCaseRepo>()),
     );
     gh.factory<_i102.UpdateItemsStatusCubit>(
       () => _i102.UpdateItemsStatusCubit(gh<_i183.AuditItemsUseCaseRepo>()),
