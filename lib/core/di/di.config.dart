@@ -9,6 +9,7 @@
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:cloud_firestore/cloud_firestore.dart' as _i974;
 import 'package:dio/dio.dart' as _i361;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
@@ -119,6 +120,15 @@ import '../../features/Products/domain/useCases/Products_useCase_repo.dart'
     as _i1066;
 import '../../features/Products/domain/useCases/Products_useCase_repo_impl.dart'
     as _i187;
+import '../../features/Products/presentation/cubit/InvoiceCubit/invoice_cubit.dart'
+    as _i928;
+import '../../features/Products/presentation/cubit/InvoiceListCubit/invoice_list_cubit.dart'
+    as _i165;
+import '../../features/Products/presentation/cubit/products_cubit.dart'
+    as _i395;
+import '../../features/Products/presentation/database_helper.dart' as _i992;
+import '../../features/Products/presentation/firebase_invoice_service.dart'
+    as _i894;
 import '../../features/Search/data/datasources/Search_datasource_repo.dart'
     as _i33;
 import '../../features/Search/data/datasources/Search_datasource_repo_impl.dart'
@@ -170,6 +180,7 @@ extension GetItInjectableX on _i174.GetIt {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final dioModule = _$DioModule();
     gh.lazySingleton<_i361.Dio>(() => dioModule.providerDio());
+    gh.lazySingleton<_i992.DatabaseHelper>(() => _i992.DatabaseHelper.create());
     gh.factory<_i627.ManagerScreenRepository>(
       () => _i806.ManagerScreenRepositoryImpl(),
     );
@@ -202,6 +213,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i423.ManagerScreenDatasourceRepo>(
       () => _i856.ManagerScreenDatasourceRepoImpl(gh<_i680.ApiService>()),
+    );
+    gh.factory<_i894.FirebaseInvoiceService>(
+      () => _i894.FirebaseInvoiceService(gh<_i974.FirebaseFirestore>()),
     );
     gh.factory<_i354.AuthDatasourceRepo>(
       () => _i485.AuthDatasourceRepoImpl(gh<_i680.ApiService>()),
@@ -242,6 +256,12 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i362.ProductsRepository>(
       () => _i724.ProductsRepositoryImpl(gh<_i266.ProductsDatasourceRepo>()),
     );
+    gh.factory<_i928.InvoiceCubit>(
+      () => _i928.InvoiceCubit(gh<_i894.FirebaseInvoiceService>()),
+    );
+    gh.factory<_i165.InvoiceListCubit>(
+      () => _i165.InvoiceListCubit(gh<_i894.FirebaseInvoiceService>()),
+    );
     gh.factory<_i628.AuthUseCaseRepo>(
       () => _i971.AuthUseCase(gh<_i647.AuthRepository>()),
     );
@@ -276,11 +296,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i214.InventoryUserCubit>(
       () => _i214.InventoryUserCubit(gh<_i1018.InventoryUseCaseRepo>()),
     );
-    gh.factory<_i821.UsersInventoryCubit>(
-      () => _i821.UsersInventoryCubit(gh<_i1018.InventoryUseCaseRepo>()),
-    );
     gh.factory<_i359.UpdateAuditStatusCubit>(
       () => _i359.UpdateAuditStatusCubit(gh<_i1018.InventoryUseCaseRepo>()),
+    );
+    gh.factory<_i821.UsersInventoryCubit>(
+      () => _i821.UsersInventoryCubit(gh<_i1018.InventoryUseCaseRepo>()),
     );
     gh.factory<_i1066.ProductsUseCaseRepo>(
       () => _i187.ProductsUseCase(gh<_i362.ProductsRepository>()),
@@ -305,6 +325,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i102.UpdateItemsStatusCubit>(
       () => _i102.UpdateItemsStatusCubit(gh<_i183.AuditItemsUseCaseRepo>()),
+    );
+    gh.factory<_i395.ProductsCubit>(
+      () => _i395.ProductsCubit(
+        gh<_i1066.ProductsUseCaseRepo>(),
+        gh<_i992.DatabaseHelper>(),
+      ),
     );
     return this;
   }

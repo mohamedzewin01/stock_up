@@ -1,12 +1,17 @@
+import 'package:injectable/injectable.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:stock_up/features/Products/data/models/response/get_all_products_model.dart';
 
+@lazySingleton
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._init();
   static Database? _database;
 
   DatabaseHelper._init();
+
+  @factoryMethod
+  static DatabaseHelper create() => DatabaseHelper._init();
 
   Future<Database> get database async {
     if (_database != null) return _database!;

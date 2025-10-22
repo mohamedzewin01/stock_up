@@ -244,6 +244,7 @@ import 'package:stock_up/features/Inventory/presentation/widgets/inventory_list_
 import 'package:stock_up/features/ManagerHome/presentation/widgets/menu_card.dart';
 import 'package:stock_up/features/ManagerHome/presentation/widgets/placeholder_page.dart';
 import 'package:stock_up/features/POSPage/presentation/pages/POSPage_page.dart';
+import 'package:stock_up/features/Products/presentation/pages/home_invoice.dart';
 
 class ManagerHome extends StatefulWidget {
   const ManagerHome({super.key});
@@ -365,10 +366,10 @@ class _ManagerHomeState extends State<ManagerHome> {
                       end: Alignment.bottomRight,
                     ),
                     onTap: () {
-                      //   Navigator.push(
-                      //     context,
-                      //     MaterialPageRoute(builder: (_) => const InvoicePage()),
-                      //   );
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const HomeInvoice()),
+                      );
                     },
                   ),
                   MenuCard(

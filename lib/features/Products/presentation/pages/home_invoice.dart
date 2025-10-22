@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -21,38 +22,43 @@ class HomeInvoice extends StatefulWidget {
 class _HomeInvoiceState extends State<HomeInvoice> {
   int _currentIndex = 0;
 
+  // إنشاء instances محلية
+  late final FirebaseInvoiceService _firebaseService;
+  late final ProductsCubit _productsCubit;
+  late final InvoiceCubit _invoiceCubit;
+  late final InvoiceListCubit _invoiceListCubit;
+
   @override
   void initState() {
     super.initState();
-    // تهيئة المنتجات عند فتح التطبيق
-    _initializeProducts();
-  }
 
-  Future<void> _initializeProducts() async {
-    final productsCubit = ProductsCubit(
+    // إنشاء الخدمات يدوياً
+    _firebaseService = FirebaseInvoiceService(FirebaseFirestore.instance);
+    _productsCubit = ProductsCubit(
       getIt<ProductsUseCaseRepo>(),
       getIt<DatabaseHelper>(),
     );
-    await productsCubit.initializeProducts();
+    _invoiceCubit = InvoiceCubit(_firebaseService);
+    _invoiceListCubit = InvoiceListCubit(_firebaseService);
+
+    _productsCubit.initializeProducts();
+  }
+
+  @override
+  void dispose() {
+    _productsCubit.close();
+    _invoiceCubit.close();
+    _invoiceListCubit.close();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (context) => ProductsCubit(
-            getIt<ProductsUseCaseRepo>(),
-            getIt<DatabaseHelper>(),
-          )..initializeProducts(),
-        ),
-        BlocProvider(
-          create: (context) => InvoiceCubit(getIt<FirebaseInvoiceService>()),
-        ),
-        BlocProvider(
-          create: (context) =>
-              InvoiceListCubit(getIt<FirebaseInvoiceService>()),
-        ),
+        BlocProvider.value(value: _productsCubit),
+        BlocProvider.value(value: _invoiceCubit),
+        BlocProvider.value(value: _invoiceListCubit),
       ],
       child: Scaffold(
         body: IndexedStack(
