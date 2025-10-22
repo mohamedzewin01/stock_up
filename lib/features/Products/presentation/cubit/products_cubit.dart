@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
+import 'package:stock_up/features/Products/data/models/response/get_all_products_model.dart';
 import 'package:stock_up/features/Products/domain/useCases/Products_useCase_repo.dart';
 import 'package:stock_up/features/Products/presentation/cubit/products_state.dart';
 import 'package:stock_up/features/Products/presentation/database_helper.dart';
@@ -54,7 +55,8 @@ class ProductsCubit extends Cubit<ProductsState> {
   // مزامنة المنتجات من API
   Future<void> syncProducts() async {
     // الحصول على المنتجات الحالية إن وجدت
-    List<dynamic>? currentProducts;
+    List<Results>? currentProducts;
+
     if (state is ProductsLoadedFromLocal) {
       currentProducts = (state as ProductsLoadedFromLocal).products;
       emit(ProductsSyncing(currentProducts));
@@ -65,45 +67,52 @@ class ProductsCubit extends Cubit<ProductsState> {
     try {
       final result = await productsUseCase.getAllProducts();
 
-      result.when(
-        success: (data) async {
-          if (data != null) {
-            // حفظ في قاعدة البيانات المحلية
-            if (data.results != null) {
-              await databaseHelper.insertProducts(data.results!);
-            }
-            if (data.store != null) {
-              await databaseHelper.insertStoreInfo(data.store!);
-            }
+      // ✅ الطريقة الصحيحة للتعامل مع Result
+      if (result.isSuccess) {
+        // نجاح
+        final data = result.data;
 
-            // تحديث الحالة
-            emit(
-              ProductsSynced(
-                products: data.results ?? [],
-                storeInfo: data.store,
-                syncTime: DateTime.now(),
-              ),
-            );
-          } else {
-            throw Exception('لا توجد بيانات من الخادم');
+        if (data != null) {
+          // حفظ في قاعدة البيانات المحلية
+          if (data.results != null) {
+            await databaseHelper.insertProducts(data.results!);
           }
-        },
-        failure: (error) {
-          // في حالة الفشل، إرجاع البيانات المحلية إن وجدت
-          if (currentProducts != null) {
-            emit(
-              ProductsError(
-                message: 'فشل في المزامنة: ${error.message}',
-                cachedProducts: currentProducts,
-              ),
-            );
-          } else {
-            emit(
-              ProductsError(message: 'فشل في جلب البيانات: ${error.message}'),
-            );
+          if (data.store != null) {
+            await databaseHelper.insertStoreInfo(data.store!);
           }
-        },
-      );
+
+          // تحديث الحالة
+          emit(
+            ProductsSynced(
+              products: data.results ?? [],
+              storeInfo: data.store,
+              syncTime: DateTime.now(),
+            ),
+          );
+        } else {
+          throw Exception('لا توجد بيانات من الخادم');
+        }
+      } else {
+        // فشل
+        final error = result.error;
+
+        // في حالة الفشل، إرجاع البيانات المحلية إن وجدت
+        if (currentProducts != null) {
+          emit(
+            ProductsError(
+              message: 'فشل في المزامنة: ${error?.message ?? "خطأ غير معروف"}',
+              cachedProducts: currentProducts,
+            ),
+          );
+        } else {
+          emit(
+            ProductsError(
+              message:
+                  'فشل في جلب البيانات: ${error?.message ?? "خطأ غير معروف"}',
+            ),
+          );
+        }
+      }
     } catch (e) {
       if (currentProducts != null) {
         emit(
@@ -123,22 +132,21 @@ class ProductsCubit extends Cubit<ProductsState> {
     try {
       final result = await productsUseCase.getAllProducts();
 
-      result.when(
-        success: (data) async {
-          if (data != null) {
-            // حفظ في قاعدة البيانات المحلية فقط
-            if (data.results != null) {
-              await databaseHelper.insertProducts(data.results!);
-            }
-            if (data.store != null) {
-              await databaseHelper.insertStoreInfo(data.store!);
-            }
+      // ✅ الطريقة الصحيحة للتعامل مع Result
+      if (result.isSuccess) {
+        final data = result.data;
+
+        if (data != null) {
+          // حفظ في قاعدة البيانات المحلية فقط
+          if (data.results != null) {
+            await databaseHelper.insertProducts(data.results!);
           }
-        },
-        failure: (_) {
-          // تجاهل الأخطاء في المزامنة الخلفية
-        },
-      );
+          if (data.store != null) {
+            await databaseHelper.insertStoreInfo(data.store!);
+          }
+        }
+      }
+      // تجاهل الأخطاء في المزامنة الخلفية
     } catch (e) {
       // تجاهل الأخطاء في المزامنة الخلفية
     }

@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:stock_up/features/Invoice/domain/entities/invoice_entity.dart';
-import 'package:stock_up/features/Invoice/presentation/cubit/invoice_list_cubit.dart';
-import 'package:stock_up/features/Invoice/presentation/cubit/invoice_state.dart';
-import 'package:stock_up/features/Invoice/presentation/pages/invoice_detail_page.dart';
+
+// import 'package:stock_up/features/Invoice/domain/entities/invoice_entity.dart';
+// import 'package:stock_up/features/Invoice/presentation/cubit/invoice_list_cubit.dart';
+// import 'package:stock_up/features/Invoice/presentation/cubit/invoice_state.dart';
+// import 'package:stock_up/features/Invoice/presentation/pages/invoice_detail_page.dart';
 
 import '../../domain/entities/products_entities.dart';
+import '../cubit/InvoiceCubit/invoice_state.dart';
 import '../cubit/InvoiceListCubit/invoice_list_cubit.dart';
+import 'invoice_detail_page.dart';
 
 class InvoiceListPage extends StatefulWidget {
   const InvoiceListPage({Key? key}) : super(key: key);

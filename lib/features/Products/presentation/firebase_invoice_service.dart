@@ -137,9 +137,23 @@ class FirebaseInvoiceService {
         return 'INV-0001';
       }
 
-      final lastInvoiceNumber =
-          lastInvoice.docs.first.data()['invoiceNumber'] as String;
-      final lastNumber = int.tryParse(lastInvoiceNumber.split('-').last) ?? 0;
+      // إصلاح مشكلة null safety
+      final data = lastInvoice.docs.first.data() as Map<String, dynamic>?;
+      if (data == null || !data.containsKey('invoiceNumber')) {
+        return 'INV-0001';
+      }
+
+      final lastInvoiceNumber = data['invoiceNumber'] as String?;
+      if (lastInvoiceNumber == null || lastInvoiceNumber.isEmpty) {
+        return 'INV-0001';
+      }
+
+      final parts = lastInvoiceNumber.split('-');
+      if (parts.length < 2) {
+        return 'INV-0001';
+      }
+
+      final lastNumber = int.tryParse(parts.last) ?? 0;
       final newNumber = lastNumber + 1;
 
       return 'INV-${newNumber.toString().padLeft(4, '0')}';

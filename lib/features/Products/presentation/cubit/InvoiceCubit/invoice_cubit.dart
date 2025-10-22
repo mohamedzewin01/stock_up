@@ -1,9 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import 'package:stock_up/features/Invoice/data/datasources/firebase_invoice_service.dart';
-import 'package:stock_up/features/Invoice/domain/entities/invoice_entity.dart';
-import 'package:stock_up/features/Invoice/presentation/cubit/invoice_state.dart';
 import 'package:stock_up/features/Products/data/models/response/get_all_products_model.dart';
+
+import '../../../domain/entities/products_entities.dart';
+import '../../firebase_invoice_service.dart';
+import 'invoice_state.dart';
 
 @injectable
 class InvoiceCubit extends Cubit<InvoiceState> {
