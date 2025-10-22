@@ -52,8 +52,7 @@ class InvoiceCubit extends Cubit<InvoiceState> {
     final price =
         customPrice ?? double.tryParse(product.sellingPrice ?? '0') ?? 0.0;
     final taxRate = double.tryParse(product.taxRate ?? '0');
-    final taxable =
-        product.taxable == '1' || product.taxable?.toLowerCase() == 'true';
+    final taxable = product.taxable == 'true';
 
     final item = InvoiceItem(
       productId: product.productId ?? '',

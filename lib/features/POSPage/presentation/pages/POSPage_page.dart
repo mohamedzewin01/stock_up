@@ -410,54 +410,60 @@ class _POSPageState extends State<POSPage> {
   Widget build(BuildContext context) {
     return BlocProvider.value(
       value: viewModel,
-      child: Scaffold(
-        backgroundColor: const Color(0xFFF8F9FE),
-        body: SafeArea(
-          child: Column(
-            children: [
-              _buildCameraSection(),
-              _buildSearchSection(),
-              Expanded(
-                child: BlocConsumer<SearchCubit, SearchState>(
-                  listener: (context, state) {
-                    if (state is SearchSuccess) {
-                      setState(() {
-                        _searchResults = state.searchEntity?.results ?? [];
-                      });
-                    } else if (state is SearchFailure) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Row(
-                            children: [
-                              const Icon(
-                                Icons.error_outline,
-                                color: Colors.white,
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  'خطأ: ${state.exception.toString()}',
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          // هذا السطر يخفي الكيبورد وأي فوكَس مفتوح
+          FocusScope.of(context).unfocus();
+        },
+        child: Scaffold(
+          backgroundColor: const Color(0xFFF8F9FE),
+          body: SafeArea(
+            child: Column(
+              children: [
+                _buildCameraSection(),
+                _buildSearchSection(),
+                Expanded(
+                  child: BlocConsumer<SearchCubit, SearchState>(
+                    listener: (context, state) {
+                      if (state is SearchSuccess) {
+                        setState(() {
+                          _searchResults = state.searchEntity?.results ?? [];
+                        });
+                      } else if (state is SearchFailure) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Row(
+                              children: [
+                                const Icon(
+                                  Icons.error_outline,
+                                  color: Colors.white,
                                 ),
-                              ),
-                            ],
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    'خطأ: ${state.exception.toString()}',
+                                  ),
+                                ),
+                              ],
+                            ),
+                            backgroundColor: const Color(0xFFFF6B6B),
+                            behavior: SnackBarBehavior.floating,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            margin: const EdgeInsets.all(16),
                           ),
-                          backgroundColor: const Color(0xFFFF6B6B),
-                          behavior: SnackBarBehavior.floating,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          margin: const EdgeInsets.all(16),
-                        ),
-                      );
-                    }
-                  },
-                  builder: (context, state) {
-                    return _buildMainContent(state);
-                  },
+                        );
+                      }
+                    },
+                    builder: (context, state) {
+                      return _buildMainContent(state);
+                    },
+                  ),
                 ),
-              ),
-              _buildBottomBar(),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -515,7 +521,72 @@ class _POSPageState extends State<POSPage> {
                 ],
               ),
             ),
+          Positioned(
+            bottom: 12,
+            left: 12,
+            right: 12,
+            child: Container(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Total Amount
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'الإجمالي',
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.9),
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '${_totalAmount.toStringAsFixed(2)} ر.س',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
 
+                  // Items Count
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.shopping_cart_rounded,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          '${_invoiceItems.length} منتج',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
           Positioned(
             top: 12,
             left: 12,
@@ -716,6 +787,7 @@ class _POSPageState extends State<POSPage> {
           ..._invoiceItems.asMap().entries.map((entry) {
             return _buildInvoiceItemCard(entry.key, entry.value);
           }),
+          _buildBottomBar(),
         ],
 
         if (_invoiceItems.isEmpty &&
@@ -790,27 +862,9 @@ class _POSPageState extends State<POSPage> {
                       Text(
                         '${product.sellingPrice ?? '0'} ر.س',
                         style: const TextStyle(
-                          fontSize: 16,
+                          fontSize: 12,
                           fontWeight: FontWeight.bold,
                           color: Color(0xFF11998E),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[100],
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Text(
-                          '#${product.productNumber ?? ''}',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Colors.grey[700],
-                          ),
                         ),
                       ),
                     ],
@@ -1036,85 +1090,9 @@ class _POSPageState extends State<POSPage> {
   Widget _buildBottomBar() {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF11998E), Color(0xFF38EF7D)],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            blurRadius: 20,
-            offset: const Offset(0, -5),
-          ),
-        ],
-      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Total and Items Count Row
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // Total Amount
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'الإجمالي',
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.9),
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    '${_totalAmount.toStringAsFixed(2)} ر.س',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-
-              // Items Count
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 10,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(
-                      Icons.shopping_cart_rounded,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      '${_invoiceItems.length} منتج',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 16),
-
-          // Action Buttons Row
           Row(
             children: [
               // Clear Button
@@ -1124,8 +1102,11 @@ class _POSPageState extends State<POSPage> {
                   icon: const Icon(Icons.delete_outline_rounded, size: 20),
                   label: const Text('مسح الكل'),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    side: const BorderSide(color: Colors.white, width: 2),
+                    foregroundColor: Colors.red,
+                    side: const BorderSide(
+                      color: Colors.deepOrangeAccent,
+                      width: 2,
+                    ),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -1158,8 +1139,12 @@ class _POSPageState extends State<POSPage> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    disabledBackgroundColor: Colors.white.withOpacity(0.3),
-                    disabledForegroundColor: Colors.white.withOpacity(0.5),
+                    disabledBackgroundColor: const Color(
+                      0xFF11998E,
+                    ).withOpacity(0.3),
+                    disabledForegroundColor: const Color(
+                      0xFF11998E,
+                    ).withOpacity(0.5),
                   ),
                 ),
               ),
