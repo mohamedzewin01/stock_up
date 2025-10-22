@@ -29,7 +29,6 @@ class DatabaseHelper {
   Future _createDB(Database db, int version) async {
     const idType = 'TEXT PRIMARY KEY';
     const textType = 'TEXT';
-    const intType = 'INTEGER';
 
     await db.execute('''
       CREATE TABLE products (
@@ -55,35 +54,97 @@ class DatabaseHelper {
         name $textType
       )
     ''');
+
+    // إضافة indexes لتحسين سرعة البحث
+    await db.execute('''
+      CREATE INDEX idx_product_name ON products(product_name)
+    ''');
+
+    await db.execute('''
+      CREATE INDEX idx_product_number ON products(product_number)
+    ''');
+
+    print('✅ تم إنشاء قاعدة البيانات مع الـ indexes');
   }
 
-  // حفظ المنتجات في قاعدة البيانات
+  // دالة مساعدة لتحويل القيم إلى String بأمان
+  String? _toStringOrNull(dynamic value) {
+    if (value == null) return null;
+    if (value is String) return value;
+    return value.toString();
+  }
+
+  // حفظ المنتجات في قاعدة البيانات (الطريقة القديمة)
   Future<void> insertProducts(List<Results> products) async {
     final db = await database;
 
     // حذف البيانات القديمة
     await db.delete('products');
 
+    print('💾 حفظ ${products.length} منتج...');
+
     // إدراج البيانات الجديدة
     final batch = db.batch();
     for (var product in products) {
       batch.insert('products', {
-        'product_id': product.productId,
-        'product_number': product.productNumber,
-        'product_name': product.productName,
-        'total_quantity': product.totalQuantity,
-        'unit': product.unit,
-        'selling_price': product.sellingPrice,
-        'average_purchase_price': product.averagePurchasePrice,
-        'last_purchase_price': product.lastPurchasePrice,
-        'category_id': product.categoryId,
-        'category_name': product.categoryName,
-        'taxable': product.taxable,
-        'tax_rate': product.taxRate,
+        'product_id': _toStringOrNull(product.productId),
+        'product_number': _toStringOrNull(product.productNumber),
+        'product_name': _toStringOrNull(product.productName),
+        'total_quantity': _toStringOrNull(product.totalQuantity),
+        'unit': _toStringOrNull(product.unit),
+        'selling_price': _toStringOrNull(product.sellingPrice),
+        'average_purchase_price': _toStringOrNull(product.averagePurchasePrice),
+        'last_purchase_price': _toStringOrNull(product.lastPurchasePrice),
+        'category_id': _toStringOrNull(product.categoryId),
+        'category_name': _toStringOrNull(product.categoryName),
+        'taxable': _toStringOrNull(product.taxable),
+        'tax_rate': _toStringOrNull(product.taxRate),
         'barcodes': product.barcodes?.join(',') ?? '',
       }, conflictAlgorithm: ConflictAlgorithm.replace);
     }
     await batch.commit(noResult: true);
+
+    print('✅ تم حفظ ${products.length} منتج بنجاح');
+  }
+
+  // حفظ المنتجات على دفعات (أسرع للكميات الكبيرة)
+  Future<void> insertProductsBatch(List<Results> products) async {
+    final db = await database;
+
+    // إذا كانت هذه أول دفعة، نحذف البيانات القديمة
+    final count = await db.rawQuery('SELECT COUNT(*) as count FROM products');
+    final currentCount = Sqflite.firstIntValue(count) ?? 0;
+
+    if (currentCount == 0) {
+      await db.delete('products');
+    }
+
+    // استخدام transaction لتحسين الأداء
+    await db.transaction((txn) async {
+      final batch = txn.batch();
+
+      for (var product in products) {
+        batch.insert('products', {
+          'product_id': _toStringOrNull(product.productId),
+          'product_number': _toStringOrNull(product.productNumber),
+          'product_name': _toStringOrNull(product.productName),
+          'total_quantity': _toStringOrNull(product.totalQuantity),
+          'unit': _toStringOrNull(product.unit),
+          'selling_price': _toStringOrNull(product.sellingPrice),
+          'average_purchase_price': _toStringOrNull(
+            product.averagePurchasePrice,
+          ),
+          'last_purchase_price': _toStringOrNull(product.lastPurchasePrice),
+          'category_id': _toStringOrNull(product.categoryId),
+          'category_name': _toStringOrNull(product.categoryName),
+          'taxable': _toStringOrNull(product.taxable),
+          'tax_rate': _toStringOrNull(product.taxRate),
+          'barcodes': product.barcodes?.join(',') ?? '',
+        }, conflictAlgorithm: ConflictAlgorithm.replace);
+      }
+
+      await batch.commit(noResult: true);
+    });
   }
 
   // حفظ معلومات المتجر
@@ -91,8 +152,8 @@ class DatabaseHelper {
     final db = await database;
     await db.delete('store_info');
     await db.insert('store_info', {
-      'id': store.id,
-      'name': store.name,
+      'id': _toStringOrNull(store.id),
+      'name': _toStringOrNull(store.name),
     }, conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
@@ -115,7 +176,7 @@ class DatabaseHelper {
         categoryName: json['category_name'] as String?,
         taxable: json['taxable'] as String?,
         taxRate: json['tax_rate'] as String?,
-        barcodes: (json['barcodes'] as String).isNotEmpty
+        barcodes: (json['barcodes'] as String?)?.isNotEmpty == true
             ? (json['barcodes'] as String).split(',')
             : null,
       );
@@ -145,7 +206,7 @@ class DatabaseHelper {
         categoryName: json['category_name'] as String?,
         taxable: json['taxable'] as String?,
         taxRate: json['tax_rate'] as String?,
-        barcodes: (json['barcodes'] as String).isNotEmpty
+        barcodes: (json['barcodes'] as String?)?.isNotEmpty == true
             ? (json['barcodes'] as String).split(',')
             : null,
       );

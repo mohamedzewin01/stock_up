@@ -12,6 +12,22 @@ class ProductsInitial extends ProductsState {}
 
 class ProductsLoading extends ProductsState {}
 
+// حالة جديدة لتتبع تقدم التحميل الأولي
+class ProductsFirstTimeLoading extends ProductsState {
+  final int progress; // 0-100
+  final int currentCount;
+  final int totalCount;
+
+  const ProductsFirstTimeLoading({
+    required this.progress,
+    required this.currentCount,
+    required this.totalCount,
+  });
+
+  @override
+  List<Object?> get props => [progress, currentCount, totalCount];
+}
+
 class ProductsLoadedFromLocal extends ProductsState {
   final List<Results> products;
   final Store? storeInfo;
