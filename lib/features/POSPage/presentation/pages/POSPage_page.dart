@@ -176,6 +176,7 @@ class _POSPageState extends State<POSPage> {
 
   Future<void> _sendInvoiceWhatsApp() async {
     if (_invoiceItems.isEmpty) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Row(
@@ -198,9 +199,11 @@ class _POSPageState extends State<POSPage> {
     final phoneController = TextEditingController();
     final nameController = TextEditingController();
 
+    if (!mounted) return;
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
@@ -283,27 +286,37 @@ class _POSPageState extends State<POSPage> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: const Text('إلغاء'),
           ),
           ElevatedButton.icon(
             onPressed: () async {
-              Navigator.pop(context);
+              // إغلاق الـ Dialog الأول
+              Navigator.pop(dialogContext);
 
+              // الانتظار قليلاً لضمان إغلاق الـ Dialog
+              await Future.delayed(const Duration(milliseconds: 100));
+
+              if (!mounted) return;
+
+              // عرض Loading Dialog مع context جديد
               showDialog(
                 context: context,
                 barrierDismissible: false,
-                builder: (context) => const Center(
-                  child: Card(
-                    child: Padding(
-                      padding: EdgeInsets.all(24),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          CircularProgressIndicator(),
-                          SizedBox(height: 16),
-                          Text('جاري إنشاء الفاتورة...'),
-                        ],
+                builder: (loadingContext) => PopScope(
+                  canPop: false,
+                  child: const Center(
+                    child: Card(
+                      child: Padding(
+                        padding: EdgeInsets.all(24),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CircularProgressIndicator(),
+                            SizedBox(height: 16),
+                            Text('جاري إنشاء الفاتورة...'),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -322,7 +335,13 @@ class _POSPageState extends State<POSPage> {
                       : null,
                 );
 
-                Navigator.pop(context);
+                // إغلاق Loading Dialog
+                if (mounted) {
+                  Navigator.of(context).pop();
+
+                  // الانتظار قليلاً قبل فتح WhatsApp
+                  await Future.delayed(const Duration(milliseconds: 200));
+                }
 
                 if (phoneController.text.isNotEmpty) {
                   final message =
@@ -339,46 +358,53 @@ class _POSPageState extends State<POSPage> {
                   await InvoicePDFService.shareViaWhatsApp(pdfFile);
                 }
 
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: const Row(
-                      children: [
-                        Icon(Icons.check_circle, color: Colors.white),
-                        SizedBox(width: 12),
-                        Text('تم إنشاء الفاتورة بنجاح!'),
-                      ],
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Row(
+                        children: [
+                          Icon(Icons.check_circle, color: Colors.white),
+                          SizedBox(width: 12),
+                          Text('تم إنشاء الفاتورة بنجاح!'),
+                        ],
+                      ),
+                      backgroundColor: const Color(0xFF11998E),
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
-                    backgroundColor: const Color(0xFF11998E),
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                );
+                  );
 
-                setState(() {
-                  _invoiceItems.clear();
-                  _totalAmount = 0.0;
-                });
+                  setState(() {
+                    _invoiceItems.clear();
+                    _totalAmount = 0.0;
+                  });
+                }
               } catch (e) {
-                Navigator.pop(context);
+                // إغلاق Loading Dialog في حالة الخطأ
+                if (mounted) {
+                  Navigator.of(context).pop();
 
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Row(
-                      children: [
-                        const Icon(Icons.error_outline, color: Colors.white),
-                        const SizedBox(width: 12),
-                        Expanded(child: Text('خطأ: ${e.toString()}')),
-                      ],
+                  await Future.delayed(const Duration(milliseconds: 100));
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Row(
+                        children: [
+                          const Icon(Icons.error_outline, color: Colors.white),
+                          const SizedBox(width: 12),
+                          Expanded(child: Text('خطأ: ${e.toString()}')),
+                        ],
+                      ),
+                      backgroundColor: const Color(0xFFFF6B6B),
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
-                    backgroundColor: const Color(0xFFFF6B6B),
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                );
+                  );
+                }
               }
             },
             icon: const Icon(Icons.send_rounded),

@@ -1,434 +1,10 @@
-// import 'dart:async';
-//
-// import 'package:flutter/material.dart';
-// import 'package:flutter/services.dart';
-// import 'package:stock_up/core/utils/cashed_data_shared_preferences.dart';
-// import 'package:stock_up/features/ManagerHome/presentation/pages/ManagerHome_page.dart';
-//
-// import 'core/utils/remote_config.dart';
-// import 'features/Auth/presentation/pages/Auth_page.dart';
-//
-// class SplashScreen extends StatefulWidget {
-//   const SplashScreen({super.key});
-//
-//   @override
-//   State<SplashScreen> createState() => _SplashScreenState();
-// }
-//
-// class _SplashScreenState extends State<SplashScreen>
-//     with SingleTickerProviderStateMixin {
-//   late AnimationController _controller;
-//   late Animation<double> _fadeAnimation;
-//   late Animation<double> _scaleAnimation;
-//   late Animation<Offset> _slideAnimation;
-//
-//   @override
-//   @override
-//   void initState() {
-//     super.initState();
-//
-//     // جعل الـ Status Bar شفاف
-//     SystemChrome.setSystemUIOverlayStyle(
-//       const SystemUiOverlayStyle(
-//         statusBarColor: Colors.transparent,
-//         statusBarIconBrightness: Brightness.light,
-//       ),
-//     );
-//
-//     // إعداد الأنيميشن
-//     _controller = AnimationController(
-//       vsync: this,
-//       duration: const Duration(milliseconds: 1500),
-//     );
-//
-//     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-//       CurvedAnimation(
-//         parent: _controller,
-//         curve: const Interval(0.0, 0.6, curve: Curves.easeIn),
-//       ),
-//     );
-//
-//     _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
-//       CurvedAnimation(
-//         parent: _controller,
-//         curve: const Interval(0.0, 0.6, curve: Curves.elasticOut),
-//       ),
-//     );
-//
-//     _slideAnimation =
-//         Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(
-//           CurvedAnimation(
-//             parent: _controller,
-//             curve: const Interval(0.3, 0.8, curve: Curves.easeOut),
-//           ),
-//         );
-//
-//     // بدء الأنيميشن
-//     _controller.forward();
-//
-//     // الانتظار وتحميل Remote Config قبل التنقل
-//     _checkAppAndNavigate();
-//   }
-//
-//   Future<void> _checkAppAndNavigate() async {
-//     // قراءة حالة التطبيق من Remote Config
-//     final isAppEnabled = await ForceUpdateChecker().fetchAppEnabledStatus();
-//
-//     // التحقق من تسجيل الدخول
-//     final isLoggedIn =
-//         await CacheService.getData(key: CacheKeys.rememberMe) ?? false;
-//
-//     // تحديد الشاشة المناسبة
-//     Widget nextScreen;
-//     if (!isAppEnabled) {
-//       print(isAppEnabled);
-//       nextScreen = const AppClosedPage();
-//     } else if (isLoggedIn) {
-//       print(isAppEnabled);
-//       nextScreen = ManagerHome();
-//     } else {
-//       print(isAppEnabled);
-//       nextScreen = AuthPage();
-//     }
-//
-//     if (!mounted) return;
-//
-//     Navigator.of(context).pushReplacement(
-//       PageRouteBuilder(
-//         pageBuilder: (context, animation, secondaryAnimation) => nextScreen,
-//         transitionsBuilder: (context, animation, secondaryAnimation, child) {
-//           return FadeTransition(opacity: animation, child: child);
-//         },
-//         transitionDuration: const Duration(milliseconds: 500),
-//       ),
-//     );
-//   }
-//
-//   // void initState() {
-//   //   ForceUpdateChecker().fetchAppEnabledStatus();
-//   //   super.initState();
-//   //
-//   //   // جعل الـ Status Bar شفاف
-//   //   SystemChrome.setSystemUIOverlayStyle(
-//   //     const SystemUiOverlayStyle(
-//   //       statusBarColor: Colors.transparent,
-//   //       statusBarIconBrightness: Brightness.light,
-//   //     ),
-//   //   );
-//   //
-//   //   // إعداد الأنيميشن
-//   //   _controller = AnimationController(
-//   //     vsync: this,
-//   //     duration: const Duration(milliseconds: 1500),
-//   //   );
-//   //
-//   //   _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-//   //     CurvedAnimation(
-//   //       parent: _controller,
-//   //       curve: const Interval(0.0, 0.6, curve: Curves.easeIn),
-//   //     ),
-//   //   );
-//   //
-//   //   _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
-//   //     CurvedAnimation(
-//   //       parent: _controller,
-//   //       curve: const Interval(0.0, 0.6, curve: Curves.elasticOut),
-//   //     ),
-//   //   );
-//   //
-//   //   _slideAnimation =
-//   //       Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(
-//   //         CurvedAnimation(
-//   //           parent: _controller,
-//   //           curve: const Interval(0.3, 0.8, curve: Curves.easeOut),
-//   //         ),
-//   //       );
-//   //
-//   //   // بدء الأنيميشن
-//   //   _controller.forward();
-//   //
-//   //   // الانتقال للصفحة التالية بعد 3 ثواني
-//   //   Timer(const Duration(seconds: 3), _navigateToNextScreen);
-//   // }
-//
-//   Future<void> _navigateToNextScreen() async {
-//     // التحقق من تسجيل الدخول
-//     final isLoggedIn =
-//         await CacheService.getData(key: CacheKeys.rememberMe) ?? false;
-//
-//     // قراءة حالة التطبيق من Remote Config
-//     final isAppEnabled = await ForceUpdateChecker().fetchAppEnabledStatus();
-//
-//     // تحديد الشاشة المناسبة
-//     Widget nextScreen;
-//
-//     if (!isAppEnabled) {
-//       nextScreen = const AppClosedPage(); // شاشة التطبيق مغلق
-//     } else if (isLoggedIn) {
-//       nextScreen = ManagerHome(); // المستخدم مسجل دخول
-//     } else {
-//       nextScreen = AuthPage(); // المستخدم غير مسجل دخول
-//     }
-//
-//     if (!mounted) return;
-//
-//     Navigator.of(context).pushReplacement(
-//       PageRouteBuilder(
-//         pageBuilder: (context, animation, secondaryAnimation) => nextScreen,
-//         transitionsBuilder: (context, animation, secondaryAnimation, child) {
-//           return FadeTransition(opacity: animation, child: child);
-//         },
-//         transitionDuration: const Duration(milliseconds: 500),
-//       ),
-//     );
-//   }
-//
-//   @override
-//   void dispose() {
-//     _controller.dispose();
-//     SystemChrome.setSystemUIOverlayStyle(
-//       const SystemUiOverlayStyle(
-//         statusBarColor: Colors.transparent,
-//         statusBarIconBrightness: Brightness.dark,
-//       ),
-//     );
-//     super.dispose();
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     final size = MediaQuery.of(context).size;
-//     final isTablet = size.shortestSide >= 600;
-//
-//     return Scaffold(
-//       body: Container(
-//         width: double.infinity,
-//         height: double.infinity,
-//         decoration: BoxDecoration(
-//           gradient: LinearGradient(
-//             begin: Alignment.topLeft,
-//             end: Alignment.bottomRight,
-//             colors: [
-//               const Color(0xFF667eea),
-//               const Color(0xFF764ba2),
-//               const Color(0xFFf093fb),
-//             ],
-//             stops: const [0.0, 0.5, 1.0],
-//           ),
-//         ),
-//         child: SafeArea(
-//           child: Stack(
-//             children: [
-//               // خلفية متحركة
-//               _buildAnimatedBackground(),
-//
-//               // المحتوى الرئيسي
-//               Center(
-//                 child: Column(
-//                   mainAxisAlignment: MainAxisAlignment.center,
-//                   children: [
-//                     // Logo مع أنيميشن
-//                     FadeTransition(
-//                       opacity: _fadeAnimation,
-//                       child: ScaleTransition(
-//                         scale: _scaleAnimation,
-//                         child: _buildLogo(isTablet),
-//                       ),
-//                     ),
-//
-//                     SizedBox(height: isTablet ? 60 : 40),
-//
-//                     // اسم التطبيق
-//                     SlideTransition(
-//                       position: _slideAnimation,
-//                       child: FadeTransition(
-//                         opacity: _fadeAnimation,
-//                         child: _buildAppName(isTablet),
-//                       ),
-//                     ),
-//
-//                     SizedBox(height: isTablet ? 20 : 12),
-//
-//                     // الوصف
-//                     SlideTransition(
-//                       position: _slideAnimation,
-//                       child: FadeTransition(
-//                         opacity: _fadeAnimation,
-//                         child: _buildDescription(isTablet),
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//
-//               // Loading indicator في الأسفل
-//               Positioned(
-//                 bottom: isTablet ? 80 : 60,
-//                 left: 0,
-//                 right: 0,
-//                 child: FadeTransition(
-//                   opacity: _fadeAnimation,
-//                   child: _buildLoadingIndicator(isTablet),
-//                 ),
-//               ),
-//
-//               // Version في أسفل الشاشة
-//               Positioned(
-//                 bottom: isTablet ? 30 : 20,
-//                 left: 0,
-//                 right: 0,
-//                 child: FadeTransition(
-//                   opacity: _fadeAnimation,
-//                   child: _buildVersion(isTablet),
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-//
-//   Widget _buildAnimatedBackground() {
-//     return AnimatedBuilder(
-//       animation: _controller,
-//       builder: (context, child) {
-//         return Stack(
-//           children: [
-//             Positioned(
-//               top: -100 + (_controller.value * 50),
-//               right: -100 + (_controller.value * 30),
-//               child: Container(
-//                 width: 300,
-//                 height: 300,
-//                 decoration: BoxDecoration(
-//                   shape: BoxShape.circle,
-//                   color: Colors.white.withOpacity(0.1),
-//                 ),
-//               ),
-//             ),
-//             Positioned(
-//               bottom: -150 + (_controller.value * 70),
-//               left: -150 + (_controller.value * 40),
-//               child: Container(
-//                 width: 400,
-//                 height: 400,
-//                 decoration: BoxDecoration(
-//                   shape: BoxShape.circle,
-//                   color: Colors.white.withOpacity(0.05),
-//                 ),
-//               ),
-//             ),
-//           ],
-//         );
-//       },
-//     );
-//   }
-//
-//   Widget _buildLogo(bool isTablet) {
-//     final logoSize = isTablet ? 180.0 : 120.0;
-//
-//     return Container(
-//       width: logoSize,
-//       height: logoSize,
-//       decoration: BoxDecoration(
-//         color: Colors.white,
-//         shape: BoxShape.circle,
-//         boxShadow: [
-//           BoxShadow(
-//             color: Colors.black.withOpacity(0.2),
-//             blurRadius: 30,
-//             spreadRadius: 5,
-//           ),
-//         ],
-//       ),
-//       child: Center(
-//         child: Icon(
-//           Icons.inventory_2_rounded,
-//           size: logoSize * 0.5,
-//           color: const Color(0xFF667eea),
-//         ),
-//       ),
-//     );
-//   }
-//
-//   Widget _buildAppName(bool isTablet) {
-//     return Text(
-//       'Stock Up',
-//       style: TextStyle(
-//         fontSize: isTablet ? 48 : 36,
-//         fontWeight: FontWeight.bold,
-//         color: Colors.white,
-//         letterSpacing: 2,
-//         shadows: [
-//           Shadow(
-//             color: Colors.black.withOpacity(0.3),
-//             offset: const Offset(0, 4),
-//             blurRadius: 10,
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-//
-//   Widget _buildDescription(bool isTablet) {
-//     return Padding(
-//       padding: const EdgeInsets.symmetric(horizontal: 40),
-//       child: Text(
-//         'إدارة المخزون بذكاء',
-//         textAlign: TextAlign.center,
-//         style: TextStyle(
-//           fontSize: isTablet ? 20 : 16,
-//           color: Colors.white.withOpacity(0.9),
-//           fontWeight: FontWeight.w300,
-//           letterSpacing: 1,
-//         ),
-//       ),
-//     );
-//   }
-//
-//   Widget _buildLoadingIndicator(bool isTablet) {
-//     return Column(
-//       children: [
-//         SizedBox(
-//           width: isTablet ? 40 : 30,
-//           height: isTablet ? 40 : 30,
-//           child: CircularProgressIndicator(
-//             strokeWidth: 3,
-//             valueColor: AlwaysStoppedAnimation<Color>(
-//               Colors.white.withOpacity(0.8),
-//             ),
-//           ),
-//         ),
-//         SizedBox(height: isTablet ? 20 : 16),
-//         Text(
-//           'جاري التحميل...',
-//           style: TextStyle(
-//             fontSize: isTablet ? 16 : 14,
-//             color: Colors.white.withOpacity(0.8),
-//             fontWeight: FontWeight.w300,
-//           ),
-//         ),
-//       ],
-//     );
-//   }
-//
-//   Widget _buildVersion(bool isTablet) {
-//     return Text(
-//       'الإصدار 1.0.0',
-//       textAlign: TextAlign.center,
-//       style: TextStyle(
-//         fontSize: isTablet ? 14 : 12,
-//         color: Colors.white.withOpacity(0.6),
-//         fontWeight: FontWeight.w300,
-//       ),
-//     );
-//   }
-// }
-//-----------------
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:stock_up/assets_manager.dart';
+import 'package:stock_up/core/constants/app_constants.dart';
+import 'package:stock_up/core/resources/style_manager.dart';
 import 'package:stock_up/core/utils/cashed_data_shared_preferences.dart';
 import 'package:stock_up/features/ManagerHome/presentation/pages/ManagerHome_page.dart';
 
@@ -443,17 +19,21 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _fadeAnimation;
-  late Animation<double> _scaleAnimation;
-  late Animation<Offset> _slideAnimation;
+    with TickerProviderStateMixin {
+  late AnimationController _backgroundController;
+  late AnimationController _logoController;
+  late AnimationController _contentController;
+  late AnimationController _rotationController;
+
+  late Animation<double> _logoScale;
+  late Animation<double> _logoRotation;
+  late Animation<double> _contentFade;
+  late Animation<Offset> _contentSlide;
 
   @override
   void initState() {
     super.initState();
 
-    // جعل الـ Status Bar شفاف
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
@@ -461,56 +41,78 @@ class _SplashScreenState extends State<SplashScreen>
       ),
     );
 
-    // إعداد الأنيميشن
-    _controller = AnimationController(
+    // Background animation
+    _backgroundController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 20),
+    )..repeat();
+
+    // Logo animation
+    _logoController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2000),
+    );
+
+    _logoScale = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _logoController, curve: Curves.elasticOut),
+    );
+
+    _logoRotation = Tween<double>(begin: -0.5, end: 0.0).animate(
+      CurvedAnimation(parent: _logoController, curve: Curves.easeOutCubic),
+    );
+
+    // Content animation
+    _contentController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     );
 
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+    _contentFade = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.0, 0.6, curve: Curves.easeIn),
+        parent: _contentController,
+        curve: const Interval(0.3, 1.0, curve: Curves.easeOut),
       ),
     );
 
-    _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.0, 0.6, curve: Curves.elasticOut),
-      ),
-    );
-
-    _slideAnimation =
-        Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(
+    _contentSlide = Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero)
+        .animate(
           CurvedAnimation(
-            parent: _controller,
-            curve: const Interval(0.3, 0.8, curve: Curves.easeOut),
+            parent: _contentController,
+            curve: const Interval(0.3, 1.0, curve: Curves.easeOutCubic),
           ),
         );
 
-    _controller.forward();
+    // Rotation animation for rings
+    _rotationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 3),
+    )..repeat();
 
-    // بدء التحميل والتحقق من Remote Config
+    // Start animations
+    _logoController.forward();
+    Future.delayed(const Duration(milliseconds: 500), () {
+      _contentController.forward();
+    });
+
+    // Check app status and navigate
     _checkAppAndNavigate();
   }
 
   Future<void> _checkAppAndNavigate() async {
-    // جلب حالة التطبيق من Remote Config
-    final isAppEnabled = await ForceUpdateChecker().fetchAppEnabledStatus();
+    // Wait for animations to complete
+    await Future.delayed(const Duration(milliseconds: 2500));
 
-    // التحقق من تسجيل الدخول
+    final isAppEnabled = await ForceUpdateChecker().fetchAppEnabledStatus();
     final isLoggedIn =
         await CacheService.getData(key: CacheKeys.rememberMe) ?? false;
 
-    // تحديد الشاشة التالية
     Widget nextScreen;
     if (!isAppEnabled) {
       nextScreen = const AppClosedPage();
     } else if (isLoggedIn) {
-      nextScreen = ManagerHome();
+      nextScreen = const ManagerHome();
     } else {
-      nextScreen = AuthPage();
+      nextScreen = const AuthPage();
     }
 
     if (!mounted) return;
@@ -519,16 +121,27 @@ class _SplashScreenState extends State<SplashScreen>
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) => nextScreen,
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return FadeTransition(opacity: animation, child: child);
+          return FadeTransition(
+            opacity: animation,
+            child: ScaleTransition(
+              scale: Tween<double>(begin: 0.8, end: 1.0).animate(
+                CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
+              ),
+              child: child,
+            ),
+          );
         },
-        transitionDuration: const Duration(milliseconds: 500),
+        transitionDuration: const Duration(milliseconds: 600),
       ),
     );
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _backgroundController.dispose();
+    _logoController.dispose();
+    _contentController.dispose();
+    _rotationController.dispose();
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
@@ -544,180 +157,480 @@ class _SplashScreenState extends State<SplashScreen>
     final isTablet = size.shortestSide >= 600;
 
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: const [
-              Color(0xFF667eea),
-              Color(0xFF764ba2),
-              Color(0xFFf093fb),
-            ],
-            stops: [0.0, 0.5, 1.0],
-          ),
-        ),
-        child: SafeArea(
-          child: Stack(
-            children: [
-              _buildAnimatedBackground(),
-              Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    FadeTransition(
-                      opacity: _fadeAnimation,
-                      child: ScaleTransition(
-                        scale: _scaleAnimation,
-                        child: _buildLogo(isTablet),
-                      ),
+      body: Stack(
+        children: [
+          // Animated Background
+          _buildAnimatedBackground(),
+
+          // Floating Particles
+          _buildFloatingParticles(),
+
+          // Main Content
+          SafeArea(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Premium Logo
+                  _buildPremiumLogo(),
+                  SizedBox(height: isTablet ? 60 : 50),
+
+                  // App Name
+                  FadeTransition(
+                    opacity: _contentFade,
+                    child: SlideTransition(
+                      position: _contentSlide,
+                      child: _buildAppName(isTablet),
                     ),
-                    SizedBox(height: isTablet ? 60 : 40),
-                    SlideTransition(
-                      position: _slideAnimation,
-                      child: FadeTransition(
-                        opacity: _fadeAnimation,
-                        child: _buildAppName(isTablet),
-                      ),
-                    ),
-                    SizedBox(height: isTablet ? 20 : 12),
-                    SlideTransition(
-                      position: _slideAnimation,
-                      child: FadeTransition(
-                        opacity: _fadeAnimation,
-                        child: _buildDescription(isTablet),
-                      ),
-                    ),
-                    const SizedBox(height: 40),
-                    // Loading indicator أثناء انتظار Remote Config
-                    const CircularProgressIndicator(color: Colors.white),
-                  ],
-                ),
+                  ),
+                  SizedBox(height: isTablet ? 20 : 16),
+
+                  // Description
+                  // FadeTransition(
+                  //   opacity: _contentFade,
+                  //   child: SlideTransition(
+                  //     position: _contentSlide,
+                  //     child: _buildDescription(isTablet),
+                  //   ),
+                  // ),
+                  SizedBox(height: isTablet ? 60 : 50),
+
+                  // Loading Indicator
+                  FadeTransition(
+                    opacity: _contentFade,
+                    child: _buildLoadingIndicator(),
+                  ),
+                ],
               ),
-              Positioned(
-                bottom: isTablet ? 30 : 20,
-                left: 0,
-                right: 0,
-                child: FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: _buildVersion(isTablet),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+
+          // Version
+          Positioned(
+            bottom: isTablet ? 40 : 30,
+            left: 0,
+            right: 0,
+            child: FadeTransition(
+              opacity: _contentFade,
+              child: _buildVersion(isTablet),
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildAnimatedBackground() {
     return AnimatedBuilder(
-      animation: _controller,
+      animation: _backgroundController,
       builder: (context, child) {
-        return Stack(
-          children: [
-            Positioned(
-              top: -100 + (_controller.value * 50),
-              right: -100 + (_controller.value * 30),
-              child: Container(
-                width: 300,
-                height: 300,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white.withOpacity(0.1),
-                ),
-              ),
+        return Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color.lerp(
+                  const Color(0xFF1A1A2E),
+                  const Color(0xFF16213E),
+                  (_backgroundController.value * 2) % 1,
+                )!,
+                Color.lerp(
+                  const Color(0xFF0F3460),
+                  const Color(0xFF16213E),
+                  (_backgroundController.value * 2 + 0.5) % 1,
+                )!,
+                Color.lerp(
+                  const Color(0xFF533483),
+                  const Color(0xFF7B2CBF),
+                  (_backgroundController.value * 2 + 0.7) % 1,
+                )!,
+              ],
+              stops: const [0.0, 0.5, 1.0],
             ),
-            Positioned(
-              bottom: -150 + (_controller.value * 70),
-              left: -150 + (_controller.value * 40),
-              child: Container(
-                width: 400,
-                height: 400,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white.withOpacity(0.05),
-                ),
-              ),
-            ),
-          ],
+          ),
         );
       },
     );
   }
 
-  Widget _buildLogo(bool isTablet) {
-    final logoSize = isTablet ? 180.0 : 120.0;
-    return Container(
-      width: logoSize,
-      height: logoSize,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            blurRadius: 30,
-            spreadRadius: 5,
+  Widget _buildFloatingParticles() {
+    return Stack(
+      children: List.generate(15, (index) {
+        return _FloatingParticle(
+          key: ValueKey(index),
+          size: (index % 3 + 1) * 3.0,
+          duration: Duration(seconds: 10 + (index % 5) * 2),
+          delay: Duration(milliseconds: index * 200),
+        );
+      }),
+    );
+  }
+
+  Widget _buildPremiumLogo() {
+    return AnimatedBuilder(
+      animation: _logoController,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: _logoScale.value,
+          child: Transform.rotate(
+            angle: _logoRotation.value,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                // Outer glow ring
+                Container(
+                  width: 180,
+                  height: 180,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      colors: [
+                        const Color(0xFF7B2CBF).withOpacity(0.3),
+                        Colors.transparent,
+                      ],
+                    ),
+                  ),
+                ),
+                // Middle ring
+                Container(
+                  width: 160,
+                  height: 160,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: const Color(0xFF7B2CBF).withOpacity(0.3),
+                      width: 2,
+                    ),
+                  ),
+                ),
+                // Main logo container
+                Container(
+                  width: 140,
+                  height: 140,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Color(0xFF9D4EDD),
+                        Color(0xFF7B2CBF),
+                        Color(0xFF5A189A),
+                      ],
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF7B2CBF).withOpacity(0.5),
+                        blurRadius: 40,
+                        spreadRadius: 10,
+                      ),
+                      BoxShadow(
+                        color: const Color(0xFF9D4EDD).withOpacity(0.3),
+                        blurRadius: 60,
+                        spreadRadius: 20,
+                      ),
+                    ],
+                  ),
+                  child: Container(
+                    margin: const EdgeInsets.all(3),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.3),
+                        width: 2,
+                      ),
+                    ),
+                    child: Image.asset(Assets.logoPng, height: 25, width: 25),
+                  ),
+                ),
+                // Rotating ring
+                AnimatedBuilder(
+                  animation: _rotationController,
+                  builder: (context, child) {
+                    return Transform.rotate(
+                      angle: _rotationController.value * 2 * pi,
+                      child: Container(
+                        width: 155,
+                        height: 155,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.1),
+                            width: 1,
+                          ),
+                        ),
+                        child: CustomPaint(painter: _DottedCirclePainter()),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
-        ],
-      ),
-      child: Center(
-        child: Icon(
-          Icons.inventory_2_rounded,
-          size: logoSize * 0.5,
-          color: const Color(0xFF667eea),
-        ),
-      ),
+        );
+      },
     );
   }
 
   Widget _buildAppName(bool isTablet) {
-    return Text(
-      'Stock Up',
-      style: TextStyle(
-        fontSize: isTablet ? 48 : 36,
-        fontWeight: FontWeight.bold,
-        color: Colors.white,
-        letterSpacing: 2,
-        shadows: [
-          Shadow(
-            color: Colors.black.withOpacity(0.3),
-            offset: const Offset(0, 4),
-            blurRadius: 10,
+    return ShaderMask(
+      shaderCallback: (bounds) => const LinearGradient(
+        colors: [Color(0xFFFFFFFF), Color(0xFFE0AAFF), Color(0xFFC77DFF)],
+      ).createShader(bounds),
+      child: Text(
+        'إدارة المخزون',
+        style: getSemiBoldStyle(
+          fontSize: isTablet ? 48 : 40,
+          color: Colors.white,
+        ),
+
+        // // TextStyle(
+        //   fontSize: isTablet ? 48 : 40,
+        //   fontWeight: FontWeight.w900,
+        //   color: Colors.white,
+        //   letterSpacing: 2,
+        // //   height: 1.2,
+        // // ),
+      ),
+    );
+  }
+
+  // Widget _buildDescription(bool isTablet) {
+  //   return Container(
+  //     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+  //     decoration: BoxDecoration(
+  //       gradient: LinearGradient(
+  //         colors: [
+  //           Colors.white.withOpacity(0.1),
+  //           Colors.white.withOpacity(0.05),
+  //         ],
+  //       ),
+  //       borderRadius: BorderRadius.circular(30),
+  //       border: Border.all(color: Colors.white.withOpacity(0.2), width: 1),
+  //     ),
+  //     child: Row(
+  //       mainAxisSize: MainAxisSize.min,
+  //       children: [
+  //         Container(
+  //           width: 8,
+  //           height: 8,
+  //           decoration: BoxDecoration(
+  //             color: const Color(0xFF00F5A0),
+  //             shape: BoxShape.circle,
+  //             boxShadow: [
+  //               BoxShadow(
+  //                 color: const Color(0xFF00F5A0).withOpacity(0.5),
+  //                 blurRadius: 10,
+  //                 spreadRadius: 2,
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //         const SizedBox(width: 12),
+  //         Text(
+  //           'إدارة المخزون بذكاء',
+  //           style: TextStyle(
+  //             fontSize: isTablet ? 18 : 16,
+  //             color: Colors.white.withOpacity(0.9),
+  //             fontWeight: FontWeight.w500,
+  //             letterSpacing: 0.5,
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
+  Widget _buildLoadingIndicator() {
+    return Column(
+      children: [
+        SizedBox(
+          width: 32,
+          height: 32,
+          child: CircularProgressIndicator(
+            strokeWidth: 3,
+            valueColor: AlwaysStoppedAnimation<Color>(
+              Colors.white.withOpacity(0.8),
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Text(
+          'جاري التحميل...',
+          style: getMediumStyle(
+            fontSize: 14,
+            color: Colors.white.withOpacity(0.7),
+          ),
+
+          // TextStyle(
+          //   fontSize: 14,
+          //
+          //   color: Colors.white.withOpacity(0.7),
+          //   fontWeight: FontWeight.w500,
+          //   letterSpacing: 0.5,
+          // ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildVersion(bool isTablet) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.white.withOpacity(0.05),
+                  Colors.white.withOpacity(0.02),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.white.withOpacity(0.1)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.security_rounded,
+                  color: Colors.white.withOpacity(0.6),
+                  size: 14,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  '${AppConstants.version} الإصدار',
+                  style: getMediumStyle(
+                    fontSize: 14,
+                    color: Colors.white.withOpacity(0.7),
+                  ),
+
+                  // TextStyle(
+                  //   fontSize: isTablet ? 13 : 12,
+                  //   color: Colors.white.withOpacity(0.6),
+                  //   fontWeight: FontWeight.w500,
+                  //   letterSpacing: 0.3,
+                  // ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            AppConstants.copyright,
+            style: TextStyle(
+              fontSize: isTablet ? 12 : 11,
+              color: Colors.white.withOpacity(0.5),
+              letterSpacing: 0.3,
+            ),
           ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildDescription(bool isTablet) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 40),
-      child: Text(
-        'إدارة المخزون بذكاء',
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: isTablet ? 20 : 16,
-          color: Colors.white.withOpacity(0.9),
-          fontWeight: FontWeight.w300,
-          letterSpacing: 1,
-        ),
-      ),
-    );
+class _FloatingParticle extends StatefulWidget {
+  final double size;
+  final Duration duration;
+  final Duration delay;
+
+  const _FloatingParticle({
+    super.key,
+    required this.size,
+    required this.duration,
+    required this.delay,
+  });
+
+  @override
+  State<_FloatingParticle> createState() => _FloatingParticleState();
+}
+
+class _FloatingParticleState extends State<_FloatingParticle>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<Offset> _animation;
+  late double _startX;
+  late double _startY;
+
+  @override
+  void initState() {
+    super.initState();
+    _startX = (DateTime.now().millisecondsSinceEpoch % 100) / 100;
+    _startY = (DateTime.now().microsecondsSinceEpoch % 100) / 100;
+
+    _controller = AnimationController(vsync: this, duration: widget.duration);
+
+    _animation = Tween<Offset>(
+      begin: Offset(_startX, _startY + 1),
+      end: Offset(_startX + 0.2, -0.5),
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.linear));
+
+    Future.delayed(widget.delay, () {
+      if (mounted) {
+        _controller.repeat();
+      }
+    });
   }
 
-  Widget _buildVersion(bool isTablet) {
-    return Text(
-      'الإصدار 1.0.0',
-      textAlign: TextAlign.center,
-      style: TextStyle(
-        fontSize: isTablet ? 14 : 12,
-        color: Colors.white.withOpacity(0.6),
-        fontWeight: FontWeight.w300,
-      ),
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        return Positioned(
+          left: _animation.value.dx * size.width,
+          top: _animation.value.dy * size.height,
+          child: Container(
+            width: widget.size,
+            height: widget.size,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [
+                  Colors.white.withOpacity(0.6),
+                  Colors.white.withOpacity(0.0),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
+}
+
+class _DottedCirclePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white.withOpacity(0.3)
+      ..strokeWidth = 2
+      ..style = PaintingStyle.stroke;
+
+    const dotCount = 12;
+    const radius = 77.5;
+    final center = Offset(size.width / 2, size.height / 2);
+
+    for (var i = 0; i < dotCount; i++) {
+      final angle = (i * 2 * pi) / dotCount;
+      final x = center.dx + radius * cos(angle);
+      final y = center.dy + radius * sin(angle);
+      canvas.drawCircle(Offset(x, y), 2, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

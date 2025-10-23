@@ -1,4 +1,4 @@
-import 'package:bloc/bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:meta/meta.dart';
 import 'package:stock_up/core/common/api_result.dart';
@@ -12,6 +12,16 @@ part 'Auth_state.dart';
 @injectable
 class AuthCubit extends Cubit<AuthState> {
   AuthCubit(this._authUseCaseRepo) : super(AuthInitial());
+
+  static AuthCubit get(context) => BlocProvider.of(context);
+
+  bool rememberMe = false;
+
+  void handleRememberMe(bool newValue) {
+    rememberMe = !rememberMe;
+    emit(AuthInitial());
+  }
+
   final AuthUseCaseRepo _authUseCaseRepo;
 
   Future<void> login(String mobileNumber, String password, int storeId) async {
@@ -48,6 +58,7 @@ class AuthCubit extends Cubit<AuthState> {
           key: CacheKeys.storeId,
           value: result.data?.user?.storeId,
         );
+        CacheService.setData(key: CacheKeys.rememberMe, value: rememberMe);
         emit(AuthSuccess(result.data));
         break;
       case Fail<LoginEntity?>():

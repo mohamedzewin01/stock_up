@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
@@ -9,6 +10,21 @@ import 'package:stock_up/features/POSPage/presentation/widgets/invoice_item.dart
 import 'package:url_launcher/url_launcher.dart';
 
 class InvoicePDFService {
+  // تحميل الخط العربي
+  static Future<pw.Font> _loadArabicFont() async {
+    try {
+      // محاولة تحميل خط عربي من assets
+      final fontData = await rootBundle.load('assets/fonts/Cairo-Regular.ttf');
+      return pw.Font.ttf(fontData);
+    } catch (e) {
+      final fontData = await rootBundle.load('assets/fonts/Cairo-Bold.ttf');
+      // سنستخدم خط من Google Fonts
+      print('تعذر تحميل الخط العربي: $e');
+      // يمكنك استخدام خط من الإنترنت أو خط مدمج
+      rethrow;
+    }
+  }
+
   static Future<File> generateInvoicePDF({
     required List<InvoiceItem> items,
     required double totalAmount,
@@ -20,9 +36,22 @@ class InvoicePDFService {
     final invoiceNumber = 'INV-${now.millisecondsSinceEpoch}';
     final dateFormat = DateFormat('yyyy-MM-dd HH:mm');
 
+    // محاولة تحميل الخط العربي
+    pw.Font? arabicFont;
+    try {
+      arabicFont = await _loadArabicFont();
+    } catch (e) {
+      print('سيتم استخدام خط افتراضي');
+    }
+
+    // إنشاء theme للخط
+    final theme = pw.ThemeData.withFont(base: arabicFont);
+
     pdf.addPage(
       pw.Page(
         pageFormat: PdfPageFormat.a4,
+        theme: theme,
+        textDirection: pw.TextDirection.rtl,
         build: (context) {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -72,12 +101,14 @@ class InvoicePDFService {
       ),
       child: pw.Row(
         mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+        // textDirection: pw.TextDirection.rtl,
         children: [
           pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
               pw.Text(
                 'فاتورة بيع',
+                textDirection: pw.TextDirection.rtl,
                 style: pw.TextStyle(
                   fontSize: 28,
                   fontWeight: pw.FontWeight.bold,
@@ -87,6 +118,7 @@ class InvoicePDFService {
               pw.SizedBox(height: 5),
               pw.Text(
                 'رقم الفاتورة: $invoiceNumber',
+                textDirection: pw.TextDirection.rtl,
                 style: const pw.TextStyle(fontSize: 12),
               ),
             ],
@@ -107,6 +139,7 @@ class InvoicePDFService {
                 ),
                 child: pw.Text(
                   'مدفوع',
+                  textDirection: pw.TextDirection.rtl,
                   style: pw.TextStyle(
                     color: PdfColors.white,
                     fontWeight: pw.FontWeight.bold,
@@ -133,6 +166,7 @@ class InvoicePDFService {
         children: [
           pw.Text(
             'بيانات العميل',
+            textDirection: pw.TextDirection.rtl,
             style: pw.TextStyle(
               fontSize: 14,
               fontWeight: pw.FontWeight.bold,
@@ -142,19 +176,23 @@ class InvoicePDFService {
           pw.SizedBox(height: 10),
           if (name != null)
             pw.Row(
+              // textDirection: pw.TextDirection.rtl,
               children: [
                 pw.Text(
                   'الاسم: ',
+                  textDirection: pw.TextDirection.rtl,
                   style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                 ),
-                pw.Text(name),
+                pw.Text(name, textDirection: pw.TextDirection.rtl),
               ],
             ),
           if (phone != null)
             pw.Row(
+              // textDirection: pw.TextDirection.rtl,
               children: [
                 pw.Text(
                   'الهاتف: ',
+                  textDirection: pw.TextDirection.rtl,
                   style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                 ),
                 pw.Text(phone),
@@ -168,16 +206,17 @@ class InvoicePDFService {
   static pw.Widget _buildItemsTable(List<InvoiceItem> items) {
     return pw.Table(
       border: pw.TableBorder.all(color: PdfColors.grey300),
+      // textDirection: pw.TextDirection.rtl,
       children: [
         // Header Row
         pw.TableRow(
           decoration: const pw.BoxDecoration(color: PdfColors.blue50),
           children: [
-            _buildTableCell('#', isHeader: true),
-            _buildTableCell('اسم المنتج', isHeader: true),
-            _buildTableCell('السعر', isHeader: true),
-            _buildTableCell('الكمية', isHeader: true),
             _buildTableCell('الإجمالي', isHeader: true),
+            _buildTableCell('الكمية', isHeader: true),
+            _buildTableCell('السعر', isHeader: true),
+            _buildTableCell('اسم المنتج', isHeader: true),
+            _buildTableCell('#', isHeader: true),
           ],
         ),
 
@@ -191,11 +230,11 @@ class InvoicePDFService {
 
           return pw.TableRow(
             children: [
-              _buildTableCell('$index'),
-              _buildTableCell(item.product.productName ?? ''),
-              _buildTableCell('${price.toStringAsFixed(2)} ر.س'),
-              _buildTableCell('${item.quantity}'),
               _buildTableCell('${total.toStringAsFixed(2)} ر.س'),
+              _buildTableCell('${item.quantity}'),
+              _buildTableCell('${price.toStringAsFixed(2)} ر.س'),
+              _buildTableCell(item.product.productName ?? ''),
+              _buildTableCell('$index'),
             ],
           );
         }).toList(),
@@ -208,6 +247,7 @@ class InvoicePDFService {
       padding: const pw.EdgeInsets.all(8),
       child: pw.Text(
         text,
+        textDirection: pw.TextDirection.rtl,
         style: pw.TextStyle(
           fontWeight: isHeader ? pw.FontWeight.bold : pw.FontWeight.normal,
           fontSize: isHeader ? 12 : 10,
@@ -261,9 +301,11 @@ class InvoicePDFService {
   }) {
     return pw.Row(
       mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+      // textDirection: pw.TextDirection.rtl,
       children: [
         pw.Text(
           label,
+          textDirection: pw.TextDirection.rtl,
           style: pw.TextStyle(
             fontSize: isGrandTotal ? 16 : 12,
             fontWeight: isGrandTotal
@@ -293,11 +335,13 @@ class InvoicePDFService {
         children: [
           pw.Text(
             'شكراً لتعاملكم معنا',
+            textDirection: pw.TextDirection.rtl,
             style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
           ),
           pw.SizedBox(height: 5),
           pw.Text(
             'تم إنشاء هذه الفاتورة إلكترونياً',
+            textDirection: pw.TextDirection.rtl,
             style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey600),
           ),
         ],
