@@ -185,14 +185,6 @@ class _SplashScreenState extends State<SplashScreen>
                   ),
                   SizedBox(height: isTablet ? 20 : 16),
 
-                  // Description
-                  // FadeTransition(
-                  //   opacity: _contentFade,
-                  //   child: SlideTransition(
-                  //     position: _contentSlide,
-                  //     child: _buildDescription(isTablet),
-                  //   ),
-                  // ),
                   SizedBox(height: isTablet ? 60 : 50),
 
                   // Loading Indicator
@@ -395,52 +387,6 @@ class _SplashScreenState extends State<SplashScreen>
       ),
     );
   }
-
-  // Widget _buildDescription(bool isTablet) {
-  //   return Container(
-  //     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-  //     decoration: BoxDecoration(
-  //       gradient: LinearGradient(
-  //         colors: [
-  //           Colors.white.withOpacity(0.1),
-  //           Colors.white.withOpacity(0.05),
-  //         ],
-  //       ),
-  //       borderRadius: BorderRadius.circular(30),
-  //       border: Border.all(color: Colors.white.withOpacity(0.2), width: 1),
-  //     ),
-  //     child: Row(
-  //       mainAxisSize: MainAxisSize.min,
-  //       children: [
-  //         Container(
-  //           width: 8,
-  //           height: 8,
-  //           decoration: BoxDecoration(
-  //             color: const Color(0xFF00F5A0),
-  //             shape: BoxShape.circle,
-  //             boxShadow: [
-  //               BoxShadow(
-  //                 color: const Color(0xFF00F5A0).withOpacity(0.5),
-  //                 blurRadius: 10,
-  //                 spreadRadius: 2,
-  //               ),
-  //             ],
-  //           ),
-  //         ),
-  //         const SizedBox(width: 12),
-  //         Text(
-  //           'إدارة المخزون بذكاء',
-  //           style: TextStyle(
-  //             fontSize: isTablet ? 18 : 16,
-  //             color: Colors.white.withOpacity(0.9),
-  //             fontWeight: FontWeight.w500,
-  //             letterSpacing: 0.5,
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
 
   Widget _buildLoadingIndicator() {
     return Column(
