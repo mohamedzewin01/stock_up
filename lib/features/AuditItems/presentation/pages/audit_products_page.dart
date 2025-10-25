@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stock_up/core/di/di.dart';
+import 'package:stock_up/core/utils/cashed_data_shared_preferences.dart';
 import 'package:stock_up/features/AuditItems/presentation/bloc/update_inventory_items_status/update_items_status_cubit.dart';
 
 class AuditProductsPage extends StatefulWidget {
@@ -17,12 +18,20 @@ class _AuditProductsPageState extends State<AuditProductsPage>
   late TabController _tabController;
   late UpdateItemsStatusCubit _updateStatusCubit;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  late int storeId;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     _updateStatusCubit = getIt.get<UpdateItemsStatusCubit>();
+
+    // جلب storeId من Cache
+    storeId = CacheService.getData(key: CacheKeys.storeId) ?? 0;
+
+    if (storeId == 0) {
+      debugPrint('⚠️ Warning: storeId is 0 or null!');
+    }
   }
 
   @override
@@ -57,10 +66,15 @@ class _AuditProductsPageState extends State<AuditProductsPage>
     }
   }
 
-  Future<void> _updateFirebaseStatus(String docId, String newStatus) async {
+  Future<void> _updateFirebaseStatus(
+    String docId,
+    String newStatus,
+    int storeId,
+  ) async {
     try {
       await _firestore.collection('inventory_audit').doc(docId).update({
         'status': newStatus,
+        'store_id': storeId, // ✅ إضافة storeId
         'updated_at': DateTime.now().toIso8601String(),
       });
     } catch (e) {
@@ -103,12 +117,10 @@ class _AuditProductsPageState extends State<AuditProductsPage>
         body: BlocListener<UpdateItemsStatusCubit, UpdateItemsStatusState>(
           listener: (context, state) async {
             if (state is UpdateItemsStatusLoaded) {
-              // تحديث Firebase بعد نجاح تحديث قاعدة البيانات
               final auditId = state.data?.auditId;
               final itemId = state.data?.itemId;
               final newStatus = state.data?.newStatus ?? '';
 
-              // تحديد الحالة الجديدة في Firebase
               String firebaseStatus;
               if (newStatus == 'done') {
                 firebaseStatus = 'DONE';
@@ -118,19 +130,23 @@ class _AuditProductsPageState extends State<AuditProductsPage>
                 firebaseStatus = newStatus.toUpperCase();
               }
 
-              // البحث عن المستند في Firebase وتحديثه
               if (auditId != null && itemId != null) {
                 try {
                   final querySnapshot = await _firestore
                       .collection('inventory_audit')
                       .where('audit_id', isEqualTo: auditId)
                       .where('product_id', isEqualTo: itemId)
+                      .where('store_id', isEqualTo: storeId)
                       .limit(1)
                       .get();
 
                   if (querySnapshot.docs.isNotEmpty) {
                     final docId = querySnapshot.docs.first.id;
-                    await _updateFirebaseStatus(docId, firebaseStatus);
+                    await _updateFirebaseStatus(
+                      docId,
+                      firebaseStatus,
+                      storeId,
+                    ); // ✅ تمرير storeId
 
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -214,16 +230,23 @@ class _AuditProductsPageState extends State<AuditProductsPage>
             controller: _tabController,
             children: [
               // Pending Products
-              PendingProductsView(onUpdateStatus: _updateProductStatus),
+              PendingProductsView(
+                onUpdateStatus: _updateProductStatus,
+                storeId: storeId,
+              ),
 
               // Done Products
               CompletedProductsView(
                 status: 'DONE',
                 onUpdateStatus: _updateProductStatus,
+                storeId: storeId,
               ),
 
-              // Cancelled Products - يمكن تأكيدها فقط
-              CancelledProductsView(onUpdateStatus: _updateProductStatus),
+              // Cancelled Products
+              CancelledProductsView(
+                onUpdateStatus: _updateProductStatus,
+                storeId: storeId,
+              ),
             ],
           ),
         ),
@@ -233,13 +256,42 @@ class _AuditProductsPageState extends State<AuditProductsPage>
 }
 
 // ============================================
-// Pending Products View (Bidirectional Scroll)
+// Pending Products View - سكرول سلس ومحسّن
 // ============================================
-class PendingProductsView extends StatelessWidget {
+class PendingProductsView extends StatefulWidget {
   final Function(String docId, String status, int auditId, int itemId)
   onUpdateStatus;
+  final int storeId;
 
-  const PendingProductsView({super.key, required this.onUpdateStatus});
+  const PendingProductsView({
+    super.key,
+    required this.onUpdateStatus,
+    required this.storeId,
+  });
+
+  @override
+  State<PendingProductsView> createState() => _PendingProductsViewState();
+}
+
+class _PendingProductsViewState extends State<PendingProductsView> {
+  late PageController _pageController;
+  int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(
+      initialPage: 0,
+      viewportFraction: 1.0,
+      keepPage: true,
+    );
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -247,6 +299,7 @@ class PendingProductsView extends StatelessWidget {
       stream: FirebaseFirestore.instance
           .collection('inventory_audit')
           .where('status', isEqualTo: 'pending')
+          .where('store_id', isEqualTo: widget.storeId)
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -266,7 +319,6 @@ class PendingProductsView extends StatelessWidget {
 
         final products = snapshot.data!.docs;
 
-        // ترتيب: الأقدم أولاً (ما دخل أولاً يعرض أولاً)
         products.sort((a, b) {
           final aTime =
               (a.data() as Map<String, dynamic>)['timestamp'] as Timestamp?;
@@ -277,8 +329,20 @@ class PendingProductsView extends StatelessWidget {
         });
 
         return PageView.builder(
+          controller: _pageController,
           scrollDirection: Axis.vertical,
           itemCount: products.length,
+          physics: const BouncingScrollPhysics(),
+          // ✅ سكرول سلس جداً
+          pageSnapping: true,
+          // ✅ التوقف على كل صفحة
+          padEnds: false,
+          // ✅ إزالة المسافات الإضافية
+          onPageChanged: (index) {
+            setState(() {
+              _currentPage = index;
+            });
+          },
           itemBuilder: (context, index) {
             final doc = products[index];
             final data = doc.data() as Map<String, dynamic>;
@@ -289,12 +353,38 @@ class PendingProductsView extends StatelessWidget {
               onConfirm: () {
                 final auditId = data['audit_id'] as int? ?? 0;
                 final itemId = data['product_id'] as int? ?? 0;
-                onUpdateStatus(doc.id, 'done', auditId, itemId);
+                widget.onUpdateStatus(doc.id, 'done', auditId, itemId);
+
+                // ✅ الانتقال السلس للمنتج التالي
+                if (index < products.length - 1) {
+                  Future.delayed(const Duration(milliseconds: 400), () {
+                    if (mounted && _pageController.hasClients) {
+                      _pageController.animateToPage(
+                        index + 1,
+                        duration: const Duration(milliseconds: 400),
+                        curve: Curves.easeInOutCubic,
+                      );
+                    }
+                  });
+                }
               },
               onCancel: () {
                 final auditId = data['audit_id'] as int? ?? 0;
                 final itemId = data['product_id'] as int? ?? 0;
-                onUpdateStatus(doc.id, 'pending', auditId, itemId);
+                widget.onUpdateStatus(doc.id, 'pending', auditId, itemId);
+
+                // ✅ الانتقال السلس للمنتج التالي
+                if (index < products.length - 1) {
+                  Future.delayed(const Duration(milliseconds: 400), () {
+                    if (mounted && _pageController.hasClients) {
+                      _pageController.animateToPage(
+                        index + 1,
+                        duration: const Duration(milliseconds: 400),
+                        curve: Curves.easeInOutCubic,
+                      );
+                    }
+                  });
+                }
               },
               currentIndex: index + 1,
               totalCount: products.length,
@@ -307,13 +397,18 @@ class PendingProductsView extends StatelessWidget {
 }
 
 // ============================================
-// Cancelled Products View - يمكن تأكيدها فقط
+// Cancelled Products View
 // ============================================
 class CancelledProductsView extends StatelessWidget {
   final Function(String docId, String status, int auditId, int itemId)
   onUpdateStatus;
+  final int storeId;
 
-  const CancelledProductsView({super.key, required this.onUpdateStatus});
+  const CancelledProductsView({
+    super.key,
+    required this.onUpdateStatus,
+    required this.storeId,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -321,6 +416,7 @@ class CancelledProductsView extends StatelessWidget {
       stream: FirebaseFirestore.instance
           .collection('inventory_audit')
           .where('status', isEqualTo: 'CANCEL')
+          .where('store_id', isEqualTo: storeId)
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -373,7 +469,7 @@ class CancelledProductsView extends StatelessWidget {
 }
 
 // ============================================
-// Cancelled Product Card - زر تأكيد فقط
+// Cancelled Product Card
 // ============================================
 class CancelledProductCard extends StatelessWidget {
   final String docId;
@@ -406,6 +502,7 @@ class CancelledProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String userName = productData['userName'] ?? 'غير معروف';
+    final String storeId = CacheService.getData(key: CacheKeys.storeId);
     final String productName = productData['product_name'] ?? 'غير معروف';
     final int currentQuantity = _parseToInt(productData['quantity']);
     final int previousQuantity = _parseToInt(productData['total_quantity']);
@@ -434,7 +531,6 @@ class CancelledProductCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Header
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
@@ -491,7 +587,6 @@ class CancelledProductCard extends StatelessWidget {
             padding: const EdgeInsets.all(12),
             child: Column(
               children: [
-                // Quantities
                 Row(
                   children: [
                     Expanded(
@@ -516,7 +611,6 @@ class CancelledProductCard extends StatelessWidget {
 
                 const SizedBox(height: 10),
 
-                // Details
                 Row(
                   children: [
                     Expanded(
@@ -549,7 +643,6 @@ class CancelledProductCard extends StatelessWidget {
 
                 const SizedBox(height: 12),
 
-                // زر التأكيد فقط
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
@@ -582,7 +675,7 @@ class CancelledProductCard extends StatelessWidget {
 }
 
 // ============================================
-// Compact Product Card (للمنتجات قيد المراجعة)
+// Compact Product Card
 // ============================================
 class CompactProductCard extends StatelessWidget {
   final String docId;
@@ -646,7 +739,6 @@ class CompactProductCard extends StatelessWidget {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            // Counter Badge
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
@@ -665,7 +757,6 @@ class CompactProductCard extends StatelessWidget {
 
             SizedBox(height: screenHeight * 0.01),
 
-            // User Badge
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
@@ -693,7 +784,6 @@ class CompactProductCard extends StatelessWidget {
 
             SizedBox(height: screenHeight * 0.015),
 
-            // Main Card
             Container(
               width: double.infinity,
               decoration: BoxDecoration(
@@ -709,7 +799,6 @@ class CompactProductCard extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  // Product Header
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(12),
@@ -751,7 +840,6 @@ class CompactProductCard extends StatelessWidget {
                     padding: const EdgeInsets.all(12),
                     child: Column(
                       children: [
-                        // Quantity Comparison
                         CompactQuantityWidget(
                           previousQuantity: previousQuantity,
                           currentQuantity: currentQuantity,
@@ -760,7 +848,6 @@ class CompactProductCard extends StatelessWidget {
 
                         const SizedBox(height: 12),
 
-                        // Details
                         Row(
                           children: [
                             Expanded(
@@ -794,7 +881,6 @@ class CompactProductCard extends StatelessWidget {
 
                         const SizedBox(height: 12),
 
-                        // Barcode
                         if (barcode.isNotEmpty)
                           CompactBarcodeWidget(barcode: barcode),
                       ],
@@ -806,7 +892,6 @@ class CompactProductCard extends StatelessWidget {
 
             SizedBox(height: screenHeight * 0.015),
 
-            // Action Buttons
             Row(
               children: [
                 Expanded(
@@ -857,7 +942,6 @@ class CompactProductCard extends StatelessWidget {
 
             SizedBox(height: screenHeight * 0.01),
 
-            // Scroll Hint
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
@@ -886,9 +970,6 @@ class CompactProductCard extends StatelessWidget {
     );
   }
 }
-
-// باقي الويدجتس نفس الكود السابق...
-// (CompactQuantityWidget, CompactDetailItem, CompactNotesWidget, CompactBarcodeWidget, etc.)
 
 class CompactQuantityWidget extends StatelessWidget {
   final int previousQuantity;
@@ -1064,34 +1145,50 @@ class CompactBarcodeWidget extends StatelessWidget {
 
   const CompactBarcodeWidget({super.key, required this.barcode});
 
+  Barcode _getBarcodeType(String barcode) {
+    final cleanBarcode = barcode.replaceAll(RegExp(r'[^0-9]'), '');
+
+    if (cleanBarcode.length == 13) {
+      return Barcode.ean13();
+    } else if (cleanBarcode.length == 8) {
+      return Barcode.ean8();
+    } else if (cleanBarcode.length == 12) {
+      return Barcode.upcA();
+    } else {
+      return Barcode.code128();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(color: Colors.grey.shade300, width: 2),
       ),
       child: Column(
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
             decoration: BoxDecoration(
-              color: Colors.grey.shade50,
+              color: Colors.white,
               borderRadius: BorderRadius.circular(8),
             ),
             child: BarcodeWidget(
-              barcode: Barcode.code128(),
+              barcode: _getBarcodeType(barcode),
               data: barcode,
-              width: 200,
-              height: 50,
-              drawText: false,
+              width: 280,
+              height: 80,
+              drawText: true,
+              textPadding: 2,
+              style: const TextStyle(fontSize: 14),
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: Colors.grey.shade800,
               borderRadius: BorderRadius.circular(6),
@@ -1100,9 +1197,9 @@ class CompactBarcodeWidget extends StatelessWidget {
               barcode,
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: 12,
+                fontSize: 13,
                 fontWeight: FontWeight.bold,
-                letterSpacing: 1,
+                letterSpacing: 1.5,
               ),
             ),
           ),
@@ -1113,17 +1210,19 @@ class CompactBarcodeWidget extends StatelessWidget {
 }
 
 // ============================================
-// Completed Products View (Full Details)
+// Completed Products View
 // ============================================
 class CompletedProductsView extends StatelessWidget {
   final String status;
   final Function(String docId, String status, int auditId, int itemId)
   onUpdateStatus;
+  final int storeId;
 
   const CompletedProductsView({
     super.key,
     required this.status,
     required this.onUpdateStatus,
+    required this.storeId,
   });
 
   @override
@@ -1132,6 +1231,7 @@ class CompletedProductsView extends StatelessWidget {
       stream: FirebaseFirestore.instance
           .collection('inventory_audit')
           .where('status', isEqualTo: status)
+          .where('store_id', isEqualTo: storeId)
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -1180,7 +1280,7 @@ class CompletedProductsView extends StatelessWidget {
 }
 
 // ============================================
-// Full Details Card (For Done/Cancel)
+// Full Details Card
 // ============================================
 class FullDetailsCard extends StatelessWidget {
   final Map<String, dynamic> productData;

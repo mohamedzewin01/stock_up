@@ -160,6 +160,7 @@ class _SearchProductsPageState extends State<SearchProductsPage> {
     try {
       await firebaseRef.collection('inventory_audit').add({
         'audit_id': auditId, // استخدام audit_id من الاستجابة
+        'store_id': CacheService.getData(key: CacheKeys.storeId),
         'userName': CacheService.getData(key: CacheKeys.userName),
         'status': 'pending',
         'product_id': product.productId,
