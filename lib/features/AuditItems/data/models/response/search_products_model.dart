@@ -88,9 +88,9 @@ class Results {
   @JsonKey(name: "last_purchase_price")
   final String? lastPurchasePrice;
   @JsonKey(name: "category_id")
-  final dynamic? categoryId;
+  final int? categoryId;
   @JsonKey(name: "category_name")
-  final dynamic? categoryName;
+  final String? categoryName;
   @JsonKey(name: "taxable")
   final int? taxable;
   @JsonKey(name: "tax_rate")
