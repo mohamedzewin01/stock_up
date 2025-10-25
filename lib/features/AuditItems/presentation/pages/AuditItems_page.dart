@@ -158,7 +158,13 @@ class _SearchProductsPageState extends State<SearchProductsPage> {
     String? notes,
   ) async {
     try {
-      await firebaseRef.collection('inventory_audit').add({
+      // إنشاء مرجع للمستند الجديد
+      final docRef = firebaseRef.collection('inventory_audit').doc();
+
+      // كتابة البيانات في المستند مع تضمين docID
+      await docRef.set({
+        'docID': docRef.id,
+        'user_id': CacheService.getData(key: CacheKeys.userId),
         'audit_id': auditId, // استخدام audit_id من الاستجابة
         'store_id': CacheService.getData(key: CacheKeys.storeId),
         'userName': CacheService.getData(key: CacheKeys.userName),
@@ -176,11 +182,45 @@ class _SearchProductsPageState extends State<SearchProductsPage> {
         'timestamp': FieldValue.serverTimestamp(),
         'created_at': DateTime.now().toIso8601String(),
       });
+
+      debugPrint('✅ Data sent successfully with docID: ${docRef.id}');
     } catch (e) {
-      debugPrint('Error sending to Firebase: $e');
+      debugPrint('❌ Error sending to Firebase: $e');
       rethrow;
     }
   }
+
+  // Future<void> _sendToFirebase(
+  //   Results product,
+  //   int quantity,
+  //   String? notes,
+  // ) async {
+  //   try {
+  //     await firebaseRef.collection('inventory_audit').add({
+  //       "docID ":
+  //       'user_id': CacheService.getData(key: CacheKeys.userId),
+  //       'audit_id': auditId, // استخدام audit_id من الاستجابة
+  //       'store_id': CacheService.getData(key: CacheKeys.storeId),
+  //       'userName': CacheService.getData(key: CacheKeys.userName),
+  //       'status': 'pending',
+  //       'product_id': product.productId,
+  //       'product_name': product.productName,
+  //       'product_number': product.productNumber,
+  //       'quantity': quantity,
+  //       'notes': notes,
+  //       'unit': product.unit,
+  //       'selling_price': product.sellingPrice,
+  //       'category_name': product.categoryName,
+  //       'total_quantity': product.totalQuantity,
+  //       'barcodes': product.barcodes,
+  //       'timestamp': FieldValue.serverTimestamp(),
+  //       'created_at': DateTime.now().toIso8601String(),
+  //     });
+  //   } catch (e) {
+  //     debugPrint('Error sending to Firebase: $e');
+  //     rethrow;
+  //   }
+  // }
 
   void _showQuantityDialog(Results product) {
     showModalBottomSheet(
