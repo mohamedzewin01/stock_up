@@ -383,6 +383,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stock_up/core/di/di.dart';
+import 'package:stock_up/core/resources/color_manager.dart';
 import 'package:stock_up/features/Inventory/presentation/bloc/createInventory/create_inventory_cubit.dart';
 
 class CreateInventoryPage extends StatefulWidget {
@@ -405,27 +406,25 @@ class _CreateInventoryPageState extends State<CreateInventoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
     return BlocProvider(
       create: (context) => getIt<CreateInventoryCubit>(),
       child: Builder(
         builder: (context) => Scaffold(
-          backgroundColor: const Color(0xFFF8F9FD),
+          backgroundColor: ColorManager.lightBackground,
           appBar: _buildAppBar(context),
           body: BlocListener<CreateInventoryCubit, CreateInventoryState>(
             listener: _handleBlocListener,
             child: SingleChildScrollView(
-              padding: EdgeInsets.all(size.width * 0.05),
+              padding: const EdgeInsets.all(20),
               child: Form(
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    _buildHeaderSection(context),
-                    SizedBox(height: size.height * 0.04),
-                    _buildNotesSection(context),
-                    SizedBox(height: size.height * 0.05),
+                    _buildHeaderSection(),
+                    const SizedBox(height: 32),
+                    _buildNotesSection(),
+                    const SizedBox(height: 40),
                     _buildCreateButton(context),
                   ],
                 ),
@@ -444,56 +443,54 @@ class _CreateInventoryPageState extends State<CreateInventoryPage> {
       leading: Container(
         margin: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: const Color(0xFF6C63FF).withOpacity(0.1),
+          gradient: ColorManager.cardGradient,
           borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: ColorManager.purple2.withOpacity(0.3),
+            width: 1,
+          ),
         ),
         child: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF6C63FF)),
+          icon: Icon(Icons.arrow_back_rounded, color: ColorManager.purple2),
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      title: const Text(
-        'إنشاء جرد جديد',
-        style: TextStyle(
-          color: Color(0xFF2D3436),
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
+      title: ShaderMask(
+        shaderCallback: (bounds) =>
+            ColorManager.primaryGradient.createShader(bounds),
+        child: const Text(
+          'إنشاء جرد جديد',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
       centerTitle: true,
     );
   }
 
-  Widget _buildHeaderSection(BuildContext context) {
+  Widget _buildHeaderSection() {
     return Container(
       padding: const EdgeInsets.all(28),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        boxShadow: ColorManager.cardShadow,
       ),
       child: Column(
         children: [
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF6C63FF), Color(0xFF5A52D5)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+              gradient: ColorManager.primaryGradient,
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF6C63FF).withOpacity(0.3),
-                  blurRadius: 15,
-                  offset: const Offset(0, 8),
+                  color: ColorManager.purple2.withOpacity(0.5),
+                  blurRadius: 30,
+                  offset: const Offset(0, 10),
                 ),
               ],
             ),
@@ -504,12 +501,16 @@ class _CreateInventoryPageState extends State<CreateInventoryPage> {
             ),
           ),
           const SizedBox(height: 24),
-          const Text(
-            'ابدأ بإنشاء جرد جديد',
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF2D3436),
+          ShaderMask(
+            shaderCallback: (bounds) =>
+                ColorManager.primaryGradient.createShader(bounds),
+            child: const Text(
+              'ابدأ بإنشاء جرد جديد',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
           ),
           const SizedBox(height: 12),
@@ -518,7 +519,7 @@ class _CreateInventoryPageState extends State<CreateInventoryPage> {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 15,
-              color: const Color(0xFF636E72),
+              color: ColorManager.textSecondary,
               height: 1.5,
             ),
           ),
@@ -527,19 +528,13 @@ class _CreateInventoryPageState extends State<CreateInventoryPage> {
     );
   }
 
-  Widget _buildNotesSection(BuildContext context) {
+  Widget _buildNotesSection() {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        boxShadow: ColorManager.cardShadow,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -549,22 +544,31 @@ class _CreateInventoryPageState extends State<CreateInventoryPage> {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFF6584).withOpacity(0.1),
+                  gradient: LinearGradient(
+                    colors: [
+                      ColorManager.purple2.withOpacity(0.2),
+                      ColorManager.purple3.withOpacity(0.2),
+                    ],
+                  ),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.note_alt_rounded,
-                  color: Color(0xFFFF6584),
+                  color: ColorManager.purple2,
                   size: 24,
                 ),
               ),
               const SizedBox(width: 12),
-              const Text(
-                'الملاحظات',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF2D3436),
+              ShaderMask(
+                shaderCallback: (bounds) =>
+                    ColorManager.primaryGradient.createShader(bounds),
+                child: const Text(
+                  'الملاحظات',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
               ),
               const SizedBox(width: 8),
@@ -574,14 +578,19 @@ class _CreateInventoryPageState extends State<CreateInventoryPage> {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF4ECDC4).withOpacity(0.1),
+                  gradient: LinearGradient(
+                    colors: [
+                      ColorManager.success.withOpacity(0.2),
+                      ColorManager.success.withOpacity(0.1),
+                    ],
+                  ),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Text(
+                child: Text(
                   'اختياري',
                   style: TextStyle(
                     fontSize: 12,
-                    color: Color(0xFF4ECDC4),
+                    color: ColorManager.success,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -603,21 +612,22 @@ class _CreateInventoryPageState extends State<CreateInventoryPage> {
                 height: 1.5,
               ),
               filled: true,
-              fillColor: const Color(0xFFF8F9FD),
+              fillColor: ColorManager.lightBackground,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide(color: Colors.grey[300]!),
+                borderSide: BorderSide(
+                  color: ColorManager.purple2.withOpacity(0.2),
+                ),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide(color: Colors.grey[300]!),
+                borderSide: BorderSide(
+                  color: ColorManager.purple2.withOpacity(0.2),
+                ),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
-                borderSide: const BorderSide(
-                  color: Color(0xFF6C63FF),
-                  width: 2,
-                ),
+                borderSide: BorderSide(color: ColorManager.purple2, width: 2),
               ),
               contentPadding: const EdgeInsets.all(20),
             ),
@@ -630,17 +640,13 @@ class _CreateInventoryPageState extends State<CreateInventoryPage> {
   Widget _buildCreateButton(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF6C63FF), Color(0xFF5A52D5)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        gradient: ColorManager.primaryGradient,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF6C63FF).withOpacity(0.4),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
+            color: ColorManager.purple2.withOpacity(0.5),
+            blurRadius: 30,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
@@ -665,10 +671,21 @@ class _CreateInventoryPageState extends State<CreateInventoryPage> {
               )
             : Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Icon(Icons.add_circle_rounded, color: Colors.white),
-                  SizedBox(width: 12),
-                  Text(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(
+                      Icons.add_circle_rounded,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  const Text(
                     'إنشاء الجرد',
                     style: TextStyle(
                       fontSize: 17,
@@ -693,11 +710,9 @@ class _CreateInventoryPageState extends State<CreateInventoryPage> {
       _showSnackBar(
         context,
         'تم إنشاء الجرد بنجاح',
-        const Color(0xFF26DE81),
+        ColorManager.success,
         Icons.check_circle_rounded,
       );
-
-      // العودة إلى صفحة القائمة مع تحديث البيانات
       Future.delayed(const Duration(milliseconds: 500), () {
         Navigator.pop(context, true);
       });
@@ -707,7 +722,7 @@ class _CreateInventoryPageState extends State<CreateInventoryPage> {
       _showSnackBar(
         context,
         'فشل إنشاء الجرد، حاول مرة أخرى',
-        const Color(0xFFFF6B9D),
+        ColorManager.error,
         Icons.error_rounded,
       );
     }
@@ -749,7 +764,6 @@ class _CreateInventoryPageState extends State<CreateInventoryPage> {
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         margin: const EdgeInsets.all(16),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         duration: const Duration(seconds: 3),
       ),
     );

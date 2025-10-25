@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stock_up/core/di/di.dart';
-import 'package:stock_up/features/Inventory/data/models/response/get_all_users_model.dart';
+import 'package:stock_up/core/resources/color_manager.dart';
 import 'package:stock_up/features/Inventory/presentation/bloc/AddInventory/add_inventory_cubit.dart';
 import 'package:stock_up/features/Inventory/presentation/bloc/users/users_inventory_cubit.dart';
+import 'package:stock_up/features/Inventory/presentation/widgets/worker_card.dart';
 
 class SelectWorkersPage extends StatefulWidget {
   final int auditId;
@@ -20,7 +21,6 @@ class _SelectWorkersPageState extends State<SelectWorkersPage>
   bool _isAdding = false;
   String _searchQuery = '';
   late AnimationController _animationController;
-  late Animation<double> _scaleAnimation;
 
   @override
   void initState() {
@@ -28,9 +28,6 @@ class _SelectWorkersPageState extends State<SelectWorkersPage>
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 200),
       vsync: this,
-    );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
   }
 
@@ -42,8 +39,6 @@ class _SelectWorkersPageState extends State<SelectWorkersPage>
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
     return MultiBlocProvider(
       providers: [
         BlocProvider(
@@ -52,21 +47,23 @@ class _SelectWorkersPageState extends State<SelectWorkersPage>
         BlocProvider(create: (context) => getIt<AddInventoryCubit>()),
       ],
       child: Builder(
-        builder: (context) => Scaffold(
-          backgroundColor: const Color(0xFFF8F9FD),
-          appBar: _buildAppBar(context),
-          body: BlocListener<AddInventoryCubit, AddInventoryState>(
-            listener: _handleBlocListener,
-            child: Column(
-              children: [
-                _buildSearchBar(size),
-                _buildSelectedCount(),
-                Expanded(child: _buildWorkersList()),
-                _buildBottomButton(context, size),
-              ],
+        builder: (context) {
+          return Scaffold(
+            backgroundColor: ColorManager.lightBackground,
+            appBar: _buildAppBar(context),
+            body: BlocListener<AddInventoryCubit, AddInventoryState>(
+              listener: _handleBlocListener,
+              child: Column(
+                children: [
+                  _buildSearchBar(),
+                  _buildSelectedCount(),
+                  Expanded(child: _buildWorkersList()),
+                  _buildBottomButton(context),
+                ],
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
@@ -78,52 +75,54 @@ class _SelectWorkersPageState extends State<SelectWorkersPage>
       leading: Container(
         margin: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: const Color(0xFF6C63FF).withOpacity(0.1),
+          gradient: ColorManager.cardGradient,
           borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: ColorManager.purple2.withOpacity(0.3),
+            width: 1,
+          ),
         ),
         child: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF6C63FF)),
+          icon: Icon(Icons.arrow_back_rounded, color: ColorManager.purple2),
           onPressed: () => _handleBackPress(context),
         ),
       ),
-      title: const Text(
-        'اختيار العمال',
-        style: TextStyle(
-          color: Color(0xFF2D3436),
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
+      title: ShaderMask(
+        shaderCallback: (bounds) =>
+            ColorManager.primaryGradient.createShader(bounds),
+        child: const Text(
+          'اختيار العمال',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
       centerTitle: true,
     );
   }
 
-  Widget _buildSearchBar(Size size) {
+  Widget _buildSearchBar() {
     return Container(
-      margin: EdgeInsets.all(size.width * 0.04),
+      margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 15,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        boxShadow: ColorManager.cardShadow,
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: const Color(0xFF6C63FF).withOpacity(0.1),
+              gradient: ColorManager.cardGradient,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.search_rounded,
-              color: Color(0xFF6C63FF),
+              color: ColorManager.purple2,
               size: 22,
             ),
           ),
@@ -148,29 +147,33 @@ class _SelectWorkersPageState extends State<SelectWorkersPage>
   Widget _buildSelectedCount() {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            const Color(
-              0xFF6C63FF,
-            ).withOpacity(_selectedWorkerIds.isEmpty ? 0.1 : 0.15),
-            const Color(
-              0xFF4ECDC4,
-            ).withOpacity(_selectedWorkerIds.isEmpty ? 0.1 : 0.15),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        gradient: _selectedWorkerIds.isEmpty
+            ? ColorManager.cardGradient
+            : LinearGradient(
+                colors: [
+                  ColorManager.purple2.withOpacity(0.2),
+                  ColorManager.purple3.withOpacity(0.2),
+                ],
+              ),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: _selectedWorkerIds.isEmpty
-              ? Colors.transparent
-              : const Color(0xFF6C63FF).withOpacity(0.3),
+              ? ColorManager.purple2.withOpacity(0.2)
+              : ColorManager.purple2.withOpacity(0.5),
           width: 2,
         ),
+        boxShadow: _selectedWorkerIds.isEmpty
+            ? []
+            : [
+                BoxShadow(
+                  color: ColorManager.purple2.withOpacity(0.3),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
+                ),
+              ],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -178,24 +181,33 @@ class _SelectWorkersPageState extends State<SelectWorkersPage>
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: const Color(0xFF6C63FF).withOpacity(0.2),
+              gradient: LinearGradient(
+                colors: [
+                  ColorManager.purple2.withOpacity(0.3),
+                  ColorManager.purple3.withOpacity(0.3),
+                ],
+              ),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(
               Icons.people_rounded,
-              color: const Color(0xFF6C63FF),
+              color: ColorManager.purple2,
               size: 20,
             ),
           ),
           const SizedBox(width: 12),
-          Text(
-            _selectedWorkerIds.isEmpty
-                ? 'لم يتم اختيار أي عامل'
-                : 'تم اختيار ${_selectedWorkerIds.length} عامل',
-            style: TextStyle(
-              color: const Color(0xFF6C63FF),
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
+          ShaderMask(
+            shaderCallback: (bounds) =>
+                ColorManager.primaryGradient.createShader(bounds),
+            child: Text(
+              _selectedWorkerIds.isEmpty
+                  ? 'لم يتم اختيار أي عامل'
+                  : 'تم اختيار ${_selectedWorkerIds.length} عامل',
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
             ),
           ),
         ],
@@ -209,14 +221,14 @@ class _SelectWorkersPageState extends State<SelectWorkersPage>
         if (state is UsersInventoryLoading) {
           return Center(
             child: CircularProgressIndicator(
-              color: const Color(0xFF6C63FF),
+              color: ColorManager.purple2,
               strokeWidth: 3,
             ),
           );
         }
 
         if (state is UsersInventoryFailure) {
-          return _buildErrorWidget(context);
+          return _buildErrorWidget();
         }
 
         if (state is UsersInventorySuccess) {
@@ -237,7 +249,7 @@ class _SelectWorkersPageState extends State<SelectWorkersPage>
             itemCount: filteredUsers.length,
             itemBuilder: (context, index) {
               final user = filteredUsers[index];
-              return _WorkerCard(
+              return WorkerCard(
                 user: user,
                 isSelected: _selectedWorkerIds.contains(user.id),
                 onTap: () => _toggleWorkerSelection(user.id),
@@ -259,35 +271,39 @@ class _SelectWorkersPageState extends State<SelectWorkersPage>
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: const Color(0xFF636E72).withOpacity(0.1),
               shape: BoxShape.circle,
+              gradient: ColorManager.cardGradient,
             ),
             child: Icon(
               Icons.search_off_rounded,
               size: 64,
-              color: Colors.grey[400],
+              color: ColorManager.purple2,
             ),
           ),
           const SizedBox(height: 20),
-          Text(
-            'لا توجد نتائج',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: const Color(0xFF2D3436),
+          ShaderMask(
+            shaderCallback: (bounds) =>
+                ColorManager.primaryGradient.createShader(bounds),
+            child: const Text(
+              'لا توجد نتائج',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
           ),
           const SizedBox(height: 8),
           Text(
             'جرب البحث بكلمات مختلفة',
-            style: TextStyle(fontSize: 14, color: const Color(0xFF636E72)),
+            style: TextStyle(fontSize: 14, color: ColorManager.textSecondary),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildErrorWidget(BuildContext context) {
+  Widget _buildErrorWidget() {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -297,56 +313,32 @@ class _SelectWorkersPageState extends State<SelectWorkersPage>
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: const Color(0xFFFF6B9D).withOpacity(0.1),
                 shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  colors: [
+                    ColorManager.error.withOpacity(0.2),
+                    ColorManager.error.withOpacity(0.1),
+                  ],
+                ),
               ),
               child: Icon(
                 Icons.error_outline_rounded,
                 size: 64,
-                color: const Color(0xFFFF6B9D),
+                color: ColorManager.error,
               ),
             ),
             const SizedBox(height: 24),
             const Text(
               'حدث خطأ أثناء جلب البيانات',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF2D3436),
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 32),
-            Container(
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF6C63FF), Color(0xFF5A52D5)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF6C63FF).withOpacity(0.3),
-                    blurRadius: 12,
-                    offset: const Offset(0, 6),
-                  ),
-                ],
-              ),
-              child: ElevatedButton.icon(
-                onPressed: () =>
-                    context.read<UsersInventoryCubit>().getAllUsers(),
-                icon: const Icon(Icons.refresh_rounded),
-                label: const Text('إعادة المحاولة'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  shadowColor: Colors.transparent,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 16,
-                  ),
-                ),
-              ),
+            _buildGradientButton(
+              onPressed: () =>
+                  context.read<UsersInventoryCubit>().getAllUsers(),
+              icon: Icons.refresh_rounded,
+              label: 'إعادة المحاولة',
             ),
           ],
         ),
@@ -354,14 +346,14 @@ class _SelectWorkersPageState extends State<SelectWorkersPage>
     );
   }
 
-  Widget _buildBottomButton(BuildContext context, Size size) {
+  Widget _buildBottomButton(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(size.width * 0.04),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withOpacity(0.1),
             blurRadius: 20,
             offset: const Offset(0, -4),
           ),
@@ -371,22 +363,19 @@ class _SelectWorkersPageState extends State<SelectWorkersPage>
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: _selectedWorkerIds.isEmpty
-                  ? [Colors.grey[400]!, Colors.grey[400]!]
-                  : [const Color(0xFF6C63FF), const Color(0xFF5A52D5)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+            gradient: _selectedWorkerIds.isEmpty
+                ? LinearGradient(colors: [Colors.grey[400]!, Colors.grey[400]!])
+                : ColorManager.primaryGradient,
             borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              if (_selectedWorkerIds.isNotEmpty)
-                BoxShadow(
-                  color: const Color(0xFF6C63FF).withOpacity(0.4),
-                  blurRadius: 15,
-                  offset: const Offset(0, 8),
-                ),
-            ],
+            boxShadow: _selectedWorkerIds.isEmpty
+                ? []
+                : [
+                    BoxShadow(
+                      color: ColorManager.purple2.withOpacity(0.5),
+                      blurRadius: 30,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
           ),
           child: ElevatedButton(
             onPressed: _selectedWorkerIds.isEmpty || _isAdding
@@ -399,7 +388,6 @@ class _SelectWorkersPageState extends State<SelectWorkersPage>
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
-              disabledBackgroundColor: Colors.transparent,
             ),
             child: _isAdding
                 ? const SizedBox(
@@ -413,11 +401,19 @@ class _SelectWorkersPageState extends State<SelectWorkersPage>
                 : Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
-                        _selectedWorkerIds.isEmpty
-                            ? Icons.people_outline_rounded
-                            : Icons.check_circle_rounded,
-                        color: Colors.white,
+                      Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          _selectedWorkerIds.isEmpty
+                              ? Icons.people_outline_rounded
+                              : Icons.check_circle_rounded,
+                          color: Colors.white,
+                          size: 20,
+                        ),
                       ),
                       const SizedBox(width: 12),
                       Text(
@@ -438,6 +434,36 @@ class _SelectWorkersPageState extends State<SelectWorkersPage>
     );
   }
 
+  Widget _buildGradientButton({
+    required VoidCallback onPressed,
+    required IconData icon,
+    required String label,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: ColorManager.primaryGradient,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: ColorManager.purple2.withOpacity(0.4),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: ElevatedButton.icon(
+        onPressed: onPressed,
+        icon: Icon(icon, color: Colors.white),
+        label: Text(label, style: const TextStyle(color: Colors.white)),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+        ),
+      ),
+    );
+  }
+
   void _toggleWorkerSelection(int? workerId) {
     if (workerId == null) return;
     setState(() {
@@ -451,8 +477,6 @@ class _SelectWorkersPageState extends State<SelectWorkersPage>
       }
     });
   }
-
-  // استبدل الدالة _handleAddWorkers في select_workers_page.dart بهذا:
 
   void _handleAddWorkers(BuildContext context) {
     context.read<AddInventoryCubit>().addInventoryAuditUsers(
@@ -471,7 +495,7 @@ class _SelectWorkersPageState extends State<SelectWorkersPage>
       _showSnackBar(
         context,
         'تم إضافة العمال بنجاح',
-        const Color(0xFF26DE81),
+        ColorManager.success,
         Icons.check_circle_rounded,
       );
       Future.delayed(const Duration(milliseconds: 500), () {
@@ -483,7 +507,7 @@ class _SelectWorkersPageState extends State<SelectWorkersPage>
       _showSnackBar(
         context,
         'فشل إضافة العمال، حاول مرة أخرى',
-        const Color(0xFFFF6B9D),
+        ColorManager.error,
         Icons.error_rounded,
       );
     }
@@ -494,18 +518,21 @@ class _SelectWorkersPageState extends State<SelectWorkersPage>
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        contentPadding: const EdgeInsets.all(24),
         title: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: const Color(0xFFFEA47F).withOpacity(0.1),
+                gradient: LinearGradient(
+                  colors: [
+                    ColorManager.warning.withOpacity(0.2),
+                    ColorManager.warning.withOpacity(0.1),
+                  ],
+                ),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Icon(
-                Icons.warning_rounded,
-                color: Color(0xFFFEA47F),
-              ),
+              child: Icon(Icons.warning_rounded, color: ColorManager.warning),
             ),
             const SizedBox(width: 12),
             const Text('تأكيد الإلغاء', style: TextStyle(fontSize: 18)),
@@ -518,17 +545,15 @@ class _SelectWorkersPageState extends State<SelectWorkersPage>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text(
+            child: Text(
               'إلغاء',
-              style: TextStyle(color: Color(0xFF636E72)),
+              style: TextStyle(color: ColorManager.textSecondary),
             ),
           ),
           Container(
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFFFF6B9D), Color(0xFFFF6584)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+              gradient: LinearGradient(
+                colors: [ColorManager.error, ColorManager.error],
               ),
               borderRadius: BorderRadius.circular(12),
             ),
@@ -584,218 +609,7 @@ class _SelectWorkersPageState extends State<SelectWorkersPage>
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         margin: const EdgeInsets.all(16),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         duration: const Duration(seconds: 3),
-      ),
-    );
-  }
-}
-
-// ============================================================
-// Worker Card Widget
-// ============================================================
-
-class _WorkerCard extends StatelessWidget {
-  final User user;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _WorkerCard({
-    required this.user,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: isSelected ? const Color(0xFF6C63FF) : const Color(0xFFE8ECEF),
-          width: isSelected ? 2.5 : 1.5,
-        ),
-        boxShadow: [
-          if (isSelected)
-            BoxShadow(
-              color: const Color(0xFF6C63FF).withOpacity(0.25),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            )
-          else
-            BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(20),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  width: 56,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    gradient: isSelected
-                        ? const LinearGradient(
-                            colors: [Color(0xFF6C63FF), Color(0xFF5A52D5)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          )
-                        : LinearGradient(
-                            colors: [Colors.grey[200]!, Colors.grey[300]!],
-                          ),
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: isSelected
-                        ? [
-                            BoxShadow(
-                              color: const Color(0xFF6C63FF).withOpacity(0.3),
-                              blurRadius: 8,
-                              offset: const Offset(0, 4),
-                            ),
-                          ]
-                        : [],
-                  ),
-                  child: Center(
-                    child: Text(
-                      (user.firstName?[0] ?? 'ع').toUpperCase(),
-                      style: TextStyle(
-                        color: isSelected ? Colors.white : Colors.grey[700],
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${user.firstName ?? ''} ${user.lastName ?? ''}',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF2D3436),
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Wrap(
-                        spacing: 12,
-                        runSpacing: 4,
-                        children: [
-                          if (user.role != null)
-                            _InfoChip(
-                              icon: Icons.work_outline_rounded,
-                              label: user.role!,
-                            ),
-                          if (user.phoneNumber != null)
-                            _InfoChip(
-                              icon: Icons.phone_outlined,
-                              label: user.phoneNumber!,
-                            ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 12),
-                AnimatedScale(
-                  duration: const Duration(milliseconds: 200),
-                  scale: isSelected ? 1.0 : 0.9,
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      gradient: isSelected
-                          ? const LinearGradient(
-                              colors: [Color(0xFF26DE81), Color(0xFF20BF6B)],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            )
-                          : null,
-                      color: isSelected ? null : Colors.transparent,
-                      border: isSelected
-                          ? null
-                          : Border.all(color: Colors.grey[400]!, width: 2),
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: isSelected
-                          ? [
-                              BoxShadow(
-                                color: const Color(0xFF26DE81).withOpacity(0.3),
-                                blurRadius: 8,
-                                offset: const Offset(0, 4),
-                              ),
-                            ]
-                          : [],
-                    ),
-                    child: isSelected
-                        ? const Icon(
-                            Icons.check_rounded,
-                            color: Colors.white,
-                            size: 24,
-                          )
-                        : null,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ============================================================
-// Info Chip Widget
-// ============================================================
-
-class _InfoChip extends StatelessWidget {
-  final IconData icon;
-  final String label;
-
-  const _InfoChip({required this.icon, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: const Color(0xFF6C63FF).withOpacity(0.08),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 14, color: const Color(0xFF636E72)),
-          const SizedBox(width: 4),
-          Flexible(
-            child: Text(
-              label,
-              style: const TextStyle(
-                fontSize: 12,
-                color: Color(0xFF636E72),
-                fontWeight: FontWeight.w500,
-              ),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stock_up/core/resources/color_manager.dart';
 import 'package:stock_up/features/Inventory/presentation/pages/select_workers_page.dart';
 
 class InventoryDetailPage extends StatefulWidget {
@@ -26,15 +27,13 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     final workers = (_inventory.workers as List?) ?? [];
-    final status = _inventory.status ?? 'pending';
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FD),
-      appBar: _buildAppBar(context),
+      backgroundColor: ColorManager.lightBackground,
+      appBar: _buildAppBar(),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(size.width * 0.04),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -43,36 +42,41 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
             _buildInfoCard(),
             const SizedBox(height: 20),
             _buildWorkersSection(workers),
-            const SizedBox(height: 20),
-            // if (status.toLowerCase() == 'pending' && workers.isNotEmpty)
-            //   _buildStartInventoryButton(),
           ],
         ),
       ),
     );
   }
 
-  PreferredSizeWidget _buildAppBar(BuildContext context) {
+  PreferredSizeWidget _buildAppBar() {
     return AppBar(
       elevation: 0,
       backgroundColor: Colors.white,
       leading: Container(
         margin: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: const Color(0xFF6C63FF).withOpacity(0.1),
+          gradient: ColorManager.cardGradient,
           borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: ColorManager.purple2.withOpacity(0.3),
+            width: 1,
+          ),
         ),
         child: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF6C63FF)),
+          icon: Icon(Icons.arrow_back_rounded, color: ColorManager.purple2),
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      title: Text(
-        'جرد #${widget.inventoryId}',
-        style: const TextStyle(
-          color: Color(0xFF2D3436),
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
+      title: ShaderMask(
+        shaderCallback: (bounds) =>
+            ColorManager.primaryGradient.createShader(bounds),
+        child: Text(
+          'جرد #${widget.inventoryId}',
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
       centerTitle: true,
@@ -86,17 +90,13 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF6C63FF), Color(0xFF5A52D5)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        gradient: ColorManager.primaryGradient,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF6C63FF).withOpacity(0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            color: ColorManager.purple2.withOpacity(0.5),
+            blurRadius: 40,
+            offset: const Offset(0, 15),
           ),
         ],
       ),
@@ -154,13 +154,7 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        boxShadow: ColorManager.cardShadow,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -170,22 +164,26 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF4ECDC4).withOpacity(0.1),
+                  gradient: ColorManager.cardGradient,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.info_outline_rounded,
-                  color: Color(0xFF4ECDC4),
+                  color: ColorManager.purple2,
                   size: 24,
                 ),
               ),
               const SizedBox(width: 12),
-              const Text(
-                'معلومات الجرد',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF2D3436),
+              ShaderMask(
+                shaderCallback: (bounds) =>
+                    ColorManager.primaryGradient.createShader(bounds),
+                child: const Text(
+                  'معلومات الجرد',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ],
@@ -213,12 +211,12 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8F9FD),
+        gradient: ColorManager.cardGradient,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         children: [
-          Icon(icon, size: 20, color: const Color(0xFF636E72)),
+          Icon(icon, size: 20, color: ColorManager.purple2),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -228,7 +226,7 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
                   label,
                   style: const TextStyle(
                     fontSize: 12,
-                    color: Color(0xFF636E72),
+                    color: ColorManager.textSecondary,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -237,7 +235,6 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF2D3436),
                   ),
                 ),
               ],
@@ -254,13 +251,7 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        boxShadow: ColorManager.cardShadow,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -270,37 +261,37 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF6C63FF).withOpacity(0.1),
+                  gradient: ColorManager.cardGradient,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.people_rounded,
-                  color: Color(0xFF6C63FF),
+                  color: ColorManager.purple2,
                   size: 24,
                 ),
               ),
               const SizedBox(width: 12),
-              const Expanded(
-                child: Text(
-                  'العمال المشاركون',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF2D3436),
+              Expanded(
+                child: ShaderMask(
+                  shaderCallback: (bounds) =>
+                      ColorManager.primaryGradient.createShader(bounds),
+                  child: const Text(
+                    'العمال المشاركون',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
               Container(
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF6C63FF), Color(0xFF5A52D5)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+                  gradient: ColorManager.primaryGradient,
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF6C63FF).withOpacity(0.3),
+                      color: ColorManager.purple2.withOpacity(0.3),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     ),
@@ -319,7 +310,6 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
                       );
 
                       if (result == true) {
-                        // تحديث البيانات هنا
                         Navigator.pop(context, true);
                       }
                     },
@@ -359,12 +349,11 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: const Color(0xFFF8F9FD),
+                gradient: ColorManager.cardGradient,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: Colors.grey[300]!,
+                  color: ColorManager.purple2.withOpacity(0.3),
                   width: 1.5,
-                  style: BorderStyle.solid,
                 ),
               ),
               child: Center(
@@ -373,14 +362,14 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
                     Icon(
                       Icons.person_add_outlined,
                       size: 48,
-                      color: Colors.grey[400],
+                      color: ColorManager.purple2,
                     ),
                     const SizedBox(height: 12),
                     Text(
                       'لم يتم إضافة عمال بعد',
                       style: TextStyle(
                         fontSize: 15,
-                        color: const Color(0xFF636E72),
+                        color: ColorManager.textSecondary,
                       ),
                     ),
                   ],
@@ -407,9 +396,12 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8F9FD),
+        gradient: ColorManager.cardGradient,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE8ECEF), width: 1.5),
+        border: Border.all(
+          color: ColorManager.purple2.withOpacity(0.2),
+          width: 1.5,
+        ),
       ),
       child: Row(
         children: [
@@ -417,12 +409,15 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
             width: 50,
             height: 50,
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF6C63FF), Color(0xFF5A52D5)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+              gradient: ColorManager.primaryGradient,
               borderRadius: BorderRadius.circular(14),
+              boxShadow: [
+                BoxShadow(
+                  color: ColorManager.purple2.withOpacity(0.4),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
             child: Center(
               child: Text(
@@ -445,41 +440,51 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
                   style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF2D3436),
                   ),
                 ),
-                const SizedBox(height: 4),
-                if (worker.role != null)
+                if (worker.role != null) ...[
+                  const SizedBox(height: 4),
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 8,
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF6C63FF).withOpacity(0.1),
+                      gradient: LinearGradient(
+                        colors: [
+                          ColorManager.purple2.withOpacity(0.2),
+                          ColorManager.purple3.withOpacity(0.1),
+                        ],
+                      ),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
                       worker.role!,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
-                        color: Color(0xFF636E72),
+                        color: ColorManager.purple2,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
+                ],
               ],
             ),
           ),
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: const Color(0xFF26DE81).withOpacity(0.1),
+              gradient: LinearGradient(
+                colors: [
+                  ColorManager.success.withOpacity(0.2),
+                  ColorManager.success.withOpacity(0.1),
+                ],
+              ),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.check_circle_rounded,
-              color: Color(0xFF26DE81),
+              color: ColorManager.success,
               size: 22,
             ),
           ),
@@ -488,139 +493,15 @@ class _InventoryDetailPageState extends State<InventoryDetailPage> {
     );
   }
 
-  // Widget _buildStartInventoryButton() {
-  //   return Container(
-  //     decoration: BoxDecoration(
-  //       gradient: const LinearGradient(
-  //         colors: [Color(0xFF26DE81), Color(0xFF20BF6B)],
-  //         begin: Alignment.topLeft,
-  //         end: Alignment.bottomRight,
-  //       ),
-  //       borderRadius: BorderRadius.circular(20),
-  //       boxShadow: [
-  //         BoxShadow(
-  //           color: const Color(0xFF26DE81).withOpacity(0.4),
-  //           blurRadius: 15,
-  //           offset: const Offset(0, 8),
-  //         ),
-  //       ],
-  //     ),
-  //     child: ElevatedButton(
-  //       onPressed: () => _handleStartInventory(),
-  //       style: ElevatedButton.styleFrom(
-  //         backgroundColor: Colors.transparent,
-  //         shadowColor: Colors.transparent,
-  //         padding: const EdgeInsets.symmetric(vertical: 18),
-  //         shape: RoundedRectangleBorder(
-  //           borderRadius: BorderRadius.circular(20),
-  //         ),
-  //       ),
-  //       child: Row(
-  //         mainAxisAlignment: MainAxisAlignment.center,
-  //         children: const [
-  //           Icon(Icons.play_arrow_rounded, color: Colors.white, size: 28),
-  //           SizedBox(width: 12),
-  //           Text(
-  //             'البدء في الجرد',
-  //             style: TextStyle(
-  //               fontSize: 18,
-  //               fontWeight: FontWeight.bold,
-  //               color: Colors.white,
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  // void _handleStartInventory() {
-  //   showDialog(
-  //     context: context,
-  //     builder: (context) => AlertDialog(
-  //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-  //       title: Row(
-  //         children: [
-  //           Container(
-  //             padding: const EdgeInsets.all(8),
-  //             decoration: BoxDecoration(
-  //               color: const Color(0xFF26DE81).withOpacity(0.1),
-  //               borderRadius: BorderRadius.circular(10),
-  //             ),
-  //             child: const Icon(
-  //               Icons.play_arrow_rounded,
-  //               color: Color(0xFF26DE81),
-  //             ),
-  //           ),
-  //           const SizedBox(width: 12),
-  //           const Text('البدء في الجرد', style: TextStyle(fontSize: 18)),
-  //         ],
-  //       ),
-  //       content: const Text(
-  //         'هل تريد البدء في عملية الجرد؟\nسيتم تحديث حالة الجرد إلى "جاري التنفيذ".',
-  //         style: TextStyle(height: 1.5),
-  //       ),
-  //       actions: [
-  //         TextButton(
-  //           onPressed: () => Navigator.pop(context),
-  //           child: const Text(
-  //             'إلغاء',
-  //             style: TextStyle(color: Color(0xFF636E72)),
-  //           ),
-  //         ),
-  //         Container(
-  //           decoration: BoxDecoration(
-  //             gradient: const LinearGradient(
-  //               colors: [Color(0xFF26DE81), Color(0xFF20BF6B)],
-  //               begin: Alignment.topLeft,
-  //               end: Alignment.bottomRight,
-  //             ),
-  //             borderRadius: BorderRadius.circular(12),
-  //           ),
-  //           child: TextButton(
-  //             onPressed: () {
-  //               Navigator.pop(context);
-  //               _showSnackBar(
-  //                 context,
-  //                 'تم البدء في الجرد بنجاح',
-  //                 const Color(0xFF26DE81),
-  //                 Icons.check_circle_rounded,
-  //               );
-  //
-  //               Navigator.push(
-  //                 context,
-  //                 MaterialPageRoute(builder: (context) => AuditProductsPage()),
-  //               );
-  //             },
-  //             style: TextButton.styleFrom(
-  //               padding: const EdgeInsets.symmetric(
-  //                 horizontal: 20,
-  //                 vertical: 10,
-  //               ),
-  //             ),
-  //             child: const Text(
-  //               'نعم، ابدأ',
-  //               style: TextStyle(
-  //                 color: Colors.white,
-  //                 fontWeight: FontWeight.bold,
-  //               ),
-  //             ),
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
       case 'completed':
-        return const Color(0xFF26DE81);
+        return ColorManager.success;
       case 'in_progress':
-        return const Color(0xFFFEA47F);
+        return ColorManager.warning;
       case 'pending':
       default:
-        return const Color(0xFF6C63FF);
+        return ColorManager.purple2;
     }
   }
 

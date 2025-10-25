@@ -78,6 +78,7 @@ class AuditItemsDatasourceRepoImpl implements AuditItemsDatasourceRepo {
       final result = await apiService.searchAuditUser(
         SearchAuditUserRequest(
           userId: CacheService.getData(key: CacheKeys.userId) ?? 0,
+          storeId: CacheService.getData(key: CacheKeys.storeId) ?? 0,
         ),
       );
       return result?.toEntity();

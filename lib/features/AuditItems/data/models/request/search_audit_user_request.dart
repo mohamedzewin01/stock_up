@@ -6,10 +6,10 @@ part 'search_audit_user_request.g.dart';
 class SearchAuditUserRequest {
   @JsonKey(name: "user_id")
   final int? userId;
+  @JsonKey(name: "store_id")
+  final int? storeId;
 
-  SearchAuditUserRequest ({
-    this.userId,
-  });
+  SearchAuditUserRequest({this.userId, this.storeId});
 
   factory SearchAuditUserRequest.fromJson(Map<String, dynamic> json) {
     return _$SearchAuditUserRequestFromJson(json);
@@ -19,5 +19,3 @@ class SearchAuditUserRequest {
     return _$SearchAuditUserRequestToJson(this);
   }
 }
-
-

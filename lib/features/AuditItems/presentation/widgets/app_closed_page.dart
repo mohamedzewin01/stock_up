@@ -5,21 +5,15 @@ import 'package:flutter/services.dart';
 import 'package:stock_up/assets_manager.dart';
 import 'package:stock_up/core/constants/app_constants.dart';
 import 'package:stock_up/core/resources/style_manager.dart';
-import 'package:stock_up/core/utils/cashed_data_shared_preferences.dart';
-import 'package:stock_up/features/Home/presentation/pages/Home_page.dart';
 
-import 'core/utils/remote_config.dart';
-import 'features/AuditItems/presentation/widgets/app_closed_page.dart';
-import 'features/Auth/presentation/pages/Auth_page.dart';
-
-class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+class AppClosedPage extends StatefulWidget {
+  const AppClosedPage({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  State<AppClosedPage> createState() => _AppClosedPageState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
+class _AppClosedPageState extends State<AppClosedPage>
     with TickerProviderStateMixin {
   late AnimationController _backgroundController;
   late AnimationController _logoController;
@@ -96,44 +90,6 @@ class _SplashScreenState extends State<SplashScreen>
     });
 
     // Check app status and navigate
-    _checkAppAndNavigate();
-  }
-
-  Future<void> _checkAppAndNavigate() async {
-    await Future.delayed(const Duration(milliseconds: 2500));
-
-    final isAppEnabled = await ForceUpdateChecker().fetchAppEnabledStatus();
-    final isLoggedIn =
-        await CacheService.getData(key: CacheKeys.rememberMe) ?? false;
-
-    Widget nextScreen;
-    if (!isAppEnabled) {
-      nextScreen = const AppClosedPage();
-    } else if (isLoggedIn) {
-      nextScreen = const HomePage();
-    } else {
-      nextScreen = const AuthPage();
-    }
-
-    if (!mounted) return;
-
-    Navigator.of(context).pushReplacement(
-      PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => nextScreen,
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return FadeTransition(
-            opacity: animation,
-            child: ScaleTransition(
-              scale: Tween<double>(begin: 0.8, end: 1.0).animate(
-                CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
-              ),
-              child: child,
-            ),
-          );
-        },
-        transitionDuration: const Duration(milliseconds: 600),
-      ),
-    );
   }
 
   @override
@@ -188,10 +144,6 @@ class _SplashScreenState extends State<SplashScreen>
                   SizedBox(height: isTablet ? 60 : 50),
 
                   // Loading Indicator
-                  FadeTransition(
-                    opacity: _contentFade,
-                    child: _buildLoadingIndicator(),
-                  ),
                 ],
               ),
             ),
@@ -371,53 +323,12 @@ class _SplashScreenState extends State<SplashScreen>
         colors: [Color(0xFFFFFFFF), Color(0xFFE0AAFF), Color(0xFFC77DFF)],
       ).createShader(bounds),
       child: Text(
-        'إدارة المخزون',
+        'التطبيق مغلق مؤقتًا ',
         style: getSemiBoldStyle(
           fontSize: isTablet ? 48 : 40,
           color: Colors.white,
         ),
-
-        // // TextStyle(
-        //   fontSize: isTablet ? 48 : 40,
-        //   fontWeight: FontWeight.w900,
-        //   color: Colors.white,
-        //   letterSpacing: 2,
-        // //   height: 1.2,
-        // // ),
       ),
-    );
-  }
-
-  Widget _buildLoadingIndicator() {
-    return Column(
-      children: [
-        SizedBox(
-          width: 32,
-          height: 32,
-          child: CircularProgressIndicator(
-            strokeWidth: 3,
-            valueColor: AlwaysStoppedAnimation<Color>(
-              Colors.white.withOpacity(0.8),
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        Text(
-          'جاري التحميل...',
-          style: getMediumStyle(
-            fontSize: 14,
-            color: Colors.white.withOpacity(0.7),
-          ),
-
-          // TextStyle(
-          //   fontSize: 14,
-          //
-          //   color: Colors.white.withOpacity(0.7),
-          //   fontWeight: FontWeight.w500,
-          //   letterSpacing: 0.5,
-          // ),
-        ),
-      ],
     );
   }
 
@@ -453,13 +364,6 @@ class _SplashScreenState extends State<SplashScreen>
                     fontSize: 14,
                     color: Colors.white.withOpacity(0.7),
                   ),
-
-                  // TextStyle(
-                  //   fontSize: isTablet ? 13 : 12,
-                  //   color: Colors.white.withOpacity(0.6),
-                  //   fontWeight: FontWeight.w500,
-                  //   letterSpacing: 0.3,
-                  // ),
                 ),
               ],
             ),

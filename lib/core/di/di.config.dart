@@ -45,6 +45,19 @@ import '../../features/Auth/domain/useCases/Auth_useCase_repo.dart' as _i628;
 import '../../features/Auth/domain/useCases/Auth_useCase_repo_impl.dart'
     as _i971;
 import '../../features/Auth/presentation/bloc/Auth_cubit.dart' as _i192;
+import '../../features/Home/data/datasources/ManagerHome_datasource_repo.dart'
+    as _i983;
+import '../../features/Home/data/datasources/ManagerHome_datasource_repo_impl.dart'
+    as _i800;
+import '../../features/Home/data/repositories_impl/ManagerHome_repo_impl.dart'
+    as _i902;
+import '../../features/Home/domain/repositories/ManagerHome_repository.dart'
+    as _i378;
+import '../../features/Home/domain/useCases/ManagerHome_useCase_repo.dart'
+    as _i478;
+import '../../features/Home/domain/useCases/ManagerHome_useCase_repo_impl.dart'
+    as _i724;
+import '../../features/Home/presentation/bloc/ManagerHome_cubit.dart' as _i632;
 import '../../features/Inventory/data/datasources/Inventory_datasource_repo.dart'
     as _i180;
 import '../../features/Inventory/data/datasources/Inventory_datasource_repo_impl.dart'
@@ -67,20 +80,6 @@ import '../../features/Inventory/presentation/bloc/update_audit_status/update_au
     as _i359;
 import '../../features/Inventory/presentation/bloc/users/users_inventory_cubit.dart'
     as _i821;
-import '../../features/ManagerHome/data/datasources/ManagerHome_datasource_repo.dart'
-    as _i650;
-import '../../features/ManagerHome/data/datasources/ManagerHome_datasource_repo_impl.dart'
-    as _i33;
-import '../../features/ManagerHome/data/repositories_impl/ManagerHome_repo_impl.dart'
-    as _i1029;
-import '../../features/ManagerHome/domain/repositories/ManagerHome_repository.dart'
-    as _i105;
-import '../../features/ManagerHome/domain/useCases/ManagerHome_useCase_repo.dart'
-    as _i794;
-import '../../features/ManagerHome/domain/useCases/ManagerHome_useCase_repo_impl.dart'
-    as _i260;
-import '../../features/ManagerHome/presentation/bloc/ManagerHome_cubit.dart'
-    as _i389;
 import '../../features/ManagerScreen/data/datasources/ManagerScreen_datasource_repo.dart'
     as _i423;
 import '../../features/ManagerScreen/data/datasources/ManagerScreen_datasource_repo_impl.dart'
@@ -184,10 +183,10 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i627.ManagerScreenRepository>(
       () => _i806.ManagerScreenRepositoryImpl(),
     );
-    gh.factory<_i105.ManagerHomeRepository>(
-      () => _i1029.ManagerHomeRepositoryImpl(),
-    );
     gh.factory<_i230.POSPageRepository>(() => _i228.POSPageRepositoryImpl());
+    gh.factory<_i378.ManagerHomeRepository>(
+      () => _i902.ManagerHomeRepositoryImpl(),
+    );
     gh.factory<_i271.SettingsRepository>(() => _i583.SettingsRepositoryImpl());
     gh.factory<_i680.ApiService>(() => _i680.ApiService(gh<_i361.Dio>()));
     gh.factory<_i650.SettingsUseCaseRepo>(
@@ -208,9 +207,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i33.SearchDatasourceRepo>(
       () => _i786.SearchDatasourceRepoImpl(gh<_i680.ApiService>()),
     );
-    gh.factory<_i650.ManagerHomeDatasourceRepo>(
-      () => _i33.ManagerHomeDatasourceRepoImpl(gh<_i680.ApiService>()),
-    );
     gh.factory<_i423.ManagerScreenDatasourceRepo>(
       () => _i856.ManagerScreenDatasourceRepoImpl(gh<_i680.ApiService>()),
     );
@@ -226,6 +222,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i1069.StoresDatasourceRepo>(
       () => _i133.StoresDatasourceRepoImpl(gh<_i680.ApiService>()),
     );
+    gh.factory<_i983.ManagerHomeDatasourceRepo>(
+      () => _i800.ManagerHomeDatasourceRepoImpl(gh<_i680.ApiService>()),
+    );
     gh.factory<_i830.POSPageDatasourceRepo>(
       () => _i448.POSPageDatasourceRepoImpl(gh<_i680.ApiService>()),
     );
@@ -234,9 +233,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i257.AuditItemsDatasourceRepo>(
       () => _i237.AuditItemsDatasourceRepoImpl(gh<_i680.ApiService>()),
-    );
-    gh.factory<_i794.ManagerHomeUseCaseRepo>(
-      () => _i260.ManagerHomeUseCase(gh<_i105.ManagerHomeRepository>()),
     );
     gh.factory<_i285.SearchRepository>(
       () => _i901.SearchRepositoryImpl(gh<_i33.SearchDatasourceRepo>()),
@@ -249,6 +245,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i647.AuthRepository>(
       () => _i295.AuthRepositoryImpl(gh<_i354.AuthDatasourceRepo>()),
+    );
+    gh.factory<_i478.ManagerHomeUseCaseRepo>(
+      () => _i724.ManagerHomeUseCase(gh<_i378.ManagerHomeRepository>()),
     );
     gh.factory<_i675.InventoryRepository>(
       () => _i629.InventoryRepositoryImpl(gh<_i180.InventoryDatasourceRepo>()),
@@ -272,14 +271,14 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i592.StoresRepository>(
       () => _i49.StoresRepositoryImpl(gh<_i1069.StoresDatasourceRepo>()),
     );
-    gh.factory<_i389.ManagerHomeCubit>(
-      () => _i389.ManagerHomeCubit(gh<_i794.ManagerHomeUseCaseRepo>()),
-    );
     gh.factory<_i293.SearchUseCaseRepo>(
       () => _i339.SearchUseCase(gh<_i285.SearchRepository>()),
     );
     gh.factory<_i192.AuthCubit>(
       () => _i192.AuthCubit(gh<_i628.AuthUseCaseRepo>()),
+    );
+    gh.factory<_i632.ManagerHomeCubit>(
+      () => _i632.ManagerHomeCubit(gh<_i478.ManagerHomeUseCaseRepo>()),
     );
     gh.factory<_i359.SearchCubit>(
       () => _i359.SearchCubit(gh<_i293.SearchUseCaseRepo>()),

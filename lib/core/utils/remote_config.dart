@@ -1,5 +1,7 @@
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
+import 'package:stock_up/features/AuditItems/presentation/widgets/app_closed_page.dart';
+import 'package:stock_up/features/Home/presentation/pages/Home_page.dart';
 
 class ForceUpdateChecker {
   final FirebaseRemoteConfig remoteConfig = FirebaseRemoteConfig.instance;
@@ -47,23 +49,5 @@ class MyError extends StatelessWidget {
         }
       },
     );
-  }
-}
-
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: Text('التطبيق مفتوح ✅')));
-  }
-}
-
-class AppClosedPage extends StatelessWidget {
-  const AppClosedPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: Text('التطبيق مغلق مؤقتًا 🚫')));
   }
 }

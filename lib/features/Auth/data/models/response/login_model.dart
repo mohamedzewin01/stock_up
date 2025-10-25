@@ -9,12 +9,12 @@ class LoginModel {
   final String? status;
   @JsonKey(name: "message")
   final String? message;
+  @JsonKey(name: "store")
+  final Store? store;
   @JsonKey(name: "user")
   final User? user;
-  @JsonKey(name: "store_id")
-  final int? storeId;
 
-  LoginModel({this.status, this.user, this.message, this.storeId});
+  LoginModel({this.status, this.message, this.store, this.user});
 
   factory LoginModel.fromJson(Map<String, dynamic> json) {
     return _$LoginModelFromJson(json);
@@ -27,10 +27,32 @@ class LoginModel {
   LoginEntity toEntity() {
     return LoginEntity(
       status: status,
-      user: user?.toEntity(),
       message: message,
-      storeId: storeId,
+      store: store?.toEntity(),
+      user: user?.toEntity(),
     );
+  }
+}
+
+@JsonSerializable()
+class Store {
+  @JsonKey(name: "id")
+  final int? id;
+  @JsonKey(name: "store_name")
+  final String? storeName;
+
+  Store({this.id, this.storeName});
+
+  factory Store.fromJson(Map<String, dynamic> json) {
+    return _$StoreFromJson(json);
+  }
+
+  Map<String, dynamic> toJson() {
+    return _$StoreToJson(this);
+  }
+
+  StoreEntity toEntity() {
+    return StoreEntity(id: id, storeName: storeName);
   }
 }
 
@@ -53,9 +75,9 @@ class User {
     this.id,
     this.firstName,
     this.lastName,
+    this.phoneNumber,
     this.role,
     this.profileImage,
-    this.phoneNumber,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -71,9 +93,9 @@ class User {
       id: id,
       firstName: firstName,
       lastName: lastName,
+      phoneNumber: phoneNumber,
       role: role,
       profileImage: profileImage,
-      phoneNumber: phoneNumber,
     );
   }
 }

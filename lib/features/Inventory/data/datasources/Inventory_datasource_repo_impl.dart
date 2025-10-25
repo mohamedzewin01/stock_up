@@ -65,7 +65,7 @@ class InventoryDatasourceRepoImpl implements InventoryDatasourceRepo {
   Future<Result<GetInventoryByUserEntity?>> getInventoryByUser() {
     return executeApi(() async {
       GetInventoryByUserRequest getInventoryByUserRequest =
-          GetInventoryByUserRequest(creatorUserId: userId);
+          GetInventoryByUserRequest(creatorUserId: userId, storeId: storeId);
       final response = await apiService.getInventoryByUser(
         getInventoryByUserRequest,
       );

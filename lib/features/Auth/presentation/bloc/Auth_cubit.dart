@@ -16,9 +16,15 @@ class AuthCubit extends Cubit<AuthState> {
   static AuthCubit get(context) => BlocProvider.of(context);
 
   bool rememberMe = false;
+  String storeName = '';
 
   void handleRememberMe(bool newValue) {
     rememberMe = !rememberMe;
+    emit(AuthInitial());
+  }
+
+  void handleStoreName(String newValue) {
+    storeName = newValue;
     emit(AuthInitial());
   }
 
@@ -56,7 +62,11 @@ class AuthCubit extends Cubit<AuthState> {
         );
         CacheService.setData(
           key: CacheKeys.storeId,
-          value: result.data?.user?.storeId,
+          value: result.data?.store?.id,
+        );
+        CacheService.setData(
+          key: CacheKeys.storeName,
+          value: result.data?.store?.storeName,
         );
         CacheService.setData(key: CacheKeys.rememberMe, value: rememberMe);
         emit(AuthSuccess(result.data));

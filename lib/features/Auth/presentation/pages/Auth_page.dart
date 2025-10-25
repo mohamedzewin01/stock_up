@@ -1,156 +1,11 @@
-// import 'package:flutter/material.dart';
-// import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:stock_up/features/Auth/presentation/bloc/Auth_cubit.dart';
-// import 'package:stock_up/features/Auth/presentation/widgets/form_card.dart';
-// import 'package:stock_up/features/Stores/data/models/response/all_stores_model.dart';
-// import 'package:stock_up/features/Stores/presentation/bloc/Stores_cubit.dart';
-//
-// import '../../../../core/di/di.dart';
-//
-// class AuthPage extends StatefulWidget {
-//   const AuthPage({super.key});
-//
-//   @override
-//   State<AuthPage> createState() => _AuthPageState();
-// }
-//
-// class _AuthPageState extends State<AuthPage> {
-//   final _formKey = GlobalKey<FormState>();
-//   final _mobileController = TextEditingController();
-//   final _passwordController = TextEditingController();
-//   late AuthCubit authViewModel;
-//   late StoresCubit storesViewModel;
-//   Results? _selectedStore;
-//   bool _rememberMe = false;
-//   bool _obscurePassword = true;
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     authViewModel = getIt.get<AuthCubit>();
-//     storesViewModel = getIt.get<StoresCubit>();
-//     // جلب المتاجر المتاحة عند تحميل الصفحة
-//   }
-//
-//   @override
-//   void dispose() {
-//     _mobileController.dispose();
-//     _passwordController.dispose();
-//     super.dispose();
-//   }
-//
-//   void _handleLogin() {
-//     if (_formKey.currentState!.validate()) {
-//       if (_selectedStore == null) {
-//         ScaffoldMessenger.of(context).showSnackBar(
-//           const SnackBar(
-//             content: Text('الرجاء اختيار المتجر'),
-//             backgroundColor: Colors.red,
-//           ),
-//         );
-//         return;
-//       }
-//
-//       // تنفيذ عملية تسجيل الدخول
-//       context.read<AuthCubit>().login(
-//         _mobileController.toString(),
-//         _passwordController.toString(),
-//         _selectedStore!.id! + 1,
-//       );
-//     }
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return MultiBlocProvider(
-//       providers: [
-//         BlocProvider.value(value: authViewModel),
-//         BlocProvider.value(value: storesViewModel..getAllStores()),
-//       ],
-//
-//       child: Scaffold(
-//         backgroundColor: Colors.grey[50],
-//         body: SafeArea(
-//           child: Center(
-//             child: SingleChildScrollView(
-//               padding: const EdgeInsets.symmetric(horizontal: 24.0),
-//               child: Form(
-//                 key: _formKey,
-//                 child: Column(
-//                   mainAxisAlignment: MainAxisAlignment.center,
-//                   children: [
-//                     // شعار التطبيق
-//                     _buildLogo(),
-//                     const SizedBox(height: 40),
-//
-//                     // عنوان الصفحة
-//                     _buildTitle(),
-//                     const SizedBox(height: 8),
-//                     _buildSubtitle(),
-//                     const SizedBox(height: 40),
-//
-//                     // بطاقة تحتوي على عناصر النموذج
-//                     FormCard(),
-//                     const SizedBox(height: 24),
-//
-//                     // // رابط نسيت كلمة المرور (اختياري)
-//                     // _buildForgotPassword(),
-//                   ],
-//                 ),
-//               ),
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-//
-//   Widget _buildLogo() {
-//     return Container(
-//       width: 100,
-//       height: 100,
-//       decoration: BoxDecoration(
-//         color: Colors.blue[700],
-//         shape: BoxShape.circle,
-//         boxShadow: [
-//           BoxShadow(
-//             color: Colors.blue.withOpacity(0.3),
-//             blurRadius: 20,
-//             offset: const Offset(0, 10),
-//           ),
-//         ],
-//       ),
-//       child: const Icon(Icons.store_rounded, size: 50, color: Colors.white),
-//     );
-//   }
-//
-//   Widget _buildTitle() {
-//     return const Text(
-//       'مرحباً بك',
-//       style: TextStyle(
-//         fontSize: 32,
-//         fontWeight: FontWeight.bold,
-//         color: Color(0xFF1E293B),
-//       ),
-//     );
-//   }
-//
-//   Widget _buildSubtitle() {
-//     return Text(
-//       'سجل الدخول للمتابعة',
-//       style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-//     );
-//   }
-// }
-
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stock_up/assets_manager.dart';
 import 'package:stock_up/core/constants/app_constants.dart';
 import 'package:stock_up/core/resources/style_manager.dart';
 import 'package:stock_up/core/widgets/animated_background.dart';
+import 'package:stock_up/core/widgets/dotted_circle_painter.dart';
+import 'package:stock_up/core/widgets/floating_particle.dart';
 import 'package:stock_up/features/Auth/presentation/bloc/Auth_cubit.dart';
 import 'package:stock_up/features/Auth/presentation/widgets/form_card.dart';
 import 'package:stock_up/features/Stores/presentation/bloc/Stores_cubit.dart';
@@ -251,11 +106,9 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
         body: Stack(
           children: [
             // Animated Background
-            // _buildAnimatedBackground(),
             AnimatedGradientBackground(),
             // Floating Particles
             _buildFloatingParticles(),
-
             // Main Content
             SafeArea(
               child: Center(
@@ -271,14 +124,12 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
                       // Animated Logo with particles
                       _buildPremiumLogo(),
                       SizedBox(height: isTablet ? 26 : 16),
-
                       // Premium Title Section
                       FadeTransition(
                         opacity: _formFade,
                         child: _buildPremiumTitle(),
                       ),
                       SizedBox(height: isTablet ? 30 : 10),
-
                       // Form Card
                       SlideTransition(
                         position: _formSlide,
@@ -305,44 +156,10 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
     );
   }
 
-  // Widget _buildAnimatedBackground() {
-  //   return AnimatedBuilder(
-  //     animation: _backgroundController,
-  //     builder: (context, child) {
-  //       return Container(
-  //         decoration: BoxDecoration(
-  //           gradient: LinearGradient(
-  //             begin: Alignment.topLeft,
-  //             end: Alignment.bottomRight,
-  //             colors: [
-  //               Color.lerp(
-  //                 const Color(0xFF1A1A2E),
-  //                 const Color(0xFF16213E),
-  //                 (_backgroundController.value * 2) % 1,
-  //               )!,
-  //               Color.lerp(
-  //                 const Color(0xFF0F3460),
-  //                 const Color(0xFF16213E),
-  //                 (_backgroundController.value * 2 + 0.5) % 1,
-  //               )!,
-  //               Color.lerp(
-  //                 const Color(0xFF533483),
-  //                 const Color(0xFF7B2CBF),
-  //                 (_backgroundController.value * 2 + 0.7) % 1,
-  //               )!,
-  //             ],
-  //             stops: const [0.0, 0.5, 1.0],
-  //           ),
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
-
   Widget _buildFloatingParticles() {
     return Stack(
       children: List.generate(20, (index) {
-        return _FloatingParticle(
+        return FloatingParticle(
           key: ValueKey(index),
           size: (index % 3 + 1) * 3.0,
           duration: Duration(seconds: 10 + (index % 5) * 2),
@@ -450,7 +267,7 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
                             width: 1,
                           ),
                         ),
-                        child: CustomPaint(painter: _DottedCirclePainter()),
+                        child: CustomPaint(painter: DottedCirclePainter()),
                       ),
                     );
                   },
@@ -526,106 +343,4 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
       ],
     );
   }
-}
-
-class _FloatingParticle extends StatefulWidget {
-  final double size;
-  final Duration duration;
-  final Duration delay;
-
-  const _FloatingParticle({
-    super.key,
-    required this.size,
-    required this.duration,
-    required this.delay,
-  });
-
-  @override
-  State<_FloatingParticle> createState() => _FloatingParticleState();
-}
-
-class _FloatingParticleState extends State<_FloatingParticle>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<Offset> _animation;
-  late double _startX;
-  late double _startY;
-
-  @override
-  void initState() {
-    super.initState();
-    _startX = (DateTime.now().millisecondsSinceEpoch % 100) / 100;
-    _startY = (DateTime.now().microsecondsSinceEpoch % 100) / 100;
-
-    _controller = AnimationController(vsync: this, duration: widget.duration);
-
-    _animation = Tween<Offset>(
-      begin: Offset(_startX, _startY + 1),
-      end: Offset(_startX + 0.2, -0.5),
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.linear));
-
-    Future.delayed(widget.delay, () {
-      if (mounted) {
-        _controller.repeat();
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
-    return AnimatedBuilder(
-      animation: _animation,
-      builder: (context, child) {
-        return Positioned(
-          left: _animation.value.dx * size.width,
-          top: _animation.value.dy * size.height,
-          child: Container(
-            width: widget.size,
-            height: widget.size,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: RadialGradient(
-                colors: [
-                  Colors.white.withOpacity(0.6),
-                  Colors.white.withOpacity(0.0),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _DottedCirclePainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.white.withOpacity(0.3)
-      ..strokeWidth = 2
-      ..style = PaintingStyle.stroke;
-
-    const dotCount = 12;
-    const radius = 67.5;
-    final center = Offset(size.width / 2, size.height / 2);
-
-    for (var i = 0; i < dotCount; i++) {
-      final angle = (i * 2 * 3.14159) / dotCount;
-      final x = center.dx + radius * cos(angle);
-      final y = center.dy + radius * sin(angle);
-      canvas.drawCircle(Offset(x, y), 2, paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

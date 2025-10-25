@@ -9,7 +9,7 @@ import 'package:stock_up/features/Auth/presentation/bloc/Auth_cubit.dart';
 import 'package:stock_up/features/Auth/presentation/widgets/custom_button.dart';
 import 'package:stock_up/features/Auth/presentation/widgets/remember_me.dart';
 import 'package:stock_up/features/Auth/presentation/widgets/store_dropdown.dart';
-import 'package:stock_up/features/ManagerHome/presentation/pages/ManagerHome_page.dart';
+import 'package:stock_up/features/Home/presentation/pages/Home_page.dart';
 import 'package:stock_up/features/Stores/data/models/response/all_stores_model.dart';
 import 'package:stock_up/features/Stores/presentation/bloc/Stores_cubit.dart';
 
@@ -356,45 +356,47 @@ class _FormCardState extends State<FormCard> with TickerProviderStateMixin {
                                 Future.delayed(
                                   const Duration(milliseconds: 800),
                                   () {
-                                    Navigator.pushReplacement(
-                                      context,
-                                      PageRouteBuilder(
-                                        pageBuilder:
-                                            (
-                                              context,
-                                              animation,
-                                              secondaryAnimation,
-                                            ) => const ManagerHome(),
-                                        transitionsBuilder:
-                                            (
-                                              context,
-                                              animation,
-                                              secondaryAnimation,
-                                              child,
-                                            ) {
-                                              return FadeTransition(
-                                                opacity: animation,
-                                                child: ScaleTransition(
-                                                  scale:
-                                                      Tween<double>(
-                                                        begin: 0.8,
-                                                        end: 1.0,
-                                                      ).animate(
-                                                        CurvedAnimation(
-                                                          parent: animation,
-                                                          curve: Curves
-                                                              .easeOutCubic,
+                                    if (context.mounted) {
+                                      Navigator.pushReplacement(
+                                        context,
+                                        PageRouteBuilder(
+                                          pageBuilder:
+                                              (
+                                                context,
+                                                animation,
+                                                secondaryAnimation,
+                                              ) => const HomePage(),
+                                          transitionsBuilder:
+                                              (
+                                                context,
+                                                animation,
+                                                secondaryAnimation,
+                                                child,
+                                              ) {
+                                                return FadeTransition(
+                                                  opacity: animation,
+                                                  child: ScaleTransition(
+                                                    scale:
+                                                        Tween<double>(
+                                                          begin: 0.8,
+                                                          end: 1.0,
+                                                        ).animate(
+                                                          CurvedAnimation(
+                                                            parent: animation,
+                                                            curve: Curves
+                                                                .easeOutCubic,
+                                                          ),
                                                         ),
-                                                      ),
-                                                  child: child,
-                                                ),
-                                              );
-                                            },
-                                        transitionDuration: const Duration(
-                                          milliseconds: 600,
+                                                    child: child,
+                                                  ),
+                                                );
+                                              },
+                                          transitionDuration: const Duration(
+                                            milliseconds: 600,
+                                          ),
                                         ),
-                                      ),
-                                    );
+                                      );
+                                    }
                                   },
                                 );
                               } else if (state is AuthFailure) {
@@ -428,64 +430,6 @@ class _FormCardState extends State<FormCard> with TickerProviderStateMixin {
       ),
     );
   }
-
-  // Widget _buildPremiumHeader() {
-  //   return Column(
-  //     children: [
-  //       Row(
-  //         mainAxisAlignment: MainAxisAlignment.center,
-  //         children: [
-  //           Container(
-  //             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-  //             decoration: BoxDecoration(
-  //               gradient: LinearGradient(
-  //                 colors: [
-  //                   const Color(0xFF9D4EDD).withOpacity(0.3),
-  //                   const Color(0xFF7B2CBF).withOpacity(0.3),
-  //                 ],
-  //               ),
-  //               borderRadius: BorderRadius.circular(20),
-  //               border: Border.all(
-  //                 color: Colors.white.withOpacity(0.3),
-  //                 width: 1,
-  //               ),
-  //             ),
-  //             child: Row(
-  //               mainAxisSize: MainAxisSize.min,
-  //               children: [
-  //                 Icon(
-  //                   Icons.lock_rounded,
-  //                   color: Colors.white.withOpacity(0.9),
-  //                   size: 16,
-  //                 ),
-  //                 const SizedBox(width: 8),
-  //                 Text(
-  //                   'تسجيل دخول آمن',
-  //                   style: TextStyle(
-  //                     fontSize: 13,
-  //                     color: Colors.white.withOpacity(0.9),
-  //                     fontWeight: FontWeight.w600,
-  //                     letterSpacing: 0.5,
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //       const SizedBox(height: 16),
-  //       Text(
-  //         'أدخل بياناتك',
-  //         style: TextStyle(
-  //           fontSize: 20,
-  //           color: Colors.white.withOpacity(0.95),
-  //           fontWeight: FontWeight.bold,
-  //           letterSpacing: 0.5,
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
 
   Widget _buildLoadingCard(bool isTablet) {
     return Container(

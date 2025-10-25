@@ -3,10 +3,11 @@
 class LoginEntity {
   final String? status;
   final String? message;
-  final int? storeId;
-  final UserEntity? user;
 
-  LoginEntity({this.status, this.message, this.user, this.storeId});
+  final UserEntity? user;
+  final StoreEntity? store;
+
+  LoginEntity({this.status, this.message, this.user, this.store});
 }
 
 class UserEntity {
@@ -35,4 +36,12 @@ class UserEntity {
   bool get isManager => role?.toLowerCase() == 'manager';
 
   bool get isEmployee => role?.toLowerCase() == 'employee';
+}
+
+class StoreEntity {
+  final int? id;
+
+  final String? storeName;
+
+  StoreEntity({this.id, this.storeName});
 }

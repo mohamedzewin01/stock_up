@@ -163,6 +163,7 @@ class _RememberMeState extends State<RememberMe>
     final newValue = !widget.value;
     widget.onChanged(newValue);
     AuthCubit.get(context).handleRememberMe(newValue);
+
     print(AuthCubit.get(context).rememberMe);
   }
 

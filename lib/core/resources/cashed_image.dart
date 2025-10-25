@@ -87,12 +87,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
 import 'package:skeletonizer/skeletonizer.dart';
 
-
 import '../api/api_constants.dart';
-import 'color_manager.dart';
 
 String getFileExtensionFromUrl(String url) {
   final uri = Uri.tryParse(url);
@@ -136,7 +133,7 @@ class CustomImage extends StatelessWidget {
             width: sizeIndicator ?? 24,
             height: sizeIndicator ?? 24,
             child: const CircularProgressIndicator(
-              color: ColorManager.primaryColor,
+              // color: ColorManager.primaryColor,
               strokeWidth: 2,
             ),
           ),
@@ -150,7 +147,7 @@ class CustomImage extends StatelessWidget {
       width: width ?? MediaQuery.sizeOf(context).width,
       fit: boxFit ?? BoxFit.fill,
       placeholder: (context, url) =>
-      loadingBuilder ??
+          loadingBuilder ??
           Skeletonizer(
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
@@ -158,7 +155,7 @@ class CustomImage extends StatelessWidget {
                 aspectRatio: 1,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: ColorManager.textPlaceholder.withAlpha(50),
+                    // color: ColorManager.textPlaceholder.withAlpha(50),
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
@@ -166,10 +163,8 @@ class CustomImage extends StatelessWidget {
             ),
           ),
       errorWidget: (context, url, error) =>
-      errorWidget ??
-          const Center(
-            child: Icon(Icons.broken_image, color: Colors.grey),
-          ),
+          errorWidget ??
+          const Center(child: Icon(Icons.broken_image, color: Colors.grey)),
     );
   }
 }

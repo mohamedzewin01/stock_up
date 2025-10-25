@@ -25,7 +25,7 @@ class _POSPageState extends State<POSPage> {
   );
 
   Timer? _debounce;
-  bool _isCameraLocked = false;
+  bool _isCameraLocked = true;
   bool _torchOn = false;
   List<InvoiceItem> _invoiceItems = [];
   List<Results> _searchResults = [];
@@ -551,66 +551,64 @@ class _POSPageState extends State<POSPage> {
             bottom: 12,
             left: 12,
             right: 12,
-            child: Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Total Amount
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'الإجمالي',
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.9),
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                        ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Total Amount
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'الإجمالي',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.9),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
                       ),
-                      const SizedBox(height: 2),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${_totalAmount.toStringAsFixed(2)} ر.س',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+
+                // Items Count
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.shopping_cart_rounded,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
                       Text(
-                        '${_totalAmount.toStringAsFixed(2)} ر.س',
+                        '${_invoiceItems.length} منتج',
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 24,
+                          fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ],
                   ),
-
-                  // Items Count
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 10,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.shopping_cart_rounded,
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          '${_invoiceItems.length} منتج',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
           Positioned(
