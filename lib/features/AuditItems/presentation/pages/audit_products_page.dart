@@ -1581,6 +1581,7 @@ class _AuditProductsPageState extends State<AuditProductsPage>
   late UpdateItemsStatusCubit _updateStatusCubit;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   late int storeId;
+  final Map<String, String> _docIdMap = {};
 
   @override
   void initState() {
@@ -1602,27 +1603,25 @@ class _AuditProductsPageState extends State<AuditProductsPage>
   }
 
   Future<void> _updateProductStatus(
-    String docId,
+    String docId, // ✅ استقبال docId مباشرة
     String newStatus,
     int auditId,
     int itemId,
   ) async {
     try {
+      // ✅ حفظ docId في Map
+      final key = '${auditId}_$itemId';
+      _docIdMap[key] = docId;
+
+      debugPrint('🔍 Saving docId: $docId for key: $key');
+
       _updateStatusCubit.updateInventoryItemsStatus(
         auditId: auditId,
         itemId: itemId,
         status: newStatus,
       );
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('خطأ: ${e.toString()}'),
-            backgroundColor: Colors.red.shade600,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
+      debugPrint('❌ Error: $e');
     }
   }
 
@@ -1681,6 +1680,17 @@ class _AuditProductsPageState extends State<AuditProductsPage>
               final itemId = state.data?.itemId;
               final newStatus = state.data?.newStatus ?? '';
 
+              // ✅ الحصول على docId من Map
+              final key = '${auditId}_$itemId';
+              final docId = _docIdMap[key];
+
+              if (docId == null || docId.isEmpty) {
+                debugPrint('⚠️ Warning: docId not found for key: $key');
+                return;
+              }
+
+              debugPrint('✅ Found docId: $docId for key: $key');
+
               String firebaseStatus;
               if (newStatus == 'done') {
                 firebaseStatus = 'DONE';
@@ -1690,72 +1700,63 @@ class _AuditProductsPageState extends State<AuditProductsPage>
                 firebaseStatus = newStatus.toUpperCase();
               }
 
-              if (auditId != null && itemId != null) {
-                try {
-                  final querySnapshot = await _firestore
-                      .collection('inventory_audit')
-                      .where('audit_id', isEqualTo: auditId)
-                      .where('product_id', isEqualTo: itemId)
-                      .where('store_id', isEqualTo: storeId)
-                      .limit(1)
-                      .get();
+              try {
+                // ✅ تحديث مباشر بدون Query
+                await _firestore
+                    .collection('inventory_audit')
+                    .doc(docId)
+                    .update({
+                      'status': firebaseStatus,
+                      'store_id': storeId,
+                      'updated_at': DateTime.now().toIso8601String(),
+                    });
 
-                  if (querySnapshot.docs.isNotEmpty) {
-                    final docId = querySnapshot.docs.first.id;
-                    await _updateFirebaseStatus(docId, firebaseStatus, storeId);
+                debugPrint('✅ Firebase updated successfully for docId: $docId');
 
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Row(
-                            children: [
-                              Icon(
-                                newStatus == 'done'
-                                    ? Icons.check_circle
-                                    : Icons.cancel,
-                                color: Colors.white,
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  state.data?.message ?? 'تم التحديث بنجاح',
-                                ),
-                              ),
-                            ],
+                // ✅ حذف من Map بعد الاستخدام
+                _docIdMap.remove(key);
+
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Row(
+                        children: [
+                          Icon(
+                            newStatus == 'done'
+                                ? Icons.check_circle
+                                : Icons.cancel,
+                            color: Colors.white,
                           ),
-                          backgroundColor: newStatus == 'done'
-                              ? Colors.green.shade600
-                              : Colors.red.shade600,
-                          behavior: SnackBarBehavior.floating,
-                          duration: const Duration(seconds: 2),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              state.data?.message ?? 'تم التحديث بنجاح',
+                            ),
                           ),
-                        ),
-                      );
-                    }
-                  }
-                } catch (e) {
-                  debugPrint('Error updating Firebase: $e');
-                }
-              }
-            } else if (state is UpdateItemsStatusError) {
-              if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Row(
-                      children: [
-                        const Icon(Icons.error, color: Colors.white),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text('خطأ: ${state.message.toString()}'),
-                        ),
-                      ],
+                        ],
+                      ),
+                      backgroundColor: newStatus == 'done'
+                          ? Colors.green.shade600
+                          : Colors.red.shade600,
+                      behavior: SnackBarBehavior.floating,
+                      duration: const Duration(seconds: 2),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
-                    backgroundColor: Colors.red.shade600,
-                    behavior: SnackBarBehavior.floating,
-                  ),
-                );
+                  );
+                }
+              } catch (e) {
+                debugPrint('❌ Error updating Firebase: $e');
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('خطأ في Firebase: ${e.toString()}'),
+                      backgroundColor: Colors.orange.shade600,
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                }
               }
             }
           },
@@ -2932,7 +2933,6 @@ class CompletedProductsView extends StatelessWidget {
       stream: FirebaseFirestore.instance
           .collection('inventory_audit')
           .where('status', isEqualTo: status)
-          .where('docID')
           .where('store_id', isEqualTo: storeId)
           .snapshots(),
       builder: (context, snapshot) {
