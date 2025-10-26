@@ -43,7 +43,7 @@ class _SearchProductsPageState extends State<SearchProductsPage> {
   bool hasMoreData = true;
   String? lastSearchQuery;
   bool isCameraExpanded = false;
-  bool isCameraActive = true;
+  bool isCameraActive = false;
   bool isFlashOn = false;
   int? auditId; // لحفظ audit_id من الاستجابة
   bool isAuditValid = false; // للتحقق من صلاحية الجرد
