@@ -43,10 +43,10 @@ abstract class ApiService {
   @POST(ApiConstants.getStore)
   Future<AllStoresModel?> getStore();
 
-  @POST(ApiConstants.getAllProducts)
-  Future<GetAllProductsModel?> getAllProducts(
-    @Body() GetAllProductsRequest getAllProductsRequest,
-  );
+  // @POST(ApiConstants.getAllProducts)
+  // Future<GetAllProductsModel?> getAllProducts(
+  //   @Body() GetAllProductsRequest getAllProductsRequest,
+  // );
 
   @POST(ApiConstants.createInventoryAudit)
   Future<CreateInventoryAuditModel?> createInventoryAudit(

@@ -428,7 +428,7 @@ class InventoryBody extends StatelessWidget {
                 ),
               );
             },
-            icon: Icons.add_shopping_cart_rounded,
+            icon: Icons.qr_code_2,
             label: 'إضافة منتجات',
             gradient: LinearGradient(
               colors: [ColorManager.purple3, ColorManager.purple2],

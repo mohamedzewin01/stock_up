@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:stock_up/core/utils/cashed_data_shared_preferences.dart';
+import 'package:stock_up/features/AuditItems/presentation/widgets/add_new_product_sheet.dart';
 import 'package:stock_up/features/AuditItems/presentation/widgets/products_list_section.dart';
 import 'package:stock_up/features/AuditItems/presentation/widgets/search_bar.dart';
 
@@ -23,6 +24,8 @@ class SearchProductsPage extends StatefulWidget {
 }
 
 class _SearchProductsPageState extends State<SearchProductsPage> {
+  String? scannedBarcode; // لحفظ الباركود المسوح
+  bool isSearchingByBarcode = false;
   late SearchProductsCubit searchViewModel;
   late AuditItemsCubit auditViewModel;
   late SearchAuditUserCubit searchAuditUserCubit;
@@ -85,23 +88,63 @@ class _SearchProductsPageState extends State<SearchProductsPage> {
     final query = searchController.text.trim();
 
     if (query != lastSearchQuery) {
+      // إذا كان المستخدم يكتب يدوياً، نلغي حالة البحث بالباركود
+      if (!isSearchingByBarcode) {
+        setState(() {
+          scannedBarcode = null;
+        });
+      }
+
       if (query.isEmpty || query.length >= 3) {
         setState(() {
           currentPage = 1;
           allProducts.clear();
           hasMoreData = true;
+
+          // إذا تم حذف النص، نعيد تعيين حالة الباركود
+          if (query.isEmpty) {
+            scannedBarcode = null;
+            isSearchingByBarcode = false;
+          }
         });
         _searchProducts(query);
       }
     }
   }
 
+  // void _onSearchChanged() {
+  //   final query = searchController.text.trim();
+  //
+  //   if (query != lastSearchQuery) {
+  //     if (query.isEmpty || query.length >= 3) {
+  //       setState(() {
+  //         currentPage = 1;
+  //         allProducts.clear();
+  //         hasMoreData = true;
+  //       });
+  //       _searchProducts(query);
+  //     }
+  //   }
+  // }
   void _searchProducts(String query) {
     lastSearchQuery = query;
+
+    // تحديد إذا كان البحث بالباركود
+    setState(() {
+      isSearchingByBarcode = scannedBarcode != null && query == scannedBarcode;
+    });
+
     if (query.isEmpty || query.length >= 3) {
       searchViewModel.search(query.isEmpty ? null : query, currentPage);
     }
   }
+
+  // void _searchProducts(String query) {
+  //   lastSearchQuery = query;
+  //   if (query.isEmpty || query.length >= 3) {
+  //     searchViewModel.search(query.isEmpty ? null : query, currentPage);
+  //   }
+  // }
 
   void _loadMoreProducts() {
     if (!isLoadingMore && hasMoreData && lastSearchQuery != null) {
@@ -118,10 +161,27 @@ class _SearchProductsPageState extends State<SearchProductsPage> {
     if (barcode != null && barcode.isNotEmpty) {
       HapticFeedback.mediumImpact();
       searchController.text = barcode;
+
+      // حفظ الباركود وتحديد أن البحث بالباركود
+      setState(() {
+        scannedBarcode = barcode;
+        isSearchingByBarcode = true;
+      });
+
       _searchProducts(barcode);
       setState(() => isCameraExpanded = false);
     }
   }
+
+  // void _onBarcodeDetected(BarcodeCapture capture) {
+  //   final String? barcode = capture.barcodes.firstOrNull?.rawValue;
+  //   if (barcode != null && barcode.isNotEmpty) {
+  //     HapticFeedback.mediumImpact();
+  //     searchController.text = barcode;
+  //     _searchProducts(barcode);
+  //     setState(() => isCameraExpanded = false);
+  //   }
+  // }
 
   void _toggleCamera() async {
     setState(() {
@@ -146,10 +206,137 @@ class _SearchProductsPageState extends State<SearchProductsPage> {
     searchController.clear();
     setState(() {
       allProducts.clear();
-      currentPage = 1;
+      currentPage = 0;
       hasMoreData = true;
       lastSearchQuery = null;
+      scannedBarcode = null; // إعادة تعيين الباركود
+      isSearchingByBarcode = false;
     });
+  }
+
+  // void _clearSearch() {
+  //   searchController.clear();
+  //   setState(() {
+  //     allProducts.clear();
+  //     currentPage = 1;
+  //     hasMoreData = true;
+  //     lastSearchQuery = null;
+  //   });
+  // }
+  Future<void> _saveNewProductToFirebase(
+    String barcode,
+    String productName,
+    int quantity,
+    double price,
+    String? notes,
+  ) async {
+    try {
+      // إظهار مؤشر التحميل
+      if (context.mounted) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (ctx) => const Center(child: CircularProgressIndicator()),
+        );
+      }
+
+      // إنشاء مرجع للمستند الجديد
+      final docRef = firebaseRef.collection('inventory_audit').doc();
+
+      // كتابة البيانات في المستند
+      await docRef.set({
+        'docID': docRef.id,
+        'user_id': CacheService.getData(key: CacheKeys.userId),
+        'audit_id': auditId,
+        'store_id': CacheService.getData(key: CacheKeys.storeId),
+        'userName': CacheService.getData(key: CacheKeys.userName),
+        'status': 'pending',
+        'product_id': 0, // منتج جديد بدون ID من قاعدة البيانات
+        'product_name': productName,
+        'product_number': 0,
+        'quantity': quantity,
+        'notes': notes,
+        'unit': 'قطعة', // الوحدة الافتراضية
+        'selling_price': price.toString(),
+        'category_name': 'غير محدد',
+        'total_quantity': '0', // المنتج جديد فالكمية السابقة 0
+        'barcodes': [barcode], // الباركود المسوح
+        'timestamp': FieldValue.serverTimestamp(),
+        'created_at': DateTime.now().toIso8601String(),
+        'is_new_product': true, // علامة لتمييز المنتج الجديد
+      });
+
+      debugPrint('✅ New product saved successfully with docID: ${docRef.id}');
+
+      if (context.mounted) {
+        // إغلاق مؤشر التحميل
+        Navigator.pop(context);
+        // إغلاق الـ bottom sheet
+        Navigator.pop(context);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Row(
+              children: [
+                Icon(Icons.check_circle, color: Colors.white),
+                SizedBox(width: 12),
+                Expanded(child: Text('تم إضافة المنتج الجديد بنجاح')),
+              ],
+            ),
+            backgroundColor: Colors.green.shade600,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        );
+
+        _clearSearch();
+      }
+    } catch (e) {
+      debugPrint('❌ Error saving new product: $e');
+
+      if (context.mounted) {
+        Navigator.pop(context); // إغلاق مؤشر التحميل
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.error, color: Colors.white),
+                const SizedBox(width: 12),
+                Expanded(child: Text('خطأ في حفظ المنتج: ${e.toString()}')),
+              ],
+            ),
+            backgroundColor: Colors.red.shade600,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  void _showAddNewProductSheet(String barcode) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => AddNewProductSheet(
+        barcode: barcode,
+        onConfirm: (name, quantity, price, notes) async {
+          await _saveNewProductToFirebase(
+            barcode,
+            name,
+            quantity,
+            price,
+            notes,
+          );
+        },
+      ),
+    );
   }
 
   Future<void> _sendToFirebase(
@@ -189,38 +376,6 @@ class _SearchProductsPageState extends State<SearchProductsPage> {
       rethrow;
     }
   }
-
-  // Future<void> _sendToFirebase(
-  //   Results product,
-  //   int quantity,
-  //   String? notes,
-  // ) async {
-  //   try {
-  //     await firebaseRef.collection('inventory_audit').add({
-  //       "docID ":
-  //       'user_id': CacheService.getData(key: CacheKeys.userId),
-  //       'audit_id': auditId, // استخدام audit_id من الاستجابة
-  //       'store_id': CacheService.getData(key: CacheKeys.storeId),
-  //       'userName': CacheService.getData(key: CacheKeys.userName),
-  //       'status': 'pending',
-  //       'product_id': product.productId,
-  //       'product_name': product.productName,
-  //       'product_number': product.productNumber,
-  //       'quantity': quantity,
-  //       'notes': notes,
-  //       'unit': product.unit,
-  //       'selling_price': product.sellingPrice,
-  //       'category_name': product.categoryName,
-  //       'total_quantity': product.totalQuantity,
-  //       'barcodes': product.barcodes,
-  //       'timestamp': FieldValue.serverTimestamp(),
-  //       'created_at': DateTime.now().toIso8601String(),
-  //     });
-  //   } catch (e) {
-  //     debugPrint('Error sending to Firebase: $e');
-  //     rethrow;
-  //   }
-  // }
 
   void _showQuantityDialog(Results product) {
     showModalBottomSheet(
@@ -508,6 +663,10 @@ class _SearchProductsPageState extends State<SearchProductsPage> {
                           hasMoreData = hasMore;
                         });
                       },
+                      // إضافة المعاملات الجديدة
+                      scannedBarcode: scannedBarcode,
+                      isSearchingByBarcode: isSearchingByBarcode,
+                      onAddNewProduct: _showAddNewProductSheet,
                     ),
 
                     const SliverToBoxAdapter(child: SizedBox(height: 80)),

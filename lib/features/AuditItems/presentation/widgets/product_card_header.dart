@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stock_up/core/resources/color_manager.dart';
 
 import '../../data/models/response/search_products_model.dart';
 
@@ -20,7 +21,7 @@ class ProductCardHeader extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.blue.shade400, Colors.blue.shade600],
+              colors: [ColorManager.primaryLight, ColorManager.purple1],
             ),
             borderRadius: BorderRadius.circular(12),
           ),
