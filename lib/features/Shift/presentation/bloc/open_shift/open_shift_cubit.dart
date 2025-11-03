@@ -4,10 +4,10 @@ import 'package:stock_up/core/common/api_result.dart';
 import 'package:stock_up/features/Shift/domain/entities/shift_entity.dart';
 import 'package:stock_up/features/Shift/domain/useCases/Shift_useCase_repo.dart';
 
-part 'user_shift_state.dart';
+part 'open_shift_state.dart';
 
-class UserShiftCubit extends Cubit<UserShiftState> {
-  UserShiftCubit(this._shiftUseCaseRepo) : super(UserShiftInitial());
+class OpenShiftCubit extends Cubit<OpenShiftState> {
+  OpenShiftCubit(this._shiftUseCaseRepo) : super(OpenShiftInitial());
   final ShiftUseCaseRepo _shiftUseCaseRepo;
 
   Future<void> getOpenUserShift() async {

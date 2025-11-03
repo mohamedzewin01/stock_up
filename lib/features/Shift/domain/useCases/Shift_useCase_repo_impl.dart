@@ -21,6 +21,11 @@ class ShiftUseCase implements ShiftUseCaseRepo {
     return repository.addShift(openingBalance);
   }
 
+  @override
+  Future<Result<GetClosedShiftEntity?>> getClosedUserShift() {
+    return repository.getClosedUserShift();
+  }
+
   // Future<Result<T>> call(...) async {
   //   return await repository.get...();
   // }

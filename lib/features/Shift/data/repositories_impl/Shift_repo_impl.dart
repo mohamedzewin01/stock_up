@@ -21,5 +21,10 @@ class ShiftRepositoryImpl implements ShiftRepository {
     return shiftDatasourceRepo.getOpenUserShift();
   }
 
+  @override
+  Future<Result<GetClosedShiftEntity?>> getClosedUserShift() {
+    return shiftDatasourceRepo.getClosedUserShift();
+  }
+
   // implementation
 }

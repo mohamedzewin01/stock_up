@@ -21,8 +21,10 @@ import 'package:stock_up/features/Inventory/data/models/response/get_all_users_m
 import 'package:stock_up/features/Inventory/data/models/response/get_inventory_by_user_model.dart';
 import 'package:stock_up/features/Inventory/data/models/response/update_audit_status_model.dart';
 import 'package:stock_up/features/Shift/data/models/request/add_shift_request.dart';
+import 'package:stock_up/features/Shift/data/models/request/get_closed_shift_request.dart';
 import 'package:stock_up/features/Shift/data/models/request/get_open_shift_request.dart';
 import 'package:stock_up/features/Shift/data/models/response/add_shift_model.dart';
+import 'package:stock_up/features/Shift/data/models/response/get_closed_shift_model.dart';
 import 'package:stock_up/features/Shift/data/models/response/get_open_shift_model.dart';
 import 'package:stock_up/features/Stores/data/models/response/all_stores_model.dart';
 import 'package:stock_up/features/Transaction/data/models/request/add_transaction_request.dart';
@@ -101,6 +103,11 @@ abstract class ApiService {
   @POST(ApiConstants.getOpenShift)
   Future<GetOpenShiftModel?> getOpenUserShift(
     @Body() GetOpenShiftRequest getOpenShiftRequest,
+  );
+
+  @POST(ApiConstants.getClosedShift)
+  Future<GetClosedShiftModel?> getClosedUserShift(
+    @Body() GetClosedShiftRequest getClosedShiftRequest,
   );
 
   @POST(ApiConstants.addShift)

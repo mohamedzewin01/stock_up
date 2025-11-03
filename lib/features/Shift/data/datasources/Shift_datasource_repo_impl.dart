@@ -3,6 +3,7 @@ import 'package:stock_up/core/api/api_extentions.dart';
 import 'package:stock_up/core/common/api_result.dart';
 import 'package:stock_up/core/utils/cashed_data_shared_preferences.dart';
 import 'package:stock_up/features/Shift/data/models/request/add_shift_request.dart';
+import 'package:stock_up/features/Shift/data/models/request/get_closed_shift_request.dart';
 import 'package:stock_up/features/Shift/data/models/request/get_open_shift_request.dart';
 import 'package:stock_up/features/Shift/domain/entities/shift_entity.dart';
 
@@ -38,6 +39,17 @@ class ShiftDatasourceRepoImpl implements ShiftDatasourceRepo {
         userId: userId,
       );
       var response = await apiService.getOpenUserShift(getOpenShiftRequest);
+      return response?.toEntity();
+    });
+  }
+
+  @override
+  Future<Result<GetClosedShiftEntity?>> getClosedUserShift() {
+    return executeApi(() async {
+      GetClosedShiftRequest getClosedShiftRequest = GetClosedShiftRequest(
+        userId: userId,
+      );
+      var response = await apiService.getClosedUserShift(getClosedShiftRequest);
       return response?.toEntity();
     });
   }

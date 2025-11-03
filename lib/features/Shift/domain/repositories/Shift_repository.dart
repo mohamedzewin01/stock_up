@@ -5,4 +5,6 @@ abstract class ShiftRepository {
   Future<Result<AddShiftEntity?>> addShift(double openingBalance);
 
   Future<Result<GetOpenShiftEntity?>> getOpenUserShift();
+
+  Future<Result<GetClosedShiftEntity?>> getClosedUserShift();
 }
