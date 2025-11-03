@@ -149,6 +149,10 @@ import '../../features/Shift/domain/repositories/Shift_repository.dart'
 import '../../features/Shift/domain/useCases/Shift_useCase_repo.dart' as _i119;
 import '../../features/Shift/domain/useCases/Shift_useCase_repo_impl.dart'
     as _i802;
+import '../../features/Shift/presentation/bloc/closed_shift/closed_shifts_cubit.dart'
+    as _i887;
+import '../../features/Shift/presentation/bloc/open_shift/open_shift_cubit.dart'
+    as _i773;
 import '../../features/Shift/presentation/bloc/Shift_cubit.dart' as _i722;
 import '../../features/Stores/data/datasources/Stores_datasource_repo.dart'
     as _i1069;
@@ -323,6 +327,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i722.ShiftCubit>(
       () => _i722.ShiftCubit(gh<_i119.ShiftUseCaseRepo>()),
+    );
+    gh.factory<_i773.OpenShiftCubit>(
+      () => _i773.OpenShiftCubit(gh<_i119.ShiftUseCaseRepo>()),
+    );
+    gh.factory<_i887.ClosedShiftsCubit>(
+      () => _i887.ClosedShiftsCubit(gh<_i119.ShiftUseCaseRepo>()),
     );
     gh.factory<_i183.AuditItemsUseCaseRepo>(
       () => _i56.AuditItemsUseCase(gh<_i291.AuditItemsRepository>()),

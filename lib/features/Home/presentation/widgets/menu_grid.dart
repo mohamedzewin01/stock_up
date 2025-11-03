@@ -5,6 +5,7 @@ import 'package:stock_up/features/Home/presentation/widgets/placeholder_page.dar
 import 'package:stock_up/features/Home/presentation/widgets/premium_card.dart';
 import 'package:stock_up/features/Inventory/presentation/pages/inventory_page.dart';
 import 'package:stock_up/features/POSPage/presentation/pages/POSPage_page.dart';
+import 'package:stock_up/features/Shift/presentation/pages/Shift_page.dart';
 
 class MenuGrid extends StatelessWidget {
   const MenuGrid({super.key});
@@ -87,12 +88,10 @@ class MenuGrid extends StatelessWidget {
               // أخضر هادئ وحيوي
               delay: 200,
               onTap: () {
+                //title: 'دفتر اليومية'
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (_) =>
-                        const PlaceholderPage(title: 'دفتر اليومية'),
-                  ),
+                  MaterialPageRoute(builder: (_) => const ShiftPage()),
                 );
               },
             ),

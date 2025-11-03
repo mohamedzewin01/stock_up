@@ -48,6 +48,7 @@ class ShiftDatasourceRepoImpl implements ShiftDatasourceRepo {
     return executeApi(() async {
       GetClosedShiftRequest getClosedShiftRequest = GetClosedShiftRequest(
         userId: userId,
+        storeId: storeId,
       );
       var response = await apiService.getClosedUserShift(getClosedShiftRequest);
       return response?.toEntity();
