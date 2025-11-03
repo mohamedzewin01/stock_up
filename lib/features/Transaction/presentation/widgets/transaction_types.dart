@@ -96,39 +96,66 @@ class TransactionItem {
   /// تحويل أسماء الأنواع لما يتوقعه الـ API (متطابق مع قاعدة البيانات)
   String _getApiTypeName(ShiftTransactionType type) {
     switch (type) {
-      // المبيعات
       case ShiftTransactionType.cash:
         return 'sale_cash';
       case ShiftTransactionType.visaSale:
         return 'sale_card';
       case ShiftTransactionType.deferredSale:
         return 'sale_credit';
-
-      // التحصيل
       case ShiftTransactionType.collectDebt:
-        return 'collect_debt';
-
-      // المصروفات
+        return 'collectDebt';
       case ShiftTransactionType.expenses:
         return 'expense';
       case ShiftTransactionType.purchaseGoods:
-        return 'purchase_goods';
+        return 'purchaseGoods';
       case ShiftTransactionType.paySupplier:
-        return 'pay_supplier';
+        return 'paySupplier';
       case ShiftTransactionType.payBills:
-        return 'pay_bills';
+        return 'payBills';
       case ShiftTransactionType.payObligation:
-        return 'pay_obligation';
-
-      // المرتجعات
+        return 'payObligation';
       case ShiftTransactionType.returns:
         return 'return';
-
-      // أخرى
       case ShiftTransactionType.other:
         return 'other';
     }
   }
+
+  // String _getApiTypeName(ShiftTransactionType type) {
+  //   switch (type) {
+  //     // المبيعات
+  //     case ShiftTransactionType.cash:
+  //       return 'sale_cash';
+  //     case ShiftTransactionType.visaSale:
+  //       return 'sale_card';
+  //     case ShiftTransactionType.deferredSale:
+  //       return 'sale_credit';
+  //
+  //     // التحصيل
+  //     case ShiftTransactionType.collectDebt:
+  //       return 'collectDebt';
+  //
+  //     // المصروفات
+  //     case ShiftTransactionType.expenses:
+  //       return 'expense';
+  //     case ShiftTransactionType.purchaseGoods:
+  //       return 'purchaseGoods';
+  //     case ShiftTransactionType.paySupplier:
+  //       return 'paySupplier';
+  //     case ShiftTransactionType.payBills:
+  //       return 'payBills';
+  //     case ShiftTransactionType.payObligation:
+  //       return 'payObligation';
+  //
+  //     // المرتجعات
+  //     case ShiftTransactionType.returns:
+  //       return 'return';
+  //
+  //     // أخرى
+  //     case ShiftTransactionType.other:
+  //       return 'other';
+  //   }
+  // }
 
   /// الحصول على فئة المعاملة
   TransactionCategory get category => type.category;

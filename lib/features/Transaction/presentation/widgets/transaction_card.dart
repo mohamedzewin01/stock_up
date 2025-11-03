@@ -333,8 +333,8 @@ class _TransactionCardState extends State<TransactionCard>
 
   Widget _buildTypeIcon(Color color) {
     return Container(
-      width: widget.isTablet ? 60 : 52,
-      height: widget.isTablet ? 60 : 52,
+      width: widget.isTablet ? 40 : 32,
+      height: widget.isTablet ? 40 : 32,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -373,33 +373,6 @@ class _TransactionCardState extends State<TransactionCard>
           const SizedBox(height: 6),
           Row(
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      widget.transaction.type.color.withOpacity(0.15),
-                      widget.transaction.type.color.withOpacity(0.05),
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: widget.transaction.type.color.withOpacity(0.2),
-                  ),
-                ),
-                child: Text(
-                  widget.transaction.type.displayName,
-                  style: TextStyle(
-                    fontSize: widget.isTablet ? 11 : 10,
-                    fontWeight: FontWeight.w700,
-                    color: widget.transaction.type.color,
-                    letterSpacing: 0.2,
-                  ),
-                ),
-              ),
               const SizedBox(width: 10),
               Container(
                 padding: const EdgeInsets.all(4),
@@ -413,13 +386,15 @@ class _TransactionCardState extends State<TransactionCard>
                   color: const Color(0xFF718096),
                 ),
               ),
-              const SizedBox(width: 4),
-              Text(
-                TransactionUtils.formatTime(widget.transaction.timestamp),
-                style: TextStyle(
-                  fontSize: widget.isTablet ? 12 : 11,
-                  color: const Color(0xFF718096),
-                  fontWeight: FontWeight.w500,
+              // const SizedBox(width: 2),
+              Expanded(
+                child: Text(
+                  TransactionUtils.formatTime(widget.transaction.timestamp),
+                  style: TextStyle(
+                    fontSize: widget.isTablet ? 12 : 11,
+                    color: const Color(0xFF718096),
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ],
@@ -432,8 +407,8 @@ class _TransactionCardState extends State<TransactionCard>
   Widget _buildAmountSection(bool isPositive, Color color) {
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: widget.isTablet ? 16 : 12,
-        vertical: widget.isTablet ? 12 : 10,
+        horizontal: widget.isTablet ? 8 : 6,
+        vertical: widget.isTablet ? 6 : 8,
       ),
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -455,13 +430,13 @@ class _TransactionCardState extends State<TransactionCard>
                     ? Icons.arrow_upward_rounded
                     : Icons.arrow_downward_rounded,
                 color: color,
-                size: widget.isTablet ? 18 : 16,
+                size: widget.isTablet ? 16 : 14,
               ),
               const SizedBox(width: 4),
               Text(
                 widget.transaction.amount.toStringAsFixed(2),
                 style: TextStyle(
-                  fontSize: widget.isTablet ? 20 : 18,
+                  fontSize: widget.isTablet ? 16 : 14,
                   fontWeight: FontWeight.w800,
                   color: color,
                   letterSpacing: -0.5,

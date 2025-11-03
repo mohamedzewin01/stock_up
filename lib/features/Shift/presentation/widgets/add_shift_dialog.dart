@@ -67,58 +67,60 @@ class _AddShiftDialogState extends State<AddShiftDialog>
           ),
         ],
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildHeader(),
-          const SizedBox(height: 24),
-          _buildForm(),
-          const SizedBox(height: 24),
-          BlocConsumer<ShiftCubit, ShiftState>(
-            listener: (context, state) {
-              if (state is ShiftSuccess) {
-                Navigator.pop(context);
-                context.read<OpenShiftCubit>().getOpenUserShift();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: const Row(
-                      children: [
-                        Icon(Icons.check_circle, color: Colors.white),
-                        SizedBox(width: 12),
-                        Text('تم فتح الوردية بنجاح'),
-                      ],
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildHeader(),
+            const SizedBox(height: 24),
+            _buildForm(),
+            const SizedBox(height: 24),
+            BlocConsumer<ShiftCubit, ShiftState>(
+              listener: (context, state) {
+                if (state is ShiftSuccess) {
+                  Navigator.pop(context);
+                  context.read<OpenShiftCubit>().getOpenUserShift();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Row(
+                        children: [
+                          Icon(Icons.check_circle, color: Colors.white),
+                          SizedBox(width: 12),
+                          Text('تم فتح الوردية بنجاح'),
+                        ],
+                      ),
+                      backgroundColor: Colors.green,
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
-                    backgroundColor: Colors.green,
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                  );
+                } else if (state is ShiftFailure) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Row(
+                        children: [
+                          const Icon(Icons.error, color: Colors.white),
+                          const SizedBox(width: 12),
+                          Expanded(child: Text(state.exception.toString())),
+                        ],
+                      ),
+                      backgroundColor: Colors.red,
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
-                  ),
-                );
-              } else if (state is ShiftFailure) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Row(
-                      children: [
-                        const Icon(Icons.error, color: Colors.white),
-                        const SizedBox(width: 12),
-                        Expanded(child: Text(state.exception.toString())),
-                      ],
-                    ),
-                    backgroundColor: Colors.red,
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                );
-              }
-            },
-            builder: (context, state) {
-              return _buildActions(context, state);
-            },
-          ),
-        ],
+                  );
+                }
+              },
+              builder: (context, state) {
+                return _buildActions(context, state);
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -145,6 +147,15 @@ class _AddShiftDialogState extends State<AddShiftDialog>
             ],
           ),
           child: const Icon(Icons.work_outline, color: Colors.white, size: 40),
+        ),
+        const SizedBox(height: 16),
+        Text(
+          CacheService.getData(key: CacheKeys.storeName),
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF0524E6),
+          ),
         ),
         const SizedBox(height: 16),
         const Text(

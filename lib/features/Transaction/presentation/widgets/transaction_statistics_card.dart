@@ -439,7 +439,7 @@ class TransactionStatisticsCard extends StatelessWidget {
         : const Color(0xFFFC8181);
 
     return Container(
-      padding: EdgeInsets.all(isTablet ? 20 : 18),
+      padding: EdgeInsets.all(isTablet ? 16 : 14),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.15),
         borderRadius: BorderRadius.circular(16),
@@ -516,14 +516,16 @@ class TransactionStatisticsCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 6),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 4),
-                      child: Text(
-                        'ريال سعودي',
-                        style: TextStyle(
-                          fontSize: isTablet ? 13 : 12,
-                          color: Colors.white.withOpacity(0.8),
-                          fontWeight: FontWeight.w600,
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 4),
+                        child: Text(
+                          'ريال سعودي',
+                          style: TextStyle(
+                            fontSize: isTablet ? 13 : 12,
+                            color: Colors.white.withOpacity(0.8),
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                     ),
