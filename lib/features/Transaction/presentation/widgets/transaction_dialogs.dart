@@ -905,6 +905,7 @@ class TransactionDialogs {
     );
 
     try {
+      // إنشاء وإرسال PDF
       await PdfService.generateAndSendShiftPdf(
         phoneNumber: phoneNumber,
         shiftId: shiftId ?? 0,
@@ -914,113 +915,273 @@ class TransactionDialogs {
         transactionCount: transactionCount ?? 0,
       );
 
-      // محاكاة العملية (احذف هذا السطر عند تفعيل PDF الحقيقي)
-      await Future.delayed(const Duration(seconds: 2));
+      // إغلاق loader
+      if (context.mounted) {
+        Navigator.of(context).pop();
 
-      Navigator.of(context).pop(); // إغلاق loader
-
-      // إظهار رسالة نجاح
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF25D366).withOpacity(0.1),
-                  shape: BoxShape.circle,
+        // إظهار رسالة نجاح
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF25D366).withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.check_circle,
+                    color: Color(0xFF25D366),
+                    size: 64,
+                  ),
                 ),
-                child: const Icon(
-                  Icons.check_circle,
-                  color: Color(0xFF25D366),
-                  size: 64,
+                const SizedBox(height: 20),
+                const Text(
+                  'تم المشاركة بنجاح! ✓',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                'تم الإرسال بنجاح! ✓',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'تم إرسال تقرير الوردية عبر واتساب إلى:\n$phoneNumber',
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: Color(0xFF718096), fontSize: 14),
+                const SizedBox(height: 12),
+                const Text(
+                  'تم مشاركة تقرير الوردية\nيمكنك الآن إرساله عبر واتساب',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Color(0xFF718096), fontSize: 14),
+                ),
+              ],
+            ),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.pushReplacementNamed(
+                    context,
+                    RoutesManager.loginPage,
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF667EEA),
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(double.infinity, 48),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text('العودة للرئيسية'),
               ),
             ],
           ),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // إغلاق dialog النجاح
-                Navigator.pushReplacementNamed(
-                  context,
-                  RoutesManager.loginPage,
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF667EEA),
-                foregroundColor: Colors.white,
-                minimumSize: const Size(double.infinity, 48),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: const Text('العودة للرئيسية'),
-            ),
-          ],
-        ),
-      );
+        );
+      }
     } catch (e) {
-      Navigator.of(context).pop(); // إغلاق loader
+      // إغلاق loader
+      if (context.mounted) {
+        Navigator.of(context).pop();
 
-      // إظهار رسالة خطأ
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          title: const Row(
-            children: [
-              Icon(Icons.error, color: Colors.red),
-              SizedBox(width: 12),
-              Text('فشل الإرسال'),
+        // إظهار رسالة خطأ
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            title: const Row(
+              children: [
+                Icon(Icons.error, color: Colors.red),
+                SizedBox(width: 12),
+                Text('فشل الإرسال'),
+              ],
+            ),
+            content: Text('حدث خطأ أثناء إرسال PDF:\n${e.toString()}'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('إغلاق'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _showSendPdfDialog(
+                    context,
+                    shiftId: shiftId,
+                    totalPositive: totalPositive,
+                    totalNegative: totalNegative,
+                    netAmount: netAmount,
+                    transactionCount: transactionCount,
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF667EEA),
+                ),
+                child: const Text('إعادة المحاولة'),
+              ),
             ],
           ),
-          content: Text('حدث خطأ أثناء إرسال PDF:\n${e.toString()}'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('إغلاق'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                _showSendPdfDialog(
-                  context,
-                  shiftId: shiftId,
-                  totalPositive: totalPositive,
-                  totalNegative: totalNegative,
-                  netAmount: netAmount,
-                  transactionCount: transactionCount,
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF667EEA),
-              ),
-              child: const Text('إعادة المحاولة'),
-            ),
-          ],
-        ),
-      );
+        );
+      }
     }
   }
+
+  // static Future<void> _sendPdfToWhatsApp(
+  //   BuildContext context, {
+  //   required String phoneNumber,
+  //   int? shiftId,
+  //   double? totalPositive,
+  //   double? totalNegative,
+  //   double? netAmount,
+  //   int? transactionCount,
+  // }) async {
+  //   // إظهار loader
+  //   showDialog(
+  //     context: context,
+  //     barrierDismissible: false,
+  //     builder: (context) => WillPopScope(
+  //       onWillPop: () async => false,
+  //       child: AlertDialog(
+  //         shape: RoundedRectangleBorder(
+  //           borderRadius: BorderRadius.circular(20),
+  //         ),
+  //         content: Column(
+  //           mainAxisSize: MainAxisSize.min,
+  //           children: [
+  //             const CircularProgressIndicator(color: Color(0xFF667EEA)),
+  //             const SizedBox(height: 20),
+  //             const Text(
+  //               'جاري إنشاء وإرسال PDF...',
+  //               style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+  //             ),
+  //             const SizedBox(height: 8),
+  //             Text(
+  //               'الرجاء الانتظار',
+  //               style: TextStyle(color: Colors.grey[600], fontSize: 13),
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  //
+  //   try {
+  //     await PdfService.generateAndSendShiftPdf(
+  //       phoneNumber: phoneNumber,
+  //       shiftId: shiftId ?? 0,
+  //       totalPositive: totalPositive ?? 0,
+  //       totalNegative: totalNegative ?? 0,
+  //       netAmount: netAmount ?? 0,
+  //       transactionCount: transactionCount ?? 0,
+  //     );
+  //
+  //     // محاكاة العملية (احذف هذا السطر عند تفعيل PDF الحقيقي)
+  //     await Future.delayed(const Duration(seconds: 2));
+  //
+  //     Navigator.of(context).pop(); // إغلاق loader
+  //
+  //     // إظهار رسالة نجاح
+  //     showDialog(
+  //       context: context,
+  //       builder: (context) => AlertDialog(
+  //         shape: RoundedRectangleBorder(
+  //           borderRadius: BorderRadius.circular(20),
+  //         ),
+  //         content: Column(
+  //           mainAxisSize: MainAxisSize.min,
+  //           children: [
+  //             Container(
+  //               padding: const EdgeInsets.all(16),
+  //               decoration: BoxDecoration(
+  //                 color: const Color(0xFF25D366).withOpacity(0.1),
+  //                 shape: BoxShape.circle,
+  //               ),
+  //               child: const Icon(
+  //                 Icons.check_circle,
+  //                 color: Color(0xFF25D366),
+  //                 size: 64,
+  //               ),
+  //             ),
+  //             const SizedBox(height: 20),
+  //             const Text(
+  //               'تم الإرسال بنجاح! ✓',
+  //               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+  //             ),
+  //             const SizedBox(height: 12),
+  //             Text(
+  //               'تم إرسال تقرير الوردية عبر واتساب إلى:\n$phoneNumber',
+  //               textAlign: TextAlign.center,
+  //               style: const TextStyle(color: Color(0xFF718096), fontSize: 14),
+  //             ),
+  //           ],
+  //         ),
+  //         actions: [
+  //           ElevatedButton(
+  //             onPressed: () {
+  //               Navigator.of(context).pop(); // إغلاق dialog النجاح
+  //               Navigator.pushReplacementNamed(
+  //                 context,
+  //                 RoutesManager.loginPage,
+  //               );
+  //             },
+  //             style: ElevatedButton.styleFrom(
+  //               backgroundColor: const Color(0xFF667EEA),
+  //               foregroundColor: Colors.white,
+  //               minimumSize: const Size(double.infinity, 48),
+  //               shape: RoundedRectangleBorder(
+  //                 borderRadius: BorderRadius.circular(12),
+  //               ),
+  //             ),
+  //             child: const Text('العودة للرئيسية'),
+  //           ),
+  //         ],
+  //       ),
+  //     );
+  //   } catch (e) {
+  //     Navigator.of(context).pop(); // إغلاق loader
+  //
+  //     // إظهار رسالة خطأ
+  //     showDialog(
+  //       context: context,
+  //       builder: (context) => AlertDialog(
+  //         shape: RoundedRectangleBorder(
+  //           borderRadius: BorderRadius.circular(20),
+  //         ),
+  //         title: const Row(
+  //           children: [
+  //             Icon(Icons.error, color: Colors.red),
+  //             SizedBox(width: 12),
+  //             Text('فشل الإرسال'),
+  //           ],
+  //         ),
+  //         content: Text('حدث خطأ أثناء إرسال PDF:\n${e.toString()}'),
+  //         actions: [
+  //           TextButton(
+  //             onPressed: () => Navigator.of(context).pop(),
+  //             child: const Text('إغلاق'),
+  //           ),
+  //           ElevatedButton(
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //               _showSendPdfDialog(
+  //                 context,
+  //                 shiftId: shiftId,
+  //                 totalPositive: totalPositive,
+  //                 totalNegative: totalNegative,
+  //                 netAmount: netAmount,
+  //                 transactionCount: transactionCount,
+  //               );
+  //             },
+  //             style: ElevatedButton.styleFrom(
+  //               backgroundColor: const Color(0xFF667EEA),
+  //             ),
+  //             child: const Text('إعادة المحاولة'),
+  //           ),
+  //         ],
+  //       ),
+  //     );
+  //   }
+  // }
 
   // حوار خطأ في الإرسال
   static void showErrorDialog(BuildContext context, String message) {

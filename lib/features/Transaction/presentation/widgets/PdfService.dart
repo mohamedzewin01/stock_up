@@ -1,11 +1,11 @@
 import 'dart:io';
 
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:share_plus/share_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 /// خدمة إنشاء وإرسال PDF للورديات
 class PdfService {
@@ -21,12 +21,21 @@ class PdfService {
   }) async {
     final pdf = pw.Document();
     final now = DateTime.now();
-    final dateFormat = DateFormat('yyyy/MM/dd - hh:mm a', 'ar');
+    final dateFormat = DateFormat('yyyy/MM/dd - hh:mm a');
+    final formattedDate = dateFormat.format(now);
+
+    // تحميل الخطوط العربية
+    final fontRegular = await rootBundle.load('assets/fonts/Cairo-Regular.ttf');
+    final fontBold = await rootBundle.load('assets/fonts/Cairo-Bold.ttf');
+
+    final ttfRegular = pw.Font.ttf(fontRegular);
+    final ttfBold = pw.Font.ttf(fontBold);
 
     pdf.addPage(
       pw.Page(
         pageFormat: PdfPageFormat.a4,
         textDirection: pw.TextDirection.rtl,
+        theme: pw.ThemeData.withFont(base: ttfRegular, bold: ttfBold),
         build: (pw.Context context) {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -45,17 +54,20 @@ class PdfService {
                   children: [
                     pw.Text(
                       'تقرير الوردية',
+                      textDirection: pw.TextDirection.rtl,
                       style: pw.TextStyle(
                         fontSize: 28,
-                        fontWeight: pw.FontWeight.bold,
+                        font: ttfBold,
                         color: PdfColors.white,
                       ),
                     ),
                     pw.SizedBox(height: 8),
                     pw.Text(
-                      dateFormat.format(now),
-                      style: const pw.TextStyle(
+                      formattedDate,
+                      textDirection: pw.TextDirection.rtl,
+                      style: pw.TextStyle(
                         fontSize: 14,
+                        font: ttfRegular,
                         color: PdfColors.white,
                       ),
                     ),
@@ -82,19 +94,40 @@ class PdfService {
                   children: [
                     pw.Text(
                       'معلومات الوردية',
+                      textDirection: pw.TextDirection.rtl,
                       style: pw.TextStyle(
                         fontSize: 18,
-                        fontWeight: pw.FontWeight.bold,
+                        font: ttfBold,
                         color: PdfColor.fromHex('#2D3748'),
                       ),
                     ),
                     pw.SizedBox(height: 12),
                     pw.Divider(color: PdfColor.fromHex('#E2E8F0')),
                     pw.SizedBox(height: 12),
-                    _buildInfoRow('رقم الوردية', '#$shiftId'),
-                    _buildInfoRow('اسم الموظف', userName ?? 'غير محدد'),
-                    _buildInfoRow('المتجر', storeName ?? 'غير محدد'),
-                    _buildInfoRow('عدد المعاملات', '$transactionCount'),
+                    _buildInfoRow(
+                      'رقم الوردية',
+                      '#$shiftId',
+                      ttfRegular,
+                      ttfBold,
+                    ),
+                    _buildInfoRow(
+                      'اسم الموظف',
+                      userName ?? 'غير محدد',
+                      ttfRegular,
+                      ttfBold,
+                    ),
+                    _buildInfoRow(
+                      'المتجر',
+                      storeName ?? 'غير محدد',
+                      ttfRegular,
+                      ttfBold,
+                    ),
+                    _buildInfoRow(
+                      'عدد المعاملات',
+                      '$transactionCount',
+                      ttfRegular,
+                      ttfBold,
+                    ),
                   ],
                 ),
               ),
@@ -115,9 +148,10 @@ class PdfService {
                   children: [
                     pw.Text(
                       'الإحصائيات المالية',
+                      textDirection: pw.TextDirection.rtl,
                       style: pw.TextStyle(
                         fontSize: 18,
-                        fontWeight: pw.FontWeight.bold,
+                        font: ttfBold,
                         color: PdfColor.fromHex('#2D3748'),
                       ),
                     ),
@@ -139,17 +173,19 @@ class PdfService {
                         children: [
                           pw.Text(
                             'إجمالي المبيعات والدخل',
+                            textDirection: pw.TextDirection.rtl,
                             style: pw.TextStyle(
                               fontSize: 14,
-                              fontWeight: pw.FontWeight.bold,
+                              font: ttfBold,
                               color: PdfColor.fromHex('#059669'),
                             ),
                           ),
                           pw.Text(
                             '${totalPositive.toStringAsFixed(2)} ر.س',
+                            textDirection: pw.TextDirection.rtl,
                             style: pw.TextStyle(
                               fontSize: 16,
-                              fontWeight: pw.FontWeight.bold,
+                              font: ttfBold,
                               color: PdfColor.fromHex('#059669'),
                             ),
                           ),
@@ -173,17 +209,19 @@ class PdfService {
                         children: [
                           pw.Text(
                             'إجمالي المصروفات والمدفوعات',
+                            textDirection: pw.TextDirection.rtl,
                             style: pw.TextStyle(
                               fontSize: 14,
-                              fontWeight: pw.FontWeight.bold,
+                              font: ttfBold,
                               color: PdfColor.fromHex('#DC2626'),
                             ),
                           ),
                           pw.Text(
                             '${totalNegative.toStringAsFixed(2)} ر.س',
+                            textDirection: pw.TextDirection.rtl,
                             style: pw.TextStyle(
                               fontSize: 16,
-                              fontWeight: pw.FontWeight.bold,
+                              font: ttfBold,
                               color: PdfColor.fromHex('#DC2626'),
                             ),
                           ),
@@ -220,9 +258,10 @@ class PdfService {
                         children: [
                           pw.Text(
                             'الصافي',
+                            textDirection: pw.TextDirection.rtl,
                             style: pw.TextStyle(
                               fontSize: 18,
-                              fontWeight: pw.FontWeight.bold,
+                              font: ttfBold,
                               color: netAmount >= 0
                                   ? PdfColor.fromHex('#059669')
                                   : PdfColor.fromHex('#DC2626'),
@@ -230,9 +269,10 @@ class PdfService {
                           ),
                           pw.Text(
                             '${netAmount >= 0 ? '+' : ''}${netAmount.toStringAsFixed(2)} ر.س',
+                            textDirection: pw.TextDirection.rtl,
                             style: pw.TextStyle(
                               fontSize: 22,
-                              fontWeight: pw.FontWeight.bold,
+                              font: ttfBold,
                               color: netAmount >= 0
                                   ? PdfColor.fromHex('#059669')
                                   : PdfColor.fromHex('#DC2626'),
@@ -260,17 +300,20 @@ class PdfService {
                   children: [
                     pw.Text(
                       'تم إنشاء هذا التقرير تلقائياً',
+                      textDirection: pw.TextDirection.rtl,
                       style: pw.TextStyle(
                         fontSize: 10,
+                        font: ttfRegular,
                         color: PdfColor.fromHex('#718096'),
                       ),
                     ),
                     pw.SizedBox(height: 4),
                     pw.Text(
                       'نظام إدارة المخزون - StockUp',
+                      textDirection: pw.TextDirection.rtl,
                       style: pw.TextStyle(
                         fontSize: 10,
-                        fontWeight: pw.FontWeight.bold,
+                        font: ttfBold,
                         color: PdfColor.fromHex('#667EEA'),
                       ),
                     ),
@@ -297,15 +340,9 @@ class PdfService {
     required File pdfFile,
     required int shiftId,
   }) async {
-    // تنظيف رقم الهاتف
-    String cleanPhone = phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
-    if (!cleanPhone.startsWith('+')) {
-      cleanPhone = '+$cleanPhone';
-    }
-
-    // رسالة مرفقة
-    final message =
-        '''
+    try {
+      final message =
+          '''
 مرحباً! 👋
 
 إليك تقرير الوردية #$shiftId
@@ -313,21 +350,19 @@ class PdfService {
 تم إرساله من نظام StockUp 📊
     ''';
 
-    // إنشاء رابط واتساب
-    final whatsappUrl =
-        'https://wa.me/$cleanPhone?text=${Uri.encodeComponent(message)}';
-
-    // فتح واتساب
-    if (await canLaunchUrl(Uri.parse(whatsappUrl))) {
-      await launchUrl(
-        Uri.parse(whatsappUrl),
-        mode: LaunchMode.externalApplication,
+      final result = await Share.shareXFiles(
+        [XFile(pdfFile.path)],
+        text: message,
+        subject: 'تقرير الوردية #$shiftId',
       );
-    } else {
-      throw Exception('لا يمكن فتح واتساب');
-    }
 
-    await Share.shareXFiles([XFile(pdfFile.path)]);
+      if (result.status == ShareResultStatus.dismissed) {
+        throw Exception('تم إلغاء المشاركة');
+      }
+    } catch (e) {
+      print('Error sharing PDF: $e');
+      rethrow;
+    }
   }
 
   /// إنشاء وإرسال PDF (دالة شاملة)
@@ -341,27 +376,35 @@ class PdfService {
     String? userName,
     String? storeName,
   }) async {
-    // إنشاء PDF
-    final pdfFile = await generateShiftPdf(
-      shiftId: shiftId,
-      totalPositive: totalPositive,
-      totalNegative: totalNegative,
-      netAmount: netAmount,
-      transactionCount: transactionCount,
-      userName: userName,
-      storeName: storeName,
-    );
+    try {
+      final pdfFile = await generateShiftPdf(
+        shiftId: shiftId,
+        totalPositive: totalPositive,
+        totalNegative: totalNegative,
+        netAmount: netAmount,
+        transactionCount: transactionCount,
+        userName: userName,
+        storeName: storeName,
+      );
 
-    // إرسال عبر واتساب
-    await sendPdfViaWhatsApp(
-      phoneNumber: phoneNumber,
-      pdfFile: pdfFile,
-      shiftId: shiftId,
-    );
+      await sendPdfViaWhatsApp(
+        phoneNumber: phoneNumber,
+        pdfFile: pdfFile,
+        shiftId: shiftId,
+      );
+    } catch (e) {
+      print('Error in generateAndSendShiftPdf: $e');
+      rethrow;
+    }
   }
 
   /// دالة مساعدة لبناء صف معلومات
-  static pw.Widget _buildInfoRow(String label, String value) {
+  static pw.Widget _buildInfoRow(
+    String label,
+    String value,
+    pw.Font fontRegular,
+    pw.Font fontBold,
+  ) {
     return pw.Padding(
       padding: const pw.EdgeInsets.symmetric(vertical: 6),
       child: pw.Row(
@@ -369,16 +412,19 @@ class PdfService {
         children: [
           pw.Text(
             label,
+            textDirection: pw.TextDirection.rtl,
             style: pw.TextStyle(
               fontSize: 14,
+              font: fontRegular,
               color: PdfColor.fromHex('#718096'),
             ),
           ),
           pw.Text(
             value,
+            textDirection: pw.TextDirection.rtl,
             style: pw.TextStyle(
               fontSize: 14,
-              fontWeight: pw.FontWeight.bold,
+              font: fontBold,
               color: PdfColor.fromHex('#2D3748'),
             ),
           ),
