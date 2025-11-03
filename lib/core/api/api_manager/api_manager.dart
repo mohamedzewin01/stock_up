@@ -20,9 +20,13 @@ import 'package:stock_up/features/Inventory/data/models/response/create_inventor
 import 'package:stock_up/features/Inventory/data/models/response/get_all_users_model.dart';
 import 'package:stock_up/features/Inventory/data/models/response/get_inventory_by_user_model.dart';
 import 'package:stock_up/features/Inventory/data/models/response/update_audit_status_model.dart';
-import 'package:stock_up/features/Products/data/models/request/get_all_products_request.dart';
-import 'package:stock_up/features/Products/data/models/response/get_all_products_model.dart';
+import 'package:stock_up/features/Shift/data/models/request/add_shift_request.dart';
+import 'package:stock_up/features/Shift/data/models/request/get_open_shift_request.dart';
+import 'package:stock_up/features/Shift/data/models/response/add_shift_model.dart';
+import 'package:stock_up/features/Shift/data/models/response/get_open_shift_model.dart';
 import 'package:stock_up/features/Stores/data/models/response/all_stores_model.dart';
+import 'package:stock_up/features/Transaction/data/models/request/add_transaction_request.dart';
+import 'package:stock_up/features/Transaction/data/models/response/add_transaction_model.dart';
 
 import '../../../features/Search/data/models/request/search_request.dart';
 import '../../../features/Search/data/models/response/search_model.dart';
@@ -92,5 +96,18 @@ abstract class ApiService {
   @POST(ApiConstants.searchAuditUser)
   Future<SearchAuditUserModel?> searchAuditUser(
     @Body() SearchAuditUserRequest searchAuditUserRequest,
+  );
+
+  @POST(ApiConstants.getOpenShift)
+  Future<GetOpenShiftModel?> getOpenUserShift(
+    @Body() GetOpenShiftRequest getOpenShiftRequest,
+  );
+
+  @POST(ApiConstants.addShift)
+  Future<AddShiftModel?> addShift(@Body() AddShiftRequest addShiftRequest);
+
+  @POST(ApiConstants.addTransaction)
+  Future<AddTransactionModel?> addTransaction(
+    @Body() AddTransactionRequest addTransactionRequest,
   );
 }

@@ -138,6 +138,18 @@ import '../../features/Settings/domain/useCases/Settings_useCase_repo.dart'
 import '../../features/Settings/domain/useCases/Settings_useCase_repo_impl.dart'
     as _i502;
 import '../../features/Settings/presentation/bloc/Settings_cubit.dart' as _i241;
+import '../../features/Shift/data/datasources/Shift_datasource_repo.dart'
+    as _i933;
+import '../../features/Shift/data/datasources/Shift_datasource_repo_impl.dart'
+    as _i886;
+import '../../features/Shift/data/repositories_impl/Shift_repo_impl.dart'
+    as _i190;
+import '../../features/Shift/domain/repositories/Shift_repository.dart'
+    as _i251;
+import '../../features/Shift/domain/useCases/Shift_useCase_repo.dart' as _i119;
+import '../../features/Shift/domain/useCases/Shift_useCase_repo_impl.dart'
+    as _i802;
+import '../../features/Shift/presentation/bloc/Shift_cubit.dart' as _i722;
 import '../../features/Stores/data/datasources/Stores_datasource_repo.dart'
     as _i1069;
 import '../../features/Stores/data/datasources/Stores_datasource_repo_impl.dart'
@@ -151,6 +163,20 @@ import '../../features/Stores/domain/useCases/Stores_useCase_repo.dart'
 import '../../features/Stores/domain/useCases/Stores_useCase_repo_impl.dart'
     as _i1044;
 import '../../features/Stores/presentation/bloc/Stores_cubit.dart' as _i1055;
+import '../../features/Transaction/data/datasources/Transaction_datasource_repo.dart'
+    as _i162;
+import '../../features/Transaction/data/datasources/Transaction_datasource_repo_impl.dart'
+    as _i4;
+import '../../features/Transaction/data/repositories_impl/Transaction_repo_impl.dart'
+    as _i515;
+import '../../features/Transaction/domain/repositories/Transaction_repository.dart'
+    as _i148;
+import '../../features/Transaction/domain/useCases/Transaction_useCase_repo.dart'
+    as _i15;
+import '../../features/Transaction/domain/useCases/Transaction_useCase_repo_impl.dart'
+    as _i657;
+import '../../features/Transaction/presentation/bloc/Transaction_cubit.dart'
+    as _i321;
 import '../api/api_manager/api_manager.dart' as _i680;
 import '../api/dio_module.dart' as _i784;
 
@@ -196,6 +222,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i354.AuthDatasourceRepo>(
       () => _i485.AuthDatasourceRepoImpl(gh<_i680.ApiService>()),
     );
+    gh.factory<_i162.TransactionDatasourceRepo>(
+      () => _i4.TransactionDatasourceRepoImpl(gh<_i680.ApiService>()),
+    );
     gh.factory<_i826.SettingsDatasourceRepo>(
       () => _i625.SettingsDatasourceRepoImpl(gh<_i680.ApiService>()),
     );
@@ -207,6 +236,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i830.POSPageDatasourceRepo>(
       () => _i448.POSPageDatasourceRepoImpl(gh<_i680.ApiService>()),
+    );
+    gh.factory<_i933.ShiftDatasourceRepo>(
+      () => _i886.ShiftDatasourceRepoImpl(gh<_i680.ApiService>()),
+    );
+    gh.factory<_i251.ShiftRepository>(
+      () => _i190.ShiftRepositoryImpl(gh<_i933.ShiftDatasourceRepo>()),
     );
     gh.factory<_i1051.ManagerScreenCubit>(
       () => _i1051.ManagerScreenCubit(gh<_i972.ManagerScreenUseCaseRepo>()),
@@ -223,6 +258,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i647.POSPageCubit>(
       () => _i647.POSPageCubit(gh<_i381.POSPageUseCaseRepo>()),
     );
+    gh.factory<_i148.TransactionRepository>(
+      () => _i515.TransactionRepositoryImpl(
+        gh<_i162.TransactionDatasourceRepo>(),
+      ),
+    );
     gh.factory<_i647.AuthRepository>(
       () => _i295.AuthRepositoryImpl(gh<_i354.AuthDatasourceRepo>()),
     );
@@ -231,6 +271,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i675.InventoryRepository>(
       () => _i629.InventoryRepositoryImpl(gh<_i180.InventoryDatasourceRepo>()),
+    );
+    gh.factory<_i15.TransactionUseCaseRepo>(
+      () => _i657.TransactionUseCase(gh<_i148.TransactionRepository>()),
+    );
+    gh.factory<_i119.ShiftUseCaseRepo>(
+      () => _i802.ShiftUseCase(gh<_i251.ShiftRepository>()),
     );
     gh.factory<_i628.AuthUseCaseRepo>(
       () => _i971.AuthUseCase(gh<_i647.AuthRepository>()),
@@ -241,6 +287,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i592.StoresRepository>(
       () => _i49.StoresRepositoryImpl(gh<_i1069.StoresDatasourceRepo>()),
+    );
+    gh.factory<_i321.TransactionCubit>(
+      () => _i321.TransactionCubit(gh<_i15.TransactionUseCaseRepo>()),
     );
     gh.factory<_i293.SearchUseCaseRepo>(
       () => _i339.SearchUseCase(gh<_i285.SearchRepository>()),
@@ -271,6 +320,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i821.UsersInventoryCubit>(
       () => _i821.UsersInventoryCubit(gh<_i1018.InventoryUseCaseRepo>()),
+    );
+    gh.factory<_i722.ShiftCubit>(
+      () => _i722.ShiftCubit(gh<_i119.ShiftUseCaseRepo>()),
     );
     gh.factory<_i183.AuditItemsUseCaseRepo>(
       () => _i56.AuditItemsUseCase(gh<_i291.AuditItemsRepository>()),
