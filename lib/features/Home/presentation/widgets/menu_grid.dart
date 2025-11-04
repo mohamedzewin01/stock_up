@@ -89,10 +89,22 @@ class MenuGrid extends StatelessWidget {
               delay: 200,
               onTap: () {
                 //title: 'دفتر اليومية'
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const ShiftPage()),
-                );
+                if (CacheService.getData(key: CacheKeys.userRole) == 'admin' ||
+                    CacheService.getData(key: CacheKeys.userRole) ==
+                        'cashier') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ShiftPage()),
+                  );
+                } else {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          const PlaceholderPage(title: 'دفتر اليومية'),
+                    ),
+                  );
+                }
               },
             ),
             PremiumCard(
