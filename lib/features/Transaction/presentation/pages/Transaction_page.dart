@@ -1,288 +1,10 @@
-// import 'package:flutter/material.dart';
-// import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:stock_up/features/Shift/data/models/response/get_open_shift_model.dart';
-//
-// import '../../../../core/di/di.dart';
-// import '../bloc/Transaction_cubit.dart';
-// import '../widgets/add_transaction_dialog.dart';
-// import '../widgets/transaction_bottom_bar.dart';
-// import '../widgets/transaction_dialogs.dart';
-// import '../widgets/transaction_empty_state.dart';
-// import '../widgets/transaction_list.dart';
-// import '../widgets/transaction_statistics_card.dart';
-// import '../widgets/transaction_types.dart';
-//
-// class TransactionPage extends StatefulWidget {
-//   const TransactionPage({super.key, required this.shift});
-//
-//   final ShiftInfo shift;
-//
-//   @override
-//   State<TransactionPage> createState() => _TransactionPageState();
-// }
-//
-// class _TransactionPageState extends State<TransactionPage> {
-//   late TransactionCubit viewModel;
-//   final List<TransactionItem> _transactions = [];
-//   final ScrollController _scrollController = ScrollController();
-//
-//   // إحصائيات المعاملات
-//   double _totalPositive = 0.0;
-//   double _totalNegative = 0.0;
-//   double _netAmount = 0.0;
-//
-//   @override
-//   void initState() {
-//     viewModel = getIt.get<TransactionCubit>();
-//     super.initState();
-//   }
-//
-//   @override
-//   void dispose() {
-//     _scrollController.dispose();
-//     super.dispose();
-//   }
-//
-//   void _updateStatistics() {
-//     _totalPositive = _transactions
-//         .where((t) => t.type.isPositive)
-//         .fold(0.0, (sum, t) => sum + t.amount);
-//
-//     _totalNegative = _transactions
-//         .where((t) => !t.type.isPositive)
-//         .fold(0.0, (sum, t) => sum + t.amount);
-//
-//     _netAmount = _totalPositive - _totalNegative;
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     final screenWidth = MediaQuery.of(context).size.width;
-//     final isTablet = screenWidth > 600;
-//
-//     return BlocProvider.value(
-//       value: viewModel,
-//       child: BlocListener<TransactionCubit, TransactionState>(
-//         listener: (context, state) {
-//           if (state is TransactionSuccess) {
-//             TransactionDialogs.showSuccessDialog(context);
-//           } else if (state is TransactionFailure) {
-//             TransactionDialogs.showErrorDialog(
-//               context,
-//               state.exception.toString(),
-//             );
-//           }
-//         },
-//         child: Scaffold(
-//           backgroundColor: const Color(0xFFF8F9FA),
-//           appBar: _buildAppBar(isTablet),
-//           body: Column(
-//             children: [
-//               // إحصائيات المعاملات
-//               TransactionStatisticsCard(
-//                 totalPositive: _totalPositive,
-//                 totalNegative: _totalNegative,
-//                 netAmount: _netAmount,
-//                 transactionCount: _transactions.length,
-//                 isTablet: isTablet,
-//               ),
-//
-//               // قائمة المعاملات
-//               Expanded(
-//                 child: _transactions.isEmpty
-//                     ? TransactionEmptyState(
-//                         isTablet: isTablet,
-//                         onAddTransaction: _showAddTransactionDialog,
-//                       )
-//                     : TransactionList(
-//                         transactions: _transactions,
-//                         scrollController: _scrollController,
-//                         isTablet: isTablet,
-//                         onEditTransaction: _editTransaction,
-//                         onRemoveTransaction: _removeTransaction,
-//                       ),
-//               ),
-//
-//               // شريط الإجراءات السفلي
-//               TransactionBottomBar(
-//                 hasTransactions: _transactions.isNotEmpty,
-//                 totalPositive: _totalPositive,
-//                 totalNegative: _totalNegative,
-//                 netAmount: _netAmount,
-//                 transactionCount: _transactions.length,
-//                 isTablet: isTablet,
-//                 onClearAll: _clearAllTransactions,
-//                 onFinishShift: _sendTransactionsAndFinishShift,
-//               ),
-//             ],
-//           ),
-//           floatingActionButton: FloatingActionButton(
-//             onPressed: _showAddTransactionDialog,
-//             backgroundColor: const Color(0xFF007AFF),
-//             child: const Icon(Icons.add, color: Colors.white),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-//
-//   PreferredSizeWidget _buildAppBar(bool isTablet) {
-//     return AppBar(
-//       backgroundColor: Colors.white,
-//       elevation: 0,
-//       centerTitle: true,
-//       leading: IconButton(
-//         onPressed: () => Navigator.of(context).pop(),
-//         icon: Icon(
-//           Icons.arrow_back_ios,
-//           color: const Color(0xFF1A1A1A),
-//           size: isTablet ? 24 : 20,
-//         ),
-//       ),
-//       title: Column(
-//         children: [
-//           Text(
-//             'إدارة المعاملات',
-//             style: TextStyle(
-//               fontSize: isTablet ? 20 : 18,
-//               fontWeight: FontWeight.bold,
-//               color: const Color(0xFF1A1A1A),
-//             ),
-//           ),
-//           if (widget.shift.shiftId != null) ...[
-//             Text(
-//               'وردية #${widget.shift.shiftId}',
-//               style: TextStyle(
-//                 fontSize: isTablet ? 12 : 10,
-//                 color: const Color(0xFF666666),
-//               ),
-//             ),
-//           ],
-//         ],
-//       ),
-//       actions: [
-//         if (_transactions.isNotEmpty)
-//           IconButton(
-//             onPressed: _clearAllTransactions,
-//             icon: Icon(
-//               Icons.clear_all,
-//               color: const Color(0xFFFF3B30),
-//               size: isTablet ? 24 : 20,
-//             ),
-//             tooltip: 'مسح جميع المعاملات',
-//           ),
-//         const SizedBox(width: 8),
-//       ],
-//       bottom: PreferredSize(
-//         preferredSize: const Size.fromHeight(1),
-//         child: Container(height: 1, color: const Color(0xFFE5E5E5)),
-//       ),
-//     );
-//   }
-//
-//   void _showAddTransactionDialog() {
-//     showDialog(
-//       context: context,
-//       builder: (context) =>
-//           AddTransactionDialog(onTransactionAdded: _addTransaction),
-//     );
-//   }
-//
-//   void _addTransaction(TransactionItem transaction) {
-//     setState(() {
-//       _transactions.add(transaction);
-//       _updateStatistics();
-//     });
-//
-//     // تحريك القائمة للأسفل لإظهار المعاملة الجديدة
-//     WidgetsBinding.instance.addPostFrameCallback((_) {
-//       if (_scrollController.hasClients) {
-//         _scrollController.animateTo(
-//           _scrollController.position.maxScrollExtent,
-//           duration: const Duration(milliseconds: 300),
-//           curve: Curves.easeOut,
-//         );
-//       }
-//     });
-//   }
-//
-//   void _editTransaction(int index) {
-//     final transaction = _transactions[index];
-//     showDialog(
-//       context: context,
-//       builder: (context) => AddTransactionDialog(
-//         transaction: transaction,
-//         onTransactionAdded: (updatedTransaction) {
-//           setState(() {
-//             _transactions[index] = updatedTransaction;
-//             _updateStatistics();
-//           });
-//         },
-//       ),
-//     );
-//   }
-//
-//   void _removeTransaction(int index) {
-//     setState(() {
-//       _transactions.removeAt(index);
-//       _updateStatistics();
-//     });
-//
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       const SnackBar(
-//         content: Text('تم حذف المعاملة'),
-//         behavior: SnackBarBehavior.floating,
-//         duration: Duration(seconds: 2),
-//       ),
-//     );
-//   }
-//
-//   void _clearAllTransactions() {
-//     TransactionDialogs.showClearConfirmationDialog(
-//       context,
-//       onConfirm: () {
-//         setState(() {
-//           _transactions.clear();
-//           _updateStatistics();
-//         });
-//       },
-//     );
-//   }
-//
-//   void _sendTransactionsAndFinishShift() {
-//     TransactionDialogs.showFinishShiftConfirmationDialog(
-//       context,
-//       totalPositive: _totalPositive,
-//       totalNegative: _totalNegative,
-//       netAmount: _netAmount,
-//       transactionCount: _transactions.length,
-//       onConfirm: () {
-//         // تحويل المعاملات إلى نموذج API
-//         final apiTransactions = _transactions
-//             .map((t) => t.toApiModel())
-//             .toList();
-//
-//         // إرسال المعاملات
-//         viewModel.addTransaction(
-//           shiftId: widget.shift.shiftId ?? 0,
-//           transactions: apiTransactions,
-//         );
-//       },
-//     );
-//   }
-// }
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stock_up/features/Shift/data/models/response/get_open_shift_model.dart';
 
 import '../../../../core/di/di.dart';
 import '../bloc/Transaction_cubit.dart';
-import '../widgets/add_transaction_dialog.dart';
-import '../widgets/transaction_bottom_bar.dart';
 import '../widgets/transaction_dialogs.dart';
-import '../widgets/transaction_empty_state.dart';
-import '../widgets/transaction_list.dart';
-import '../widgets/transaction_statistics_card.dart';
 import '../widgets/transaction_types.dart';
 
 class TransactionPage extends StatefulWidget {
@@ -294,50 +16,40 @@ class TransactionPage extends StatefulWidget {
   State<TransactionPage> createState() => _TransactionPageState();
 }
 
-class _TransactionPageState extends State<TransactionPage>
-    with SingleTickerProviderStateMixin {
+class _TransactionPageState extends State<TransactionPage> {
   late TransactionCubit viewModel;
   final List<TransactionItem> _transactions = [];
-  final ScrollController _scrollController = ScrollController();
-  late AnimationController _animationController;
-  late Animation<double> _fadeAnimation;
-  late Animation<Offset> _slideAnimation;
 
-  // إحصائيات المعاملات
+  // Controllers
+  final TextEditingController _amountController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+
+  // State
+  ShiftTransactionType _selectedType = ShiftTransactionType.cash;
+  String _calculatorDisplay = '0';
+  bool _isCalculatorMode = false;
+
+  // Statistics
   double _totalPositive = 0.0;
   double _totalNegative = 0.0;
   double _netAmount = 0.0;
+
+  // Colors
+  final Color primaryColor = const Color(0xFF6366F1);
+  final Color secondaryColor = const Color(0xFF8B5CF6);
+  final Color successColor = const Color(0xFF10B981);
+  final Color dangerColor = const Color(0xFFEF4444);
 
   @override
   void initState() {
     super.initState();
     viewModel = getIt.get<TransactionCubit>();
-
-    // Animation setup
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 800),
-      vsync: this,
-    );
-
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeIn),
-    );
-
-    _slideAnimation =
-        Tween<Offset>(begin: const Offset(0, 0.1), end: Offset.zero).animate(
-          CurvedAnimation(
-            parent: _animationController,
-            curve: Curves.easeOutCubic,
-          ),
-        );
-
-    _animationController.forward();
   }
 
   @override
   void dispose() {
-    _scrollController.dispose();
-    _animationController.dispose();
+    _amountController.dispose();
+    _descriptionController.dispose();
     super.dispose();
   }
 
@@ -346,26 +58,164 @@ class _TransactionPageState extends State<TransactionPage>
       _totalPositive = _transactions
           .where((t) => t.type.isPositive)
           .fold(0.0, (sum, t) => sum + t.amount);
-
       _totalNegative = _transactions
           .where((t) => !t.type.isPositive)
           .fold(0.0, (sum, t) => sum + t.amount);
-
       _netAmount = _totalPositive - _totalNegative;
     });
   }
 
+  void _addQuickAmount(String amount) {
+    if (_isCalculatorMode) {
+      if (_calculatorDisplay == '0') {
+        _calculatorDisplay = amount;
+      } else {
+        _calculatorDisplay += amount;
+      }
+      _amountController.text = _calculatorDisplay;
+    } else {
+      final currentAmount = double.tryParse(_amountController.text) ?? 0;
+      final quickAmount = double.parse(amount);
+      _amountController.text = (currentAmount + quickAmount).toString();
+    }
+    setState(() {});
+  }
+
+  void _handleCalculator(String value) {
+    setState(() {
+      if (value == 'C') {
+        _calculatorDisplay = '0';
+        _amountController.text = '0';
+      } else if (value == '⌫') {
+        if (_calculatorDisplay.length > 1) {
+          _calculatorDisplay = _calculatorDisplay.substring(
+            0,
+            _calculatorDisplay.length - 1,
+          );
+        } else {
+          _calculatorDisplay = '0';
+        }
+        _amountController.text = _calculatorDisplay;
+      } else if (value == '.') {
+        if (!_calculatorDisplay.contains('.')) {
+          _calculatorDisplay += '.';
+          _amountController.text = _calculatorDisplay;
+        }
+      } else {
+        if (_calculatorDisplay == '0') {
+          _calculatorDisplay = value;
+        } else {
+          _calculatorDisplay += value;
+        }
+        _amountController.text = _calculatorDisplay;
+      }
+    });
+  }
+
+  void _addTransaction() {
+    final amount = double.tryParse(_amountController.text);
+    if (amount == null || amount <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: const [
+              Icon(Icons.warning, color: Colors.white),
+              SizedBox(width: 12),
+              Text('يرجى إدخال مبلغ صحيح'),
+            ],
+          ),
+          backgroundColor: dangerColor,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
+      return;
+    }
+
+    final transaction = TransactionItem(
+      amount: amount,
+      type: _selectedType,
+      description: _descriptionController.text.isEmpty
+          ? TransactionUtils.getDefaultDescription(_selectedType)
+          : _descriptionController.text,
+      timestamp: DateTime.now(),
+    );
+
+    setState(() {
+      _transactions.add(transaction);
+      _updateStatistics();
+
+      // Reset
+      _amountController.clear();
+      _descriptionController.clear();
+      _calculatorDisplay = '0';
+      _isCalculatorMode = false;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: const [
+            Icon(Icons.check_circle, color: Colors.white),
+            SizedBox(width: 12),
+            Text('تم إضافة المعاملة بنجاح'),
+          ],
+        ),
+        backgroundColor: successColor,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        duration: const Duration(seconds: 1),
+      ),
+    );
+  }
+
+  void _finishShift() {
+    if (_transactions.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('لا توجد معاملات لإرسالها'),
+          backgroundColor: dangerColor,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
+    TransactionDialogs.showFinishShiftConfirmationDialog(
+      context,
+      totalPositive: _totalPositive,
+      totalNegative: _totalNegative,
+      netAmount: _netAmount,
+      transactionCount: _transactions.length,
+      onConfirm: () {
+        final apiTransactions = _transactions
+            .map((t) => t.toApiModel())
+            .toList();
+        viewModel.addTransaction(
+          shiftId: widget.shift.shiftId ?? 0,
+          transactions: apiTransactions,
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final isTablet = screenWidth > 600;
-
     return BlocProvider.value(
       value: viewModel,
       child: BlocListener<TransactionCubit, TransactionState>(
         listener: (context, state) {
           if (state is TransactionSuccess) {
-            TransactionDialogs.showSuccessDialog(context);
+            TransactionDialogs.showSuccessDialog(
+              context,
+              shiftId: widget.shift.shiftId,
+              totalPositive: _totalPositive,
+              totalNegative: _totalNegative,
+              netAmount: _netAmount,
+              transactionCount: _transactions.length,
+            );
           } else if (state is TransactionFailure) {
             TransactionDialogs.showErrorDialog(
               context,
@@ -375,255 +225,115 @@ class _TransactionPageState extends State<TransactionPage>
         },
         child: Scaffold(
           backgroundColor: const Color(0xFFF5F7FA),
-          body: CustomScrollView(
-            physics: const BouncingScrollPhysics(),
-            slivers: [
-              _buildSliverAppBar(isTablet),
-              SliverToBoxAdapter(
-                child: FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: SlideTransition(
-                    position: _slideAnimation,
+          body: SafeArea(
+            child: Column(
+              children: [
+                _buildHeader(),
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(16),
                     child: Column(
                       children: [
-                        const SizedBox(height: 8),
-                        // بطاقة معلومات الوردية
-                        _buildShiftInfoCard(isTablet),
+                        _buildStatsCard(),
                         const SizedBox(height: 16),
-                        // إحصائيات المعاملات
-                        TransactionStatisticsCard(
-                          totalPositive: _totalPositive,
-                          totalNegative: _totalNegative,
-                          netAmount: _netAmount,
-                          transactionCount: _transactions.length,
-                          isTablet: isTablet,
-                        ),
+                        _buildQuickInputCard(),
                         const SizedBox(height: 16),
+                        _buildTransactionsList(),
                       ],
                     ),
                   ),
                 ),
-              ),
-              // قائمة المعاملات
-              _transactions.isEmpty
-                  ? SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: TransactionEmptyState(
-                        isTablet: isTablet,
-                        onAddTransaction: _showAddTransactionDialog,
-                      ),
-                    )
-                  : SliverPadding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: isTablet ? 20 : 16,
-                      ),
-                      sliver: TransactionList(
-                        transactions: _transactions,
-                        scrollController: _scrollController,
-                        isTablet: isTablet,
-                        onEditTransaction: _editTransaction,
-                        onRemoveTransaction: _removeTransaction,
-                      ),
-                    ),
-              const SliverToBoxAdapter(child: SizedBox(height: 100)),
-            ],
+                _buildBottomBar(),
+              ],
+            ),
           ),
-          bottomNavigationBar: TransactionBottomBar(
-            hasTransactions: _transactions.isNotEmpty,
-            totalPositive: _totalPositive,
-            totalNegative: _totalNegative,
-            netAmount: _netAmount,
-            transactionCount: _transactions.length,
-            isTablet: isTablet,
-            onClearAll: _clearAllTransactions,
-            onFinishShift: _sendTransactionsAndFinishShift,
-          ),
-          floatingActionButton: _buildFloatingActionButton(isTablet),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerFloat,
         ),
       ),
     );
   }
 
-  Widget _buildSliverAppBar(bool isTablet) {
-    return SliverAppBar(
-      expandedHeight: 120,
-      floating: false,
-      pinned: true,
-      elevation: 0,
-      backgroundColor: Colors.transparent,
-      flexibleSpace: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF667EEA), Color(0xFF764BA2)],
+  Widget _buildHeader() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(colors: [primaryColor, secondaryColor]),
+        boxShadow: [
+          BoxShadow(
+            color: primaryColor.withOpacity(0.3),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
           ),
-        ),
-        child: FlexibleSpaceBar(
-          centerTitle: true,
-          title: Column(
-            mainAxisSize: MainAxisSize.min,
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
             children: [
-              Text(
-                'إدارة المعاملات',
-                style: TextStyle(
-                  fontSize: isTablet ? 18 : 14,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  shadows: [
-                    Shadow(
-                      color: Colors.black.withOpacity(0.2),
-                      offset: const Offset(0, 2),
-                      blurRadius: 4,
+              IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(
+                    Icons.arrow_back_ios_new,
+                    color: Colors.white,
+                    size: 18,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'إدارة المعاملات',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'وردية #${widget.shift.shiftId ?? 'N/A'}',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.white.withOpacity(0.9),
+                      ),
                     ),
                   ],
                 ),
               ),
-              if (widget.shift.shiftId != null) ...[
-                const SizedBox(height: 2),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    'وردية #${widget.shift.shiftId}',
-                    style: TextStyle(
-                      fontSize: isTablet ? 11 : 10,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
                 ),
-              ],
-            ],
-          ),
-        ),
-      ),
-      leading: IconButton(
-        onPressed: () => Navigator.of(context).pop(),
-        icon: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: const Icon(
-            Icons.arrow_back_ios_new,
-            color: Colors.white,
-            size: 18,
-          ),
-        ),
-      ),
-      actions: [
-        if (_transactions.isNotEmpty)
-          IconButton(
-            onPressed: _clearAllTransactions,
-            icon: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.red.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Icon(
-                Icons.delete_sweep,
-                color: Colors.white,
-                size: 20,
-              ),
-            ),
-            tooltip: 'مسح الكل',
-          ),
-        const SizedBox(width: 8),
-      ],
-    );
-  }
-
-  Widget _buildShiftInfoCard(bool isTablet) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: isTablet ? 20 : 16),
-      padding: EdgeInsets.all(isTablet ? 20 : 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF667EEA), Color(0xFF764BA2)],
-              ),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(Icons.access_time, color: Colors.white, size: 24),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'وردية نشطة',
-                  style: TextStyle(
-                    fontSize: isTablet ? 16 : 14,
-                    fontWeight: FontWeight.bold,
-                    color: const Color(0xFF2D3748),
-                  ),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(20),
                 ),
-                const SizedBox(height: 4),
-                Row(
+                child: Row(
                   children: [
-                    Container(
-                      width: 8,
-                      height: 8,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF48BB78),
-                        shape: BoxShape.circle,
-                      ),
+                    const Icon(
+                      Icons.receipt_long,
+                      color: Colors.white,
+                      size: 18,
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      'جارية الآن',
-                      style: TextStyle(
-                        fontSize: isTablet ? 13 : 11,
-                        color: const Color(0xFF718096),
+                      '${_transactions.length}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
                       ),
                     ),
                   ],
-                ),
-              ],
-            ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                '${_transactions.length}',
-                style: TextStyle(
-                  fontSize: isTablet ? 24 : 20,
-                  fontWeight: FontWeight.bold,
-                  color: const Color(0xFF667EEA),
-                ),
-              ),
-              Text(
-                'معاملة',
-                style: TextStyle(
-                  fontSize: isTablet ? 12 : 10,
-                  color: const Color(0xFF718096),
                 ),
               ),
             ],
@@ -633,248 +343,642 @@ class _TransactionPageState extends State<TransactionPage>
     );
   }
 
-  Widget _buildFloatingActionButton(bool isTablet) {
+  Widget _buildStatsCard() {
     return Container(
-      height: isTablet ? 70 : 60,
-      width: isTablet ? 70 : 60,
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF667EEA), Color(0xFF764BA2)],
-        ),
-        borderRadius: BorderRadius.circular(isTablet ? 20 : 16),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF667EEA).withOpacity(0.4),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: _showAddTransactionDialog,
-          borderRadius: BorderRadius.circular(isTablet ? 20 : 16),
-          child: Icon(
-            Icons.add_rounded,
-            color: Colors.white,
-            size: isTablet ? 32 : 28,
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _showAddTransactionDialog() {
-    showGeneralDialog(
-      context: context,
-      barrierDismissible: true,
-      barrierLabel: '',
-      barrierColor: Colors.black.withOpacity(0.5),
-      transitionDuration: const Duration(milliseconds: 300),
-      pageBuilder: (context, animation, secondaryAnimation) {
-        return AddTransactionDialog(onTransactionAdded: _addTransaction);
-      },
-      transitionBuilder: (context, animation, secondaryAnimation, child) {
-        return ScaleTransition(
-          scale: Tween<double>(begin: 0.8, end: 1.0).animate(
-            CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
-          ),
-          child: FadeTransition(opacity: animation, child: child),
-        );
-      },
-    );
-  }
-
-  void _addTransaction(TransactionItem transaction) {
-    setState(() {
-      _transactions.add(transaction);
-      _updateStatistics();
-    });
-
-    // عرض رسالة نجاح
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Icon(
-                Icons.check_circle,
-                color: Colors.white,
-                size: 20,
-              ),
-            ),
-            const SizedBox(width: 12),
-            const Expanded(
-              child: Text(
-                'تم إضافة المعاملة بنجاح',
-                style: TextStyle(fontWeight: FontWeight.w600),
-              ),
-            ),
+          colors: [
+            primaryColor.withOpacity(0.1),
+            secondaryColor.withOpacity(0.05),
           ],
         ),
-        backgroundColor: const Color(0xFF48BB78),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        duration: const Duration(seconds: 2),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: primaryColor.withOpacity(0.2)),
       ),
-    );
-
-    // تحريك القائمة للأسفل
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 400),
-          curve: Curves.easeOutCubic,
-        );
-      }
-    });
-  }
-
-  void _editTransaction(int index) {
-    final transaction = _transactions[index];
-    showGeneralDialog(
-      context: context,
-      barrierDismissible: true,
-      barrierLabel: '',
-      barrierColor: Colors.black.withOpacity(0.5),
-      transitionDuration: const Duration(milliseconds: 300),
-      pageBuilder: (context, animation, secondaryAnimation) {
-        return AddTransactionDialog(
-          transaction: transaction,
-          onTransactionAdded: (updatedTransaction) {
-            setState(() {
-              _transactions[index] = updatedTransaction;
-              _updateStatistics();
-            });
-
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: const Row(
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Icon(Icons.analytics_rounded, color: primaryColor, size: 24),
+              const SizedBox(width: 12),
+              const Text(
+                'الملخص المالي',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: _buildStatItem(
+                  'الدخل',
+                  _totalPositive,
+                  successColor,
+                  Icons.arrow_upward_rounded,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildStatItem(
+                  'المصروفات',
+                  _totalNegative,
+                  dangerColor,
+                  Icons.arrow_downward_rounded,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: _netAmount >= 0
+                  ? successColor.withOpacity(0.1)
+                  : dangerColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: _netAmount >= 0 ? successColor : dangerColor,
+                width: 2,
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
                   children: [
-                    Icon(Icons.edit, color: Colors.white, size: 20),
-                    SizedBox(width: 12),
+                    Icon(
+                      _netAmount >= 0 ? Icons.trending_up : Icons.trending_down,
+                      color: _netAmount >= 0 ? successColor : dangerColor,
+                    ),
+                    const SizedBox(width: 8),
                     Text(
-                      'تم تعديل المعاملة بنجاح',
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                      'الصافي',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: _netAmount >= 0 ? successColor : dangerColor,
+                      ),
                     ),
                   ],
                 ),
-                backgroundColor: const Color(0xFF667EEA),
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                Text(
+                  '${_netAmount >= 0 ? '+' : ''}${_netAmount.toStringAsFixed(2)} ر.س',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w900,
+                    color: _netAmount >= 0 ? successColor : dangerColor,
+                  ),
                 ),
-              ),
-            );
-          },
-        );
-      },
-      transitionBuilder: (context, animation, secondaryAnimation, child) {
-        return ScaleTransition(
-          scale: Tween<double>(begin: 0.8, end: 1.0).animate(
-            CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
-          ),
-          child: FadeTransition(opacity: animation, child: child),
-        );
-      },
-    );
-  }
-
-  void _removeTransaction(int index) {
-    final removedTransaction = _transactions[index];
-
-    setState(() {
-      _transactions.removeAt(index);
-      _updateStatistics();
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Row(
-          children: [
-            Icon(Icons.delete, color: Colors.white, size: 20),
-            SizedBox(width: 12),
-            Text(
-              'تم حذف المعاملة',
-              style: TextStyle(fontWeight: FontWeight.w600),
+              ],
             ),
-          ],
-        ),
-        backgroundColor: const Color(0xFFFC8181),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        action: SnackBarAction(
-          label: 'تراجع',
-          textColor: Colors.white,
-          onPressed: () {
-            setState(() {
-              _transactions.insert(index, removedTransaction);
-              _updateStatistics();
-            });
-          },
-        ),
+          ),
+        ],
       ),
     );
   }
 
-  void _clearAllTransactions() {
-    TransactionDialogs.showClearConfirmationDialog(
-      context,
-      onConfirm: () {
-        setState(() {
-          _transactions.clear();
-          _updateStatistics();
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Row(
-              children: [
-                Icon(Icons.clear_all, color: Colors.white, size: 20),
-                SizedBox(width: 12),
-                Text(
-                  'تم مسح جميع المعاملات',
-                  style: TextStyle(fontWeight: FontWeight.w600),
-                ),
-              ],
-            ),
-            backgroundColor: const Color(0xFFFC8181),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+  Widget _buildStatItem(
+    String label,
+    double value,
+    Color color,
+    IconData icon,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withOpacity(0.3)),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: color, size: 20),
+          const SizedBox(height: 8),
+          Text(label, style: TextStyle(fontSize: 12, color: color)),
+          const SizedBox(height: 4),
+          Text(
+            value.toStringAsFixed(2),
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: color,
             ),
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 
-  void _sendTransactionsAndFinishShift() {
-    TransactionDialogs.showFinishShiftConfirmationDialog(
-      context,
-      totalPositive: _totalPositive,
-      totalNegative: _totalNegative,
-      netAmount: _netAmount,
-      transactionCount: _transactions.length,
-      onConfirm: () {
-        // تحويل المعاملات إلى نموذج API
-        final apiTransactions = _transactions
-            .map((t) => t.toApiModel())
-            .toList();
+  Widget _buildQuickInputCard() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.add_circle_outline, color: primaryColor),
+              const SizedBox(width: 12),
+              const Text(
+                'إضافة معاملة سريعة',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
 
-        // إرسال المعاملات
-        viewModel.addTransaction(
-          shiftId: widget.shift.shiftId ?? 0,
-          transactions: apiTransactions,
+          // Type Selector
+          const Text(
+            'نوع المعاملة',
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 8),
+          _buildTypeSelector(),
+
+          const SizedBox(height: 16),
+
+          // Amount Input
+          const Text(
+            'المبلغ',
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 8),
+          _buildAmountInput(),
+
+          const SizedBox(height: 12),
+
+          // Quick Amount Buttons
+          _buildQuickAmountButtons(),
+
+          const SizedBox(height: 12),
+
+          // Calculator Toggle
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    setState(() {
+                      _isCalculatorMode = !_isCalculatorMode;
+                      if (!_isCalculatorMode) {
+                        _calculatorDisplay = '0';
+                      }
+                    });
+                  },
+                  icon: Icon(
+                    _isCalculatorMode ? Icons.keyboard : Icons.calculate,
+                    size: 18,
+                  ),
+                  label: Text(_isCalculatorMode ? 'إخفاء الآلة' : 'آلة حاسبة'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: primaryColor,
+                    side: BorderSide(color: primaryColor),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          if (_isCalculatorMode) ...[
+            const SizedBox(height: 12),
+            _buildCalculator(),
+          ],
+
+          const SizedBox(height: 16),
+
+          // Description (Optional)
+          const Text(
+            'الوصف (اختياري)',
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 8),
+          TextField(
+            controller: _descriptionController,
+            decoration: InputDecoration(
+              hintText: 'أدخل وصف المعاملة',
+              prefixIcon: Icon(Icons.notes, color: primaryColor),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: primaryColor, width: 2),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          // Add Button
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: _addTransaction,
+              icon: const Icon(Icons.add, size: 24),
+              label: const Text(
+                'إضافة المعاملة',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: _selectedType.color,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 2,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTypeSelector() {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: ShiftTransactionType.values.take(6).map((type) {
+        final isSelected = type == _selectedType;
+        return GestureDetector(
+          onTap: () => setState(() => _selectedType = type),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? type.color.withOpacity(0.15)
+                  : Colors.grey[100],
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: isSelected ? type.color : Colors.grey[300]!,
+                width: isSelected ? 2 : 1,
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  type.icon,
+                  size: 18,
+                  color: isSelected ? type.color : Colors.grey[600],
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  type.displayName,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: isSelected
+                        ? FontWeight.bold
+                        : FontWeight.normal,
+                    color: isSelected ? type.color : Colors.grey[700],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildAmountInput() {
+    return TextField(
+      controller: _amountController,
+      keyboardType: TextInputType.number,
+      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+      decoration: InputDecoration(
+        hintText: '0.00',
+        prefixIcon: Icon(
+          Icons.attach_money,
+          color: _selectedType.color,
+          size: 28,
+        ),
+        suffixText: 'ر.س',
+        suffixStyle: TextStyle(
+          fontSize: 16,
+          color: Colors.grey[600],
+          fontWeight: FontWeight.bold,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: _selectedType.color, width: 2),
+        ),
+        filled: true,
+        fillColor: _selectedType.color.withOpacity(0.05),
+      ),
+    );
+  }
+
+  Widget _buildQuickAmountButtons() {
+    final amounts = ['50', '100', '200', '500', '1000'];
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: amounts.map((amount) {
+        return InkWell(
+          onTap: () => _addQuickAmount(amount),
+          borderRadius: BorderRadius.circular(10),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  primaryColor.withOpacity(0.1),
+                  secondaryColor.withOpacity(0.05),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: primaryColor.withOpacity(0.3)),
+            ),
+            child: Text(
+              '+$amount',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: primaryColor,
+              ),
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildCalculator() {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        children: [
+          GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: 4,
+            mainAxisSpacing: 8,
+            crossAxisSpacing: 8,
+            children:
+                [
+                  '7',
+                  '8',
+                  '9',
+                  'C',
+                  '4',
+                  '5',
+                  '6',
+                  '⌫',
+                  '1',
+                  '2',
+                  '3',
+                  '.',
+                  '0',
+                  '00',
+                ].map((key) {
+                  return InkWell(
+                    onTap: () => _handleCalculator(key),
+                    borderRadius: BorderRadius.circular(8),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: ['C', '⌫'].contains(key)
+                            ? dangerColor.withOpacity(0.1)
+                            : Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.grey[300]!),
+                      ),
+                      child: Center(
+                        child: Text(
+                          key,
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: ['C', '⌫'].contains(key)
+                                ? dangerColor
+                                : Colors.grey[800],
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTransactionsList() {
+    if (_transactions.isEmpty) {
+      return Container(
+        padding: const EdgeInsets.all(40),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Column(
+          children: [
+            Icon(
+              Icons.receipt_long_outlined,
+              size: 64,
+              color: Colors.grey[400],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'لا توجد معاملات بعد',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey[700],
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'ابدأ بإضافة معاملات جديدة',
+              style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Icon(Icons.list_alt, color: primaryColor),
+                const SizedBox(width: 12),
+                const Text(
+                  'قائمة المعاملات',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const Spacer(),
+                Text(
+                  '${_transactions.length} معاملة',
+                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                ),
+              ],
+            ),
+          ),
+          const Divider(height: 1),
+          ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: _transactions.length,
+            separatorBuilder: (context, index) => const Divider(height: 1),
+            itemBuilder: (context, index) {
+              final transaction = _transactions[index];
+              return Dismissible(
+                key: Key('transaction_$index'),
+                direction: DismissDirection.endToStart,
+                background: Container(
+                  color: dangerColor,
+                  alignment: Alignment.centerLeft,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: const Icon(Icons.delete, color: Colors.white),
+                ),
+                onDismissed: (direction) {
+                  setState(() {
+                    _transactions.removeAt(index);
+                    _updateStatistics();
+                  });
+                },
+                child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  leading: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: transaction.type.color.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      transaction.type.icon,
+                      color: transaction.type.color,
+                    ),
+                  ),
+                  title: Text(
+                    transaction.description,
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  subtitle: Text(
+                    TransactionUtils.formatTime(transaction.timestamp),
+                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                  ),
+                  trailing: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        '${transaction.isPositive ? '+' : '-'}${transaction.amount.toStringAsFixed(2)}',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: transaction.type.color,
+                        ),
+                      ),
+                      Text(
+                        transaction.type.displayName,
+                        style: TextStyle(fontSize: 10, color: Colors.grey[600]),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottomBar() {
+    return BlocBuilder<TransactionCubit, TransactionState>(
+      builder: (context, state) {
+        final isLoading = state is TransactionLoading;
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 10,
+                offset: const Offset(0, -2),
+              ),
+            ],
+          ),
+          child: SafeArea(
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: isLoading || _transactions.isEmpty
+                    ? null
+                    : _finishShift,
+                icon: isLoading
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      )
+                    : const Icon(Icons.send_rounded, size: 24),
+                label: Text(
+                  isLoading ? 'جاري الإرسال...' : 'إنهاء الوردية وإرسال',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: successColor,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 0,
+                  disabledBackgroundColor: Colors.grey[300],
+                ),
+              ),
+            ),
+          ),
         );
       },
     );
