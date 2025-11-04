@@ -695,6 +695,8 @@ class TransactionDialogs {
         totalNegative: totalNegative ?? 0,
         netAmount: netAmount ?? 0,
         transactionCount: transactionCount ?? 0,
+        storeName: CacheService.getData(key: CacheKeys.storeName),
+        userName: CacheService.getData(key: CacheKeys.userName),
       );
 
       // إغلاق loader
