@@ -25,7 +25,9 @@ class _AddBarcodeSheetState extends State<AddBarcodeSheet> {
   final TextEditingController barcodeController = TextEditingController();
   final TextEditingController unitQuantityController = TextEditingController();
   final TextEditingController unitPriceController = TextEditingController();
-  String selectedBarcodeType = 'EAN-13';
+  final TextEditingController selectedBarcodeType = TextEditingController();
+
+  // String selectedBarcodeType = 'EAN-13';
   bool isLoading = false;
 
   final List<String> barcodeTypes = [
@@ -65,7 +67,7 @@ class _AddBarcodeSheetState extends State<AddBarcodeSheet> {
 
       await widget.onConfirm(
         barcode,
-        selectedBarcodeType,
+        selectedBarcodeType.text,
         unitQuantity,
         unitPrice,
       );
@@ -266,21 +268,23 @@ class _AddBarcodeSheetState extends State<AddBarcodeSheet> {
             border: Border.all(color: Colors.grey.shade200),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              value: selectedBarcodeType,
-              isExpanded: true,
-              icon: const Icon(Icons.arrow_drop_down),
-              items: barcodeTypes.map((String type) {
-                return DropdownMenuItem<String>(value: type, child: Text(type));
-              }).toList(),
-              onChanged: isLoading
-                  ? null
-                  : (String? newValue) {
-                      if (newValue != null) {
-                        setState(() => selectedBarcodeType = newValue);
-                      }
-                    },
+          child: TextField(
+            controller: selectedBarcodeType,
+            keyboardType: TextInputType.text,
+            enabled: !isLoading,
+            decoration: InputDecoration(
+              hintText: 'اكتب نوع الكمية شد12 كرتون12 علبه12',
+              hintStyle: TextStyle(color: Colors.grey.shade400),
+              prefixIcon: Icon(
+                Icons.card_travel_outlined,
+                color: Colors.orange.shade700,
+                size: 20,
+              ),
+              border: InputBorder.none,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 14,
+              ),
             ),
           ),
         ),
