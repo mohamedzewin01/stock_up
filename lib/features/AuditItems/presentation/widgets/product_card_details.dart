@@ -58,6 +58,13 @@ class ProductCardDetails extends StatelessWidget {
                   value: product.categoryName?.toString() ?? 'غير محدد',
                   color: Colors.blue,
                 ),
+                const Divider(height: 16),
+                InfoRow(
+                  icon: Icons.inventory_2,
+                  label: 'الوحدة',
+                  value: product.unit?.toString() ?? 'غير محدد',
+                  color: Colors.indigo,
+                ),
               ],
             ),
           ),

@@ -239,11 +239,12 @@ class _TransactionPageState extends State<TransactionPage> {
                         _buildQuickInputCard(),
                         const SizedBox(height: 16),
                         _buildTransactionsList(),
+                        const SizedBox(height: 16),
+                        _buildBottomBar(),
                       ],
                     ),
                   ),
                 ),
-                _buildBottomBar(),
               ],
             ),
           ),
@@ -523,8 +524,7 @@ class _TransactionPageState extends State<TransactionPage> {
           const SizedBox(height: 12),
 
           // Quick Amount Buttons
-          _buildQuickAmountButtons(),
-
+          // _buildQuickAmountButtons(),
           const SizedBox(height: 12),
 
           // Calculator Toggle
@@ -544,7 +544,9 @@ class _TransactionPageState extends State<TransactionPage> {
                     _isCalculatorMode ? Icons.keyboard : Icons.calculate,
                     size: 18,
                   ),
-                  label: Text(_isCalculatorMode ? 'إخفاء الآلة' : 'آلة حاسبة'),
+                  label: Text(
+                    _isCalculatorMode ? 'إخفاء اللوحة' : 'لوحة رقمية',
+                  ),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: primaryColor,
                     side: BorderSide(color: primaryColor),
@@ -934,6 +936,7 @@ class _TransactionPageState extends State<TransactionPage> {
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.1),

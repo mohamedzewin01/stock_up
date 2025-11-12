@@ -44,6 +44,19 @@ import '../../features/Auth/domain/useCases/Auth_useCase_repo.dart' as _i628;
 import '../../features/Auth/domain/useCases/Auth_useCase_repo_impl.dart'
     as _i971;
 import '../../features/Auth/presentation/bloc/Auth_cubit.dart' as _i192;
+import '../../features/Barcodes/data/datasources/Barcodes_datasource_repo.dart'
+    as _i1031;
+import '../../features/Barcodes/data/datasources/Barcodes_datasource_repo_impl.dart'
+    as _i173;
+import '../../features/Barcodes/data/repositories_impl/Barcodes_repo_impl.dart'
+    as _i241;
+import '../../features/Barcodes/domain/repositories/Barcodes_repository.dart'
+    as _i230;
+import '../../features/Barcodes/domain/useCases/Barcodes_useCase_repo.dart'
+    as _i705;
+import '../../features/Barcodes/domain/useCases/Barcodes_useCase_repo_impl.dart'
+    as _i560;
+import '../../features/Barcodes/presentation/bloc/Barcodes_cubit.dart' as _i398;
 import '../../features/Home/data/datasources/ManagerHome_datasource_repo.dart'
     as _i983;
 import '../../features/Home/data/datasources/ManagerHome_datasource_repo_impl.dart'
@@ -229,14 +242,26 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i162.TransactionDatasourceRepo>(
       () => _i4.TransactionDatasourceRepoImpl(gh<_i680.ApiService>()),
     );
+    gh.factory<_i1031.BarcodesDatasourceRepo>(
+      () => _i173.BarcodesDatasourceRepoImpl(gh<_i680.ApiService>()),
+    );
     gh.factory<_i826.SettingsDatasourceRepo>(
       () => _i625.SettingsDatasourceRepoImpl(gh<_i680.ApiService>()),
     );
     gh.factory<_i1069.StoresDatasourceRepo>(
       () => _i133.StoresDatasourceRepoImpl(gh<_i680.ApiService>()),
     );
+    gh.factory<_i230.BarcodesRepository>(
+      () => _i241.BarcodesRepositoryImpl(gh<_i1031.BarcodesDatasourceRepo>()),
+    );
+    gh.factory<_i705.BarcodesUseCaseRepo>(
+      () => _i560.BarcodesUseCase(gh<_i230.BarcodesRepository>()),
+    );
     gh.factory<_i983.ManagerHomeDatasourceRepo>(
       () => _i800.ManagerHomeDatasourceRepoImpl(gh<_i680.ApiService>()),
+    );
+    gh.factory<_i398.BarcodesCubit>(
+      () => _i398.BarcodesCubit(gh<_i705.BarcodesUseCaseRepo>()),
     );
     gh.factory<_i830.POSPageDatasourceRepo>(
       () => _i448.POSPageDatasourceRepoImpl(gh<_i680.ApiService>()),
@@ -325,14 +350,14 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i821.UsersInventoryCubit>(
       () => _i821.UsersInventoryCubit(gh<_i1018.InventoryUseCaseRepo>()),
     );
-    gh.factory<_i722.ShiftCubit>(
-      () => _i722.ShiftCubit(gh<_i119.ShiftUseCaseRepo>()),
+    gh.factory<_i887.ClosedShiftsCubit>(
+      () => _i887.ClosedShiftsCubit(gh<_i119.ShiftUseCaseRepo>()),
     );
     gh.factory<_i773.OpenShiftCubit>(
       () => _i773.OpenShiftCubit(gh<_i119.ShiftUseCaseRepo>()),
     );
-    gh.factory<_i887.ClosedShiftsCubit>(
-      () => _i887.ClosedShiftsCubit(gh<_i119.ShiftUseCaseRepo>()),
+    gh.factory<_i722.ShiftCubit>(
+      () => _i722.ShiftCubit(gh<_i119.ShiftUseCaseRepo>()),
     );
     gh.factory<_i183.AuditItemsUseCaseRepo>(
       () => _i56.AuditItemsUseCase(gh<_i291.AuditItemsRepository>()),

@@ -11,6 +11,10 @@ import 'package:stock_up/features/AuditItems/data/models/response/search_product
 import 'package:stock_up/features/AuditItems/data/models/response/update_inventory_stem_status_model.dart';
 import 'package:stock_up/features/Auth/data/models/request/login_request.dart';
 import 'package:stock_up/features/Auth/data/models/response/login_model.dart';
+import 'package:stock_up/features/Barcodes/data/models/request/add_barcode_request.dart';
+import 'package:stock_up/features/Barcodes/data/models/request/delete_barcode_request.dart';
+import 'package:stock_up/features/Barcodes/data/models/response/add_barcode_model.dart';
+import 'package:stock_up/features/Barcodes/data/models/response/delete_barcode_model.dart';
 import 'package:stock_up/features/Inventory/data/models/request/add_inventory_audit_users_request.dart';
 import 'package:stock_up/features/Inventory/data/models/request/create_inventory_audit_request.dart';
 import 'package:stock_up/features/Inventory/data/models/request/get_inventory_by_user_request.dart';
@@ -116,5 +120,15 @@ abstract class ApiService {
   @POST(ApiConstants.addTransaction)
   Future<AddTransactionModel?> addTransaction(
     @Body() AddTransactionRequest addTransactionRequest,
+  );
+
+  @POST(ApiConstants.addBarcode)
+  Future<AddBarcodeModel?> addBarcode(
+    @Body() AddBarcodeRequest addBarcodeRequest,
+  );
+
+  @POST(ApiConstants.deleteBarcode)
+  Future<DeleteBarcodeModel?> deleteBarcode(
+    @Body() DeleteBarcodeRequest deleteBarcodeRequest,
   );
 }
