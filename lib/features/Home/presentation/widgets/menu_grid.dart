@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stock_up/core/utils/cashed_data_shared_preferences.dart';
 import 'package:stock_up/features/AuditItems/presentation/pages/AuditItems_page.dart';
+import 'package:stock_up/features/Barcodes/presentation/pages/Barcodes_page.dart';
 import 'package:stock_up/features/Home/presentation/widgets/placeholder_page.dart';
 import 'package:stock_up/features/Home/presentation/widgets/premium_card.dart';
 import 'package:stock_up/features/Inventory/presentation/pages/inventory_page.dart';
@@ -49,7 +50,8 @@ class MenuGrid extends StatelessWidget {
               gradientColors: const [Color(0xFF9D4EDD), Color(0xFF7B2CBF)],
               delay: 0,
               onTap: () {
-                if (CacheService.getData(key: CacheKeys.userRole) == 'admin') {
+                if (CacheService.getData(key: CacheKeys.userRole) == 'admin' ||
+                    CacheService.getData(key: CacheKeys.userRole) == 'super') {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => InventoryPage()),
@@ -91,7 +93,8 @@ class MenuGrid extends StatelessWidget {
                 //title: 'دفتر اليومية'
                 if (CacheService.getData(key: CacheKeys.userRole) == 'admin' ||
                     CacheService.getData(key: CacheKeys.userRole) ==
-                        'cashier') {
+                        'cashier' ||
+                    CacheService.getData(key: CacheKeys.userRole) == 'super') {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const ShiftPage()),
@@ -137,7 +140,6 @@ class MenuGrid extends StatelessWidget {
                 );
               },
             ),
-
             PremiumCard(
               icon: Icons.show_chart,
               title: 'تحليل البيانات',
@@ -153,6 +155,33 @@ class MenuGrid extends StatelessWidget {
                         const PlaceholderPage(title: 'تحليل البيانات'),
                   ),
                 );
+              },
+            ),
+            PremiumCard(
+              icon: Icons.barcode_reader,
+              title: 'اضافة باركود',
+              subtitle: 'اضافة باركود للكميات',
+              gradientColors: const [Color(0xFFE0D1E6), Color(0xF9AD8EDA)],
+
+              delay: 500,
+              onTap: () {
+                //title: 'دفتر اليومية'
+                if (CacheService.getData(key: CacheKeys.userRole) == 'super') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const BarcodesPage(),
+                    ),
+                  );
+                } else {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          const PlaceholderPage(title: 'اضافة باكود'),
+                    ),
+                  );
+                }
               },
             ),
           ],
