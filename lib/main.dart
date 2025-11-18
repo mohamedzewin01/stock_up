@@ -43,6 +43,8 @@ class MyApp extends StatelessWidget {
         ),
       ),
       home: SplashScreen(),
+      //InvoiceScreen(),
+      //SplashScreen(),
       debugShowCheckedModeBanner: false,
     );
   }
