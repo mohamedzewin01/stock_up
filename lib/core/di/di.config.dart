@@ -119,12 +119,6 @@ import '../../features/POSPage/domain/useCases/POSPage_useCase_repo.dart'
 import '../../features/POSPage/domain/useCases/POSPage_useCase_repo_impl.dart'
     as _i660;
 import '../../features/POSPage/presentation/bloc/POSPage_cubit.dart' as _i647;
-import '../../features/Products/domain/repositories/Products_repository.dart'
-    as _i362;
-import '../../features/Products/domain/useCases/Products_useCase_repo.dart'
-    as _i1066;
-import '../../features/Products/domain/useCases/Products_useCase_repo_impl.dart'
-    as _i187;
 import '../../features/Search/data/datasources/Search_datasource_repo.dart'
     as _i33;
 import '../../features/Search/data/datasources/Search_datasource_repo_impl.dart'
@@ -214,9 +208,6 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i902.ManagerHomeRepositoryImpl(),
     );
     gh.factory<_i271.SettingsRepository>(() => _i583.SettingsRepositoryImpl());
-    gh.factory<_i1066.ProductsUseCaseRepo>(
-      () => _i187.ProductsUseCase(gh<_i362.ProductsRepository>()),
-    );
     gh.factory<_i680.ApiService>(() => _i680.ApiService(gh<_i361.Dio>()));
     gh.factory<_i650.SettingsUseCaseRepo>(
       () => _i502.SettingsUseCase(gh<_i271.SettingsRepository>()),
