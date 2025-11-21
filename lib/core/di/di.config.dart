@@ -119,6 +119,18 @@ import '../../features/POSPage/domain/useCases/POSPage_useCase_repo.dart'
 import '../../features/POSPage/domain/useCases/POSPage_useCase_repo_impl.dart'
     as _i660;
 import '../../features/POSPage/presentation/bloc/POSPage_cubit.dart' as _i647;
+import '../../features/ProductExpiry/data/datasources/ProductExpiry_datasource_repo.dart'
+    as _i688;
+import '../../features/ProductExpiry/data/datasources/ProductExpiry_datasource_repo_impl.dart'
+    as _i644;
+import '../../features/ProductExpiry/data/repositories_impl/ProductExpiry_repo_impl.dart'
+    as _i13;
+import '../../features/ProductExpiry/domain/repositories/ProductExpiry_repository.dart'
+    as _i210;
+import '../../features/ProductExpiry/domain/useCases/ProductExpiry_useCase_repo.dart'
+    as _i750;
+import '../../features/ProductExpiry/domain/useCases/ProductExpiry_useCase_repo_impl.dart'
+    as _i268;
 import '../../features/Search/data/datasources/Search_datasource_repo.dart'
     as _i33;
 import '../../features/Search/data/datasources/Search_datasource_repo_impl.dart'
@@ -208,6 +220,9 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i902.ManagerHomeRepositoryImpl(),
     );
     gh.factory<_i271.SettingsRepository>(() => _i583.SettingsRepositoryImpl());
+    gh.factory<_i210.ProductExpiryRepository>(
+      () => _i13.ProductExpiryRepositoryImpl(),
+    );
     gh.factory<_i680.ApiService>(() => _i680.ApiService(gh<_i361.Dio>()));
     gh.factory<_i650.SettingsUseCaseRepo>(
       () => _i502.SettingsUseCase(gh<_i271.SettingsRepository>()),
@@ -235,6 +250,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i1031.BarcodesDatasourceRepo>(
       () => _i173.BarcodesDatasourceRepoImpl(gh<_i680.ApiService>()),
+    );
+    gh.factory<_i688.ProductExpiryDatasourceRepo>(
+      () => _i644.ProductExpiryDatasourceRepoImpl(gh<_i680.ApiService>()),
     );
     gh.factory<_i826.SettingsDatasourceRepo>(
       () => _i625.SettingsDatasourceRepoImpl(gh<_i680.ApiService>()),
@@ -288,6 +306,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i478.ManagerHomeUseCaseRepo>(
       () => _i724.ManagerHomeUseCase(gh<_i378.ManagerHomeRepository>()),
+    );
+    gh.factory<_i750.ProductExpiryUseCaseRepo>(
+      () => _i268.ProductExpiryUseCase(gh<_i210.ProductExpiryRepository>()),
     );
     gh.factory<_i675.InventoryRepository>(
       () => _i629.InventoryRepositoryImpl(gh<_i180.InventoryDatasourceRepo>()),
