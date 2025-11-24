@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stock_up/core/utils/cashed_data_shared_preferences.dart';
 import 'package:stock_up/features/AuditItems/presentation/pages/AuditItems_page.dart';
 import 'package:stock_up/features/Barcodes/presentation/pages/Barcodes_page.dart';
@@ -7,8 +6,6 @@ import 'package:stock_up/features/Home/presentation/widgets/placeholder_page.dar
 import 'package:stock_up/features/Home/presentation/widgets/premium_card.dart';
 import 'package:stock_up/features/Inventory/presentation/pages/inventory_page.dart';
 import 'package:stock_up/features/POSPage/presentation/pages/POSPage_page.dart';
-import 'package:stock_up/features/ProductExpiry/presentation/bloc/ProductExpiry_cubit.dart';
-import 'package:stock_up/features/ProductExpiry/presentation/pages/ProductExpiry_page.dart';
 import 'package:stock_up/features/Shift/presentation/pages/Shift_page.dart';
 
 class MenuGrid extends StatelessWidget {
@@ -192,29 +189,28 @@ class MenuGrid extends StatelessWidget {
               title: 'تاريخ الانتهاء',
               subtitle: 'اضافة باركود للكميات',
               gradientColors: const [Color(0xFFE0D1E6), Color(0xF9AD8EDA)],
-
               delay: 500,
               onTap: () {
                 //title: 'دفتر اليومية'
-                if (CacheService.getData(key: CacheKeys.userRole) == 'super') {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => BlocProvider(
-                        create: (context) => DateScannerCubit(),
-                        child: const DateScannerPage(),
-                      ),
-                    ),
-                  );
-                } else {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) =>
-                          const PlaceholderPage(title: 'اضافة باكود'),
-                    ),
-                  );
-                }
+                // if (CacheService.getData(key: CacheKeys.userRole) == 'super') {
+                //   Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //       builder: (context) => BlocProvider(
+                //         create: (context) => DateScannerCubit(),
+                //         child: const DateScannerPage(),
+                //       ),
+                //     ),
+                //   );
+                // } else {
+                //   Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //       builder: (_) =>
+                //           const PlaceholderPage(title: 'اضافة باكود'),
+                //     ),
+                //   );
+                // }
               },
             ),
           ],
