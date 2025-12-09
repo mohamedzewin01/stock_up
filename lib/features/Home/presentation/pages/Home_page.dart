@@ -239,18 +239,15 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
   late SummaryCubit summaryCubit;
-  late StoresCubit storesCubit;
+  late StoresCubit storesCubit; // ✅ إضافة
 
   @override
   void initState() {
     super.initState();
     summaryCubit = getIt.get<SummaryCubit>();
-    storesCubit = getIt.get<StoresCubit>();
+    storesCubit = getIt.get<StoresCubit>(); // ✅ إضافة
 
-    // جلب قائمة المتاجر أولاً
-    storesCubit.getAllStores();
-
-    // ثم جلب بيانات الـ Summary
+    storesCubit.getAllStores(); // ✅ جلب المتاجر
     _loadSummary();
   }
 
@@ -263,8 +260,8 @@ class _HomePageState extends State<HomePage>
     final startDate = DateTime(now.year, now.month, 1);
     final endDate = DateTime(now.year, now.month + 1, 0);
 
-    final startStr = DateFormat('yyyy-MM-dd').format(startDate);
-    final endStr = DateFormat('yyyy-MM-dd').format(endDate);
+    final startStr = DateFormat('2025-12-07').format(startDate);
+    final endStr = DateFormat('2025-12-07').format(endDate);
 
     summaryCubit.summary(storeId, startStr, endStr);
   }
@@ -279,7 +276,7 @@ class _HomePageState extends State<HomePage>
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(value: summaryCubit),
-        BlocProvider.value(value: storesCubit),
+        BlocProvider.value(value: storesCubit), // الحل هنا!
       ],
       child: Scaffold(
         backgroundColor: const Color(0xFF0F172A),
@@ -291,9 +288,12 @@ class _HomePageState extends State<HomePage>
             color: const Color(0xFF6366F1),
             child: CustomScrollView(
               slivers: [
-                // Header Section with Store Selector
+                // Header Section
+                // ✅ صحيح
                 SliverToBoxAdapter(
-                  child: DashboardHeaderSection(onStoreChanged: _loadSummary),
+                  child: DashboardHeaderSection(
+                    onStoreChanged: _loadSummary, // هنا الحل!
+                  ),
                 ),
 
                 // Stats Bar - Dynamic Data
