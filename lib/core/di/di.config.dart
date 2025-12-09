@@ -174,6 +174,19 @@ import '../../features/Stores/domain/useCases/Stores_useCase_repo.dart'
 import '../../features/Stores/domain/useCases/Stores_useCase_repo_impl.dart'
     as _i1044;
 import '../../features/Stores/presentation/bloc/Stores_cubit.dart' as _i1055;
+import '../../features/Summary/data/datasources/Summary_datasource_repo.dart'
+    as _i563;
+import '../../features/Summary/data/datasources/Summary_datasource_repo_impl.dart'
+    as _i996;
+import '../../features/Summary/data/repositories_impl/Summary_repo_impl.dart'
+    as _i281;
+import '../../features/Summary/domain/repositories/Summary_repository.dart'
+    as _i178;
+import '../../features/Summary/domain/useCases/Summary_useCase_repo.dart'
+    as _i656;
+import '../../features/Summary/domain/useCases/Summary_useCase_repo_impl.dart'
+    as _i104;
+import '../../features/Summary/presentation/bloc/Summary_cubit.dart' as _i246;
 import '../../features/Transaction/data/datasources/Transaction_datasource_repo.dart'
     as _i162;
 import '../../features/Transaction/data/datasources/Transaction_datasource_repo_impl.dart'
@@ -230,6 +243,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i354.AuthDatasourceRepo>(
       () => _i485.AuthDatasourceRepoImpl(gh<_i680.ApiService>()),
     );
+    gh.factory<_i563.SummaryDatasourceRepo>(
+      () => _i996.SummaryDatasourceRepoImpl(gh<_i680.ApiService>()),
+    );
     gh.factory<_i162.TransactionDatasourceRepo>(
       () => _i4.TransactionDatasourceRepoImpl(gh<_i680.ApiService>()),
     );
@@ -269,6 +285,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i257.AuditItemsDatasourceRepo>(
       () => _i237.AuditItemsDatasourceRepoImpl(gh<_i680.ApiService>()),
     );
+    gh.factory<_i178.SummaryRepository>(
+      () => _i281.SummaryRepositoryImpl(gh<_i563.SummaryDatasourceRepo>()),
+    );
     gh.factory<_i285.SearchRepository>(
       () => _i901.SearchRepositoryImpl(gh<_i33.SearchDatasourceRepo>()),
     );
@@ -288,6 +307,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i478.ManagerHomeUseCaseRepo>(
       () => _i724.ManagerHomeUseCase(gh<_i378.ManagerHomeRepository>()),
+    );
+    gh.factory<_i656.SummaryUseCaseRepo>(
+      () => _i104.SummaryUseCase(gh<_i178.SummaryRepository>()),
     );
     gh.factory<_i675.InventoryRepository>(
       () => _i629.InventoryRepositoryImpl(gh<_i180.InventoryDatasourceRepo>()),
@@ -310,6 +332,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i321.TransactionCubit>(
       () => _i321.TransactionCubit(gh<_i15.TransactionUseCaseRepo>()),
+    );
+    gh.factory<_i246.SummaryCubit>(
+      () => _i246.SummaryCubit(gh<_i656.SummaryUseCaseRepo>()),
     );
     gh.factory<_i293.SearchUseCaseRepo>(
       () => _i339.SearchUseCase(gh<_i285.SearchRepository>()),

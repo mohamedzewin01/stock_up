@@ -1,6 +1,5 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
+import 'package:stock_up/core/resources/style_manager.dart';
 
 class PlaceholderPage extends StatelessWidget {
   final String title;
@@ -10,91 +9,72 @@ class PlaceholderPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              const Color(0xFF1A1A2E),
-              const Color(0xFF16213E),
-              const Color(0xFF7B2CBF),
-            ],
-          ),
-        ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              // Custom App Bar
-              _buildPremiumAppBar(context),
+      backgroundColor: const Color(0xFF0F172A),
+      body: SafeArea(
+        child: Column(
+          children: [
+            // App Bar
+            _buildAppBar(context),
 
-              // Content
-              Expanded(
-                child: Center(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _buildIconContainer(),
-                        const SizedBox(height: 32),
-                        _buildTitle(),
-                        const SizedBox(height: 16),
-                        _buildSubtitle(),
-                        const SizedBox(height: 48),
-                        _buildFeaturesList(),
-                      ],
-                    ),
+            // Content
+            Expanded(
+              child: Center(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _buildIconContainer(),
+                      const SizedBox(height: 32),
+                      _buildTitle(),
+                      const SizedBox(height: 16),
+                      _buildSubtitle(),
+                      const SizedBox(height: 48),
+                      // _buildFeaturesList(),
+                    ],
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildPremiumAppBar(BuildContext context) {
+  Widget _buildAppBar(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.all(20),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E293B),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withOpacity(0.1), width: 1),
+      ),
       child: Row(
         children: [
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Colors.white.withOpacity(0.2),
-                  Colors.white.withOpacity(0.1),
+                  const Color(0xFF6366F1).withOpacity(0.2),
+                  const Color(0xFF8B5CF6).withOpacity(0.2),
                 ],
               ),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.3),
-                width: 1.5,
-              ),
+              borderRadius: BorderRadius.circular(10),
             ),
             child: IconButton(
               icon: const Icon(Icons.arrow_back_ios_rounded, size: 20),
               color: Colors.white,
               onPressed: () => Navigator.pop(context),
+              padding: const EdgeInsets.all(8),
             ),
           ),
           const SizedBox(width: 16),
           Expanded(
-            child: ShaderMask(
-              shaderCallback: (bounds) => const LinearGradient(
-                colors: [Color(0xFFFFFFFF), Color(0xFFE0AAFF)],
-              ).createShader(bounds),
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w900,
-                  color: Colors.white,
-                  letterSpacing: 0.5,
-                ),
-              ),
+            child: Text(
+              title,
+              style: getBoldStyle(color: Colors.white, fontSize: 20),
             ),
           ),
         ],
@@ -103,50 +83,27 @@ class PlaceholderPage extends StatelessWidget {
   }
 
   Widget _buildIconContainer() {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        // Outer glow
-        Container(
-          width: 140,
-          height: 140,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: RadialGradient(
-              colors: [
-                const Color(0xFF9D4EDD).withOpacity(0.3),
-                Colors.transparent,
-              ],
-            ),
-          ),
+    return Container(
+      width: 130,
+      height: 130,
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
         ),
-        // Main container
-        Container(
-          width: 120,
-          height: 120,
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Color(0xFF9D4EDD), Color(0xFF7B2CBF)],
-            ),
-            shape: BoxShape.circle,
-            border: Border.all(color: Colors.white.withOpacity(0.3), width: 2),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFF9D4EDD).withOpacity(0.5),
-                blurRadius: 30,
-                spreadRadius: 10,
-              ),
-            ],
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF6366F1).withOpacity(0.5),
+            blurRadius: 40,
+            spreadRadius: 10,
           ),
-          child: const Icon(
-            Icons.construction_rounded,
-            size: 50,
-            color: Colors.white,
-          ),
-        ),
-      ],
+        ],
+      ),
+      child: const Icon(
+        Icons.construction_rounded,
+        size: 60,
+        color: Colors.white,
+      ),
     );
   }
 
@@ -157,12 +114,7 @@ class PlaceholderPage extends StatelessWidget {
       ).createShader(bounds),
       child: Text(
         'صفحة $title',
-        style: const TextStyle(
-          fontSize: 32,
-          fontWeight: FontWeight.w900,
-          color: Colors.white,
-          letterSpacing: 1,
-        ),
+        style: getBoldStyle(color: Colors.white, fontSize: 32),
         textAlign: TextAlign.center,
       ),
     );
@@ -174,25 +126,28 @@ class PlaceholderPage extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Colors.white.withOpacity(0.15),
-            Colors.white.withOpacity(0.05),
+            const Color(0xFFFBBF24).withOpacity(0.2),
+            const Color(0xFFF59E0B).withOpacity(0.2),
           ],
         ),
-        borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: Colors.white.withOpacity(0.2), width: 1),
+        borderRadius: BorderRadius.circular(25),
+        border: Border.all(
+          color: const Color(0xFFFBBF24).withOpacity(0.3),
+          width: 1,
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 8,
-            height: 8,
+            width: 10,
+            height: 10,
             decoration: BoxDecoration(
-              color: const Color(0xFFFFB347),
+              color: const Color(0xFFFBBF24),
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFFFFB347).withOpacity(0.5),
+                  color: const Color(0xFFFBBF24).withOpacity(0.5),
                   blurRadius: 10,
                   spreadRadius: 2,
                 ),
@@ -201,12 +156,10 @@ class PlaceholderPage extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Text(
-            'قيد التطوير',
-            style: TextStyle(
-              fontSize: 16,
+            'قيد التطوير او ليس لديك صلاحية وصول ',
+            style: getMediumStyle(
+              fontSize: 15,
               color: Colors.white.withOpacity(0.9),
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.5,
             ),
           ),
         ],
@@ -214,81 +167,64 @@ class PlaceholderPage extends StatelessWidget {
     );
   }
 
-  Widget _buildFeaturesList() {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(24),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Colors.white.withOpacity(0.15),
-                Colors.white.withOpacity(0.05),
-              ],
-            ),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(
-              color: Colors.white.withOpacity(0.2),
-              width: 1.5,
-            ),
-          ),
-          child: Column(
-            children: [
-              Text(
-                'قريباً',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white.withOpacity(0.95),
-                ),
-              ),
-              const SizedBox(height: 20),
-              _buildFeatureItem(
-                icon: Icons.rocket_launch_rounded,
-                text: 'مميزات جديدة',
-              ),
-              const SizedBox(height: 12),
-              _buildFeatureItem(icon: Icons.speed_rounded, text: 'أداء محسّن'),
-              const SizedBox(height: 12),
-              _buildFeatureItem(
-                icon: Icons.security_rounded,
-                text: 'أمان متقدم',
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+  // Widget _buildFeaturesList() {
+  //   return Container(
+  //     padding: const EdgeInsets.all(28),
+  //     decoration: BoxDecoration(
+  //       color: const Color(0xFF1E293B),
+  //       borderRadius: BorderRadius.circular(24),
+  //       border: Border.all(color: Colors.white.withOpacity(0.1), width: 1),
+  //     ),
+  //     child: Column(
+  //       children: [
+  //         Text(
+  //           'قريباً',
+  //           style: getBoldStyle(color: Colors.white, fontSize: 22),
+  //         ),
+  //         const SizedBox(height: 24),
+  //         _buildFeatureItem(
+  //           icon: Icons.rocket_launch_rounded,
+  //           text: 'مميزات جديدة',
+  //           color: const Color(0xFF6366F1),
+  //         ),
+  //         const SizedBox(height: 16),
+  //         _buildFeatureItem(
+  //           icon: Icons.speed_rounded,
+  //           text: 'أداء محسّن',
+  //           color: const Color(0xFF10B981),
+  //         ),
+  //         const SizedBox(height: 16),
+  //         _buildFeatureItem(
+  //           icon: Icons.security_rounded,
+  //           text: 'أمان متقدم',
+  //           color: const Color(0xFFF59E0B),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
-  Widget _buildFeatureItem({required IconData icon, required String text}) {
+  Widget _buildFeatureItem({
+    required IconData icon,
+    required String text,
+    required Color color,
+  }) {
     return Row(
       children: [
         Container(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                const Color(0xFF9D4EDD).withOpacity(0.3),
-                const Color(0xFF7B2CBF).withOpacity(0.3),
-              ],
-            ),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: Colors.white.withOpacity(0.3)),
+            color: color.withOpacity(0.15),
+            borderRadius: BorderRadius.circular(12),
           ),
-          child: Icon(icon, size: 20, color: Colors.white.withOpacity(0.9)),
+          child: Icon(icon, size: 24, color: color),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 16),
         Text(
           text,
-          style: TextStyle(
-            fontSize: 15,
+          style: getMediumStyle(
+            fontSize: 16,
             color: Colors.white.withOpacity(0.85),
-            fontWeight: FontWeight.w500,
           ),
         ),
       ],

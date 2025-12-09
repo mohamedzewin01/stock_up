@@ -31,6 +31,8 @@ import 'package:stock_up/features/Shift/data/models/response/add_shift_model.dar
 import 'package:stock_up/features/Shift/data/models/response/get_closed_shift_model.dart';
 import 'package:stock_up/features/Shift/data/models/response/get_open_shift_model.dart';
 import 'package:stock_up/features/Stores/data/models/response/all_stores_model.dart';
+import 'package:stock_up/features/Summary/data/models/request/summary_request.dart';
+import 'package:stock_up/features/Summary/data/models/response/summary_model.dart';
 import 'package:stock_up/features/Transaction/data/models/request/add_transaction_request.dart';
 import 'package:stock_up/features/Transaction/data/models/response/add_transaction_model.dart';
 
@@ -131,4 +133,7 @@ abstract class ApiService {
   Future<DeleteBarcodeModel?> deleteBarcode(
     @Body() DeleteBarcodeRequest deleteBarcodeRequest,
   );
+
+  @POST(ApiConstants.summary)
+  Future<SummaryModel?> summary(@Body() SummaryRequest summaryRequest);
 }

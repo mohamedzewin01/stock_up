@@ -8,13 +8,13 @@ class MenuCard extends StatefulWidget {
   final VoidCallback onTap;
 
   const MenuCard({
-    Key? key,
+    super.key,
     required this.icon,
     required this.title,
     required this.color,
     required this.gradient,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   State<MenuCard> createState() => _MenuCardState();
