@@ -686,6 +686,26 @@ class DashboardStatsBar extends StatelessWidget {
     // بناء قائمة الكروت ديناميكياً
     List<Widget> statCards = [];
     int delayCounter = 0;
+    statCards.add(
+      _buildStatCard(
+        icon: Icons.account_balance_wallet_rounded,
+        title: 'رصيد الخزينة',
+        value: treasuryBalance,
+        color: const Color(0xFFF59E0B),
+        delay: delayCounter++ * 50,
+      ),
+    );
+
+    // كرت رصيد البنك
+    statCards.add(
+      _buildStatCard(
+        icon: Icons.account_balance_rounded,
+        title: 'رصيد البنك',
+        value: bankBalance,
+        color: const Color(0xFFEC4899),
+        delay: delayCounter++ * 50,
+      ),
+    );
 
     // كرت المنتجات (ثابت)
     statCards.add(
@@ -719,26 +739,7 @@ class DashboardStatsBar extends StatelessWidget {
           color = const Color(0xFFEF4444);
           icon = Icons.arrow_circle_up_rounded;
         }
-        statCards.add(
-          _buildStatCard(
-            icon: Icons.account_balance_wallet_rounded,
-            title: 'رصيد الخزينة',
-            value: treasuryBalance,
-            color: const Color(0xFFF59E0B),
-            delay: delayCounter++ * 50,
-          ),
-        );
 
-        // كرت رصيد البنك
-        statCards.add(
-          _buildStatCard(
-            icon: Icons.account_balance_rounded,
-            title: 'رصيد البنك',
-            value: bankBalance,
-            color: const Color(0xFFEC4899),
-            delay: delayCounter++ * 50,
-          ),
-        );
         statCards.add(
           _buildStatCard(
             icon: icon,
@@ -850,30 +851,31 @@ class DashboardStatsBar extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         children: List.generate(
           4,
-          (index) => Container(
-            width: 140,
-            margin: const EdgeInsets.only(left: 12),
-            decoration: BoxDecoration(
-              color: const Color(0xFF1E293B),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.1),
-                width: 1,
-              ),
-            ),
-            child: Center(
-              child: SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    const Color(0xFF6366F1).withOpacity(0.5),
+              (index) =>
+              Container(
+                width: 140,
+                margin: const EdgeInsets.only(left: 12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1E293B),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.1),
+                    width: 1,
+                  ),
+                ),
+                child: Center(
+                  child: SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        const Color(0xFF6366F1).withOpacity(0.5),
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
-          ),
         ),
       ),
     );
