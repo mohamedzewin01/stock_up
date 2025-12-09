@@ -28,5 +28,6 @@ class SummaryCubit extends Cubit<SummaryState> {
         emit(SummaryFailure(result.exception));
         break;
     }
+    //
   }
 }

@@ -17,4 +17,5 @@ final class SummaryFailure extends SummaryState {
   final Exception exception;
 
   SummaryFailure(this.exception);
+  //
 }
