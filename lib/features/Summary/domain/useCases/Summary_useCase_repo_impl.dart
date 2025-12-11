@@ -12,11 +12,7 @@ class SummaryUseCase implements SummaryUseCaseRepo {
   SummaryUseCase(this.repository);
 
   @override
-  Future<Result<SummaryEntity?>> summary(
-    int storeId,
-    String? startDate,
-    String? endDate,
-  ) {
-    return repository.summary(storeId, startDate, endDate);
+  Future<Result<SummaryEntity?>> summary(int storeId, String? operationDate) {
+    return repository.summary(storeId, operationDate);
   }
 }

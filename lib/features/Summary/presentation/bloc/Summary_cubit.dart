@@ -13,13 +13,9 @@ class SummaryCubit extends Cubit<SummaryState> {
   SummaryCubit(this._summaryUseCaseRepo) : super(SummaryInitial());
   final SummaryUseCaseRepo _summaryUseCaseRepo;
 
-  Future<void> summary(int storeId, String? startDate, String? endDate) async {
+  Future<void> summary(int storeId, String? operationDate) async {
     emit(SummaryLoading());
-    final result = await _summaryUseCaseRepo.summary(
-      storeId,
-      startDate,
-      endDate,
-    );
+    final result = await _summaryUseCaseRepo.summary(storeId, operationDate);
     switch (result) {
       case Success<SummaryEntity?>():
         emit(SummarySuccess(result.data));

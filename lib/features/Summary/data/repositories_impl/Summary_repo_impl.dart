@@ -12,11 +12,7 @@ class SummaryRepositoryImpl implements SummaryRepository {
   SummaryRepositoryImpl(this.summaryDatasourceRepo);
 
   @override
-  Future<Result<SummaryEntity?>> summary(
-    int storeId,
-    String? startDate,
-    String? endDate,
-  ) {
-    return summaryDatasourceRepo.summary(storeId, startDate, endDate);
+  Future<Result<SummaryEntity?>> summary(int storeId, String? operationDate) {
+    return summaryDatasourceRepo.summary(storeId, operationDate);
   }
 }

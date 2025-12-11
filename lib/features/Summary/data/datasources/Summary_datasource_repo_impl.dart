@@ -14,18 +14,10 @@ class SummaryDatasourceRepoImpl implements SummaryDatasourceRepo {
   SummaryDatasourceRepoImpl(this.apiService);
 
   @override
-  Future<Result<SummaryEntity?>> summary(
-    int storeId,
-    String? startDate,
-    String? endDate,
-  ) {
+  Future<Result<SummaryEntity?>> summary(int storeId, String? operationDate) {
     return executeApi(() async {
       final response = await apiService.summary(
-        SummaryRequest(
-          storeId: storeId,
-          startDate: startDate,
-          endDate: endDate,
-        ),
+        SummaryRequest(storeId: storeId, operationDate: operationDate),
       );
       return response?.toEntity();
     });

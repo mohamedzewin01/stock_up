@@ -6,12 +6,11 @@ part 'summary_request.g.dart';
 class SummaryRequest {
   @JsonKey(name: "store_id")
   final int? storeId;
-  @JsonKey(name: "start_date")
-  final String? startDate;
-  @JsonKey(name: "end_date")
-  final String? endDate;
 
-  SummaryRequest({this.storeId, this.startDate, this.endDate});
+  @JsonKey(name: "operation_date")
+  final String? operationDate; //2025-12-10
+
+  SummaryRequest({this.storeId, this.operationDate});
 
   factory SummaryRequest.fromJson(Map<String, dynamic> json) {
     return _$SummaryRequestFromJson(json);

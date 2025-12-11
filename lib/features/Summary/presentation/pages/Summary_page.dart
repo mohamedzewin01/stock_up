@@ -12,7 +12,6 @@ class SummaryPage extends StatefulWidget {
 }
 
 class _SummaryPageState extends State<SummaryPage> {
-
   late SummaryCubit viewModel;
 
   @override
@@ -31,5 +30,6 @@ class _SummaryPageState extends State<SummaryPage> {
       ),
     );
   }
-}
 
+  //
+}

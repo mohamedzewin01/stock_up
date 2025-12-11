@@ -257,18 +257,11 @@ class _HomePageState extends State<HomePage>
 
     // تحديد تواريخ الشهر الحالي
     final now = DateTime.now();
-    final startDate = DateTime(now.year, now.month, 1);
-    final endDate = DateTime(now.year, now.month + 1, 0);
+    final date = DateTime(now.year, now.month, 1);
 
-    final startStr = DateFormat('2025-12-07').format(startDate);
-    final endStr = DateFormat('2025-12-07').format(endDate);
+    final operationDate = DateFormat('2025-12-10').format(date);
 
-    summaryCubit.summary(storeId, startStr, endStr);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
+    summaryCubit.summary(storeId, operationDate);
   }
 
   @override
@@ -291,9 +284,7 @@ class _HomePageState extends State<HomePage>
                 // Header Section
                 // ✅ صحيح
                 SliverToBoxAdapter(
-                  child: DashboardHeaderSection(
-                    onStoreChanged: _loadSummary, // هنا الحل!
-                  ),
+                  child: DashboardHeaderSection(onStoreChanged: _loadSummary),
                 ),
 
                 // Stats Bar - Dynamic Data
