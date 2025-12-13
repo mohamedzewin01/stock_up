@@ -18,7 +18,7 @@ class SummaryAccountsModel {
   @JsonKey(name: "total_pages")
   final int? totalPages;
   @JsonKey(name: "results")
-  final List<Results>? results;
+  final List<ResultsAccounts>? results;
 
   SummaryAccountsModel({
     this.status,
@@ -70,7 +70,7 @@ class StoreAccounts {
 }
 
 @JsonSerializable()
-class Results {
+class ResultsAccounts {
   @JsonKey(name: "id")
   final int? id;
   @JsonKey(name: "store_id")
@@ -116,7 +116,7 @@ class Results {
   @JsonKey(name: "relevance_score")
   final int? relevanceScore;
 
-  Results({
+  ResultsAccounts({
     this.id,
     this.storeId,
     this.accountNumber,
@@ -141,11 +141,11 @@ class Results {
     this.relevanceScore,
   });
 
-  factory Results.fromJson(Map<String, dynamic> json) {
-    return _$ResultsFromJson(json);
+  factory ResultsAccounts.fromJson(Map<String, dynamic> json) {
+    return _$ResultsAccountsFromJson(json);
   }
 
   Map<String, dynamic> toJson() {
-    return _$ResultsToJson(this);
+    return _$ResultsAccountsToJson(this);
   }
 }

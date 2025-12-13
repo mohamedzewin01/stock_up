@@ -22,7 +22,7 @@ class SummaryAccountsEntity {
 
   final int? totalPages;
 
-  final List<Results>? results;
+  final List<ResultsAccounts>? results;
 
   SummaryAccountsEntity({
     this.status,
