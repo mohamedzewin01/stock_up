@@ -41,7 +41,7 @@ class FinancialSummaryCard extends StatelessWidget {
         children: [
           // Header with Balance
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [color.withOpacity(0.15), color.withOpacity(0.05)],
@@ -53,7 +53,7 @@ class FinancialSummaryCard extends StatelessWidget {
                 topRight: Radius.circular(16),
               ),
             ),
-            child: Row(
+            child: Column(
               children: [
                 Container(
                   padding: const EdgeInsets.all(10),
@@ -64,28 +64,23 @@ class FinancialSummaryCard extends StatelessWidget {
                   child: Icon(icon, color: color, size: 24),
                 ),
                 const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: TextStyle(
-                          color: color,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                        ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        color: color,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
                       ),
-                      const SizedBox(height: 2),
-                      const Text(
-                        'الرصيد النهائي',
-                        style: TextStyle(
-                          color: Color(0xFF64748B),
-                          fontSize: 10,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 2),
+                    const Text(
+                      'الرصيد النهائي',
+                      style: TextStyle(color: Color(0xFF64748B), fontSize: 10),
+                    ),
+                  ],
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
