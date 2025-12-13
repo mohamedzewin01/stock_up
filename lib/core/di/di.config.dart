@@ -186,6 +186,8 @@ import '../../features/Summary/domain/useCases/Summary_useCase_repo.dart'
     as _i656;
 import '../../features/Summary/domain/useCases/Summary_useCase_repo_impl.dart'
     as _i104;
+import '../../features/Summary/presentation/bloc/summary_accounts_cubit.dart'
+    as _i1038;
 import '../../features/Summary/presentation/bloc/Summary_cubit.dart' as _i246;
 import '../../features/Transaction/data/datasources/Transaction_datasource_repo.dart'
     as _i162;
@@ -335,6 +337,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i246.SummaryCubit>(
       () => _i246.SummaryCubit(gh<_i656.SummaryUseCaseRepo>()),
+    );
+    gh.factory<_i1038.SummaryAccountsCubit>(
+      () => _i1038.SummaryAccountsCubit(gh<_i656.SummaryUseCaseRepo>()),
     );
     gh.factory<_i293.SearchUseCaseRepo>(
       () => _i339.SearchUseCase(gh<_i285.SearchRepository>()),

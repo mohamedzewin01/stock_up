@@ -15,4 +15,23 @@ class SummaryUseCase implements SummaryUseCaseRepo {
   Future<Result<SummaryEntity?>> summary(int storeId, String? operationDate) {
     return repository.summary(storeId, operationDate);
   }
+
+  @override
+  Future<Result<SummaryAccountsEntity?>> summaryAccounts(
+    int storeId,
+    String? accountType,
+    String? q,
+    int? page,
+    int? limit,
+    bool? hideZero,
+  ) {
+    return repository.summaryAccounts(
+      storeId,
+      accountType,
+      q,
+      page,
+      limit,
+      hideZero,
+    );
+  }
 }
