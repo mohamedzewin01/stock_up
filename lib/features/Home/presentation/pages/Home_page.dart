@@ -180,20 +180,23 @@ class _HomePageState extends State<HomePage>
                 ),
 
                 // Stats Bar - Dynamic Data
-                SliverToBoxAdapter(
-                  child: BlocBuilder<SummaryCubit, SummaryState>(
-                    builder: (context, state) {
-                      if (state is SummarySuccess) {
-                        return DashboardStatsBar(summaryEntity: state.summary);
-                      } else if (state is SummaryLoading) {
-                        return const DashboardStatsBar(isLoading: true);
-                      } else if (state is SummaryFailure) {
-                        return const DashboardStatsBar(hasError: true);
-                      }
-                      return const DashboardStatsBar();
-                    },
+                if (CacheService.getData(key: CacheKeys.userRole) == 'super')
+                  SliverToBoxAdapter(
+                    child: BlocBuilder<SummaryCubit, SummaryState>(
+                      builder: (context, state) {
+                        if (state is SummarySuccess) {
+                          return DashboardStatsBar(
+                            summaryEntity: state.summary,
+                          );
+                        } else if (state is SummaryLoading) {
+                          return const DashboardStatsBar(isLoading: true);
+                        } else if (state is SummaryFailure) {
+                          return const DashboardStatsBar(hasError: true);
+                        }
+                        return const DashboardStatsBar();
+                      },
+                    ),
                   ),
-                ),
 
                 // Menu Section
                 const SliverToBoxAdapter(child: DashboardMenuSection()),

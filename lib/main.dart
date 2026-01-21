@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:stock_up/core/utils/remote_config.dart';
-import 'package:stock_up/features/Summary/presentation/pages/Summary_page.dart';
+import 'package:stock_up/splash_screen.dart';
 
 import 'core/di/di.dart';
 import 'core/utils/cashed_data_shared_preferences.dart';
@@ -63,8 +63,7 @@ class MyApp extends StatelessWidget {
                 ),
               ),
             ),
-            home: SummaryPage(),
-            // SplashScreen(),
+            home: SplashScreen(),
             //InvoiceScreen(),
             //SplashScreen(),
             debugShowCheckedModeBanner: false,

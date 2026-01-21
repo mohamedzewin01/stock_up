@@ -6,7 +6,7 @@ import 'package:stock_up/features/Barcodes/presentation/pages/Barcodes_page.dart
 import 'package:stock_up/features/Home/presentation/widgets/placeholder_page.dart';
 import 'package:stock_up/features/Inventory/presentation/pages/inventory_page.dart';
 import 'package:stock_up/features/POSPage/presentation/pages/POSPage_page.dart';
-import 'package:stock_up/features/Shift/presentation/pages/Shift_page.dart';
+import 'package:stock_up/features/Summary/presentation/pages/Summary_page.dart';
 
 class DashboardMenuSection extends StatelessWidget {
   const DashboardMenuSection({super.key});
@@ -101,14 +101,15 @@ class DashboardMenuSection extends StatelessWidget {
                       onTap: () {
                         if (CacheService.getData(key: CacheKeys.userRole) ==
                                 'admin' ||
-                            CacheService.getData(key: CacheKeys.userRole) ==
-                                'cashier' ||
+                            // CacheService.getData(key: CacheKeys.userRole) ==
+                            //     'cashier' ||
                             CacheService.getData(key: CacheKeys.userRole) ==
                                 'super') {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const ShiftPage(),
+                              builder: (context) => SummaryPage(),
+                              //const ShiftPage(),
                             ),
                           );
                         } else {
